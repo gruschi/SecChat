@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hello">Hello World, startApp</string>
-    <string name="app_name">labs</string>
+    <string name="app_name">SecChat</string>
     <string name="friend_list">Friend List</string>
     
     <string name="username">Username:</string>
