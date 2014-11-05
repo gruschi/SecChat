@@ -25,3 +25,9 @@
 Icon?
 ehthumbs.db
 Thumbs.db
+
+# Server #
+################
+.buildpath
+.project
+.settings/
