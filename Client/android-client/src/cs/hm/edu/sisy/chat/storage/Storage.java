@@ -1,5 +1,6 @@
-package cs.hm.edu.sisy.chat.tools;
+package cs.hm.edu.sisy.chat.storage;
 
+import cs.hm.edu.sisy.chat.tools.CONSTANTS;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -66,5 +67,19 @@ public class Storage {
 		      }
 		      
 			return null;
-	   }	   
+	   }
+	   
+	   public static void savePublicKeyFriend(int friendId, String pk, Context context) 
+	   {
+       DatabaseHandler dbh = new DatabaseHandler(context);
+       
+       dbh.addPubKey(new PubKey(friendId, pk), dbh); 
+	   }
+	   
+     public static String getPublicKeyFriend(int id, Context context) 
+     {
+       DatabaseHandler dbh = new DatabaseHandler(context);
+       
+       return dbh.getPubKey(id).getPubKey();
+     }
 }

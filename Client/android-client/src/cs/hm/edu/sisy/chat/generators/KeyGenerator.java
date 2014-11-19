@@ -1,4 +1,4 @@
-package cs.hm.edu.sisy.chat.tools;
+package cs.hm.edu.sisy.chat.generators;
 
 import java.security.KeyFactory;
 import java.security.KeyPair;
