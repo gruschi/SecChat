@@ -9,6 +9,10 @@ class User extends AppModel {
 					'required' => array(
 							'rule' => array('notEmpty'),
 							'message' => 'A username is required'
+					),
+					'isUnique' => array(
+							'rule' => array('isUnique'),
+							'message' => 'This username is aready in use'
 					)
 			),
 			'password' => array(
