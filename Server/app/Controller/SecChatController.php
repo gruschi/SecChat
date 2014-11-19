@@ -6,5 +6,6 @@ class SecChatController extends AppController {
 		$this->layout = "ajax";
 	}
 	
-	
 }
+
+?>
