@@ -44,8 +44,8 @@ class AppController extends Controller {
 							'action' => 'index'
 					),
 					'logoutRedirect' => array(
-							'controller' => 'SecChat',
-							'action' => 'index'							
+							'controller' => 'Users',
+							'action' => 'login'							
 					),
 					'authenticate' => array(
 							'Form' => array(

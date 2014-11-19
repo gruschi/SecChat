@@ -4,6 +4,12 @@ class MessageController extends AppController {
 	
 	var $uses = array('User');
 	
+	public function beforeFilter() {
+		parent::beforeFilter();
+		
+		$this->Auth->allow();
+	}
+	
 	public function send(){		
 		if ($this->request->is('post')) {
 			$this->Message->create();
@@ -21,7 +27,7 @@ class MessageController extends AppController {
 			
 		}
 		
-		$this->layout = "ajax";
+		//$this->layout = "ajax";
 	}
 	
 	public function receive(){
