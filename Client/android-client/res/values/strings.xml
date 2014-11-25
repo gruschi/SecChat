@@ -4,10 +4,11 @@
     <string name="app_name">SecChat</string>
     <string name="friend_list">Friend List</string>
     
-    <string name="username">Username:</string>
-    <string name="password">Password:</string>
+    <string name="alias">Please enter your nickname:</string>
     <string name="login">Login</string>
+
     <string name="cancel">Cancel</string>
+
     <string name="messaging">Messaging</string>
     <string name="local_service_started">App service started</string>
     <string name="local_service_stopped">App service stopped</string>

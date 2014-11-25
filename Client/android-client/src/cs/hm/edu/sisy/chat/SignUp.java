@@ -52,8 +52,6 @@ public class SignUp extends Activity {
             // service that we know is running in our own process, we can
             // cast its IBinder to a concrete class and directly access it.
             imService = ((IMService.IMBinder)service).getService();  
-            
-            
         }
 
         public void onServiceDisconnected(ComponentName className) {
@@ -71,7 +69,7 @@ public class SignUp extends Activity {
 	        super.onCreate(savedInstanceState);    
 
 	    
-	               
+/*  
 	        setContentView(R.layout.sign_up_screen);
 	        setTitle("Sign up");
 	        
@@ -149,7 +147,7 @@ public class SignUp extends Activity {
 				}	        	
 	        });
 	        
-	        
+*/
 	    }
 	
 	

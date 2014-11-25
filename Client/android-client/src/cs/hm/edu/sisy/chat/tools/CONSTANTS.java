@@ -6,11 +6,13 @@ public class CONSTANTS {
 	   public static final String MyPREFERENCES = "MyPrefs" ;
 	   public static final String HASH = "hashKey"; 
 	   public static final String ID = "idKey"; 
-	   public static final String ALIAS = "aliasKey"; 
+	   public static final String ALIAS = "aliasKey";
+	   public static final String SESSION_ID = "sessionID"; 
 	   
 	   //REST
      public static final String REST_SERVER = "localhost/SecChat/Server" ;
-     public static final String REST_LOGIN = REST_SERVER + "/users/login"; 
+     public static final String REST_LOGIN = REST_SERVER + "/users/login";
+     public static final String REST_LOGOUT = REST_SERVER + "/users/logout"; 
      public static final String REST_REGISTER = REST_SERVER + "/users/add"; 
      public static final String REST_CONNECT_FRIEND = REST_SERVER + "/connect/contact";
      public static final String REST_CONNECT_GROUP = REST_SERVER + "/connect/group";     

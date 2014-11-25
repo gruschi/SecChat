@@ -9,44 +9,25 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dip"
-        android:text="@string/username"
+        android:text="@string/alias"
     />
-    
-    <EditText android:id="@+id/userName"
+    <EditText android:id="@+id/loginAlias"
+        android:hint="@string/alias"
+        android:inputType="text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
         android:singleLine="true"
-        android:password="false"
-    />
-    
-    <TextView 
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dip"
-        android:text="@string/password"
-    />
-    
-    <EditText android:id="@+id/password"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:singleLine="true"
-        android:password="true"
     /> 
+    
     <LinearLayout android:orientation="horizontal"
     			  android:layout_width="fill_parent"
     			  android:layout_height="wrap_content">
 			  
-    <Button android:id="@+id/login"
+    <Button android:id="@+id/loginButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/login"
-    />
-    <Button android:id="@+id/cancel_login"
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:text="@string/cancel"
     />
 	</LinearLayout>
 

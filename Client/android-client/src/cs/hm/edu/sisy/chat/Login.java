@@ -29,9 +29,8 @@ public class Login extends Activity {
 	public static final String FRIEND_LIST = "FRIEND_LIST";
 	protected static final int MAKE_SURE_USERNAME_AND_PASSWORD_CORRECT = 2 ;
 	protected static final int NOT_CONNECTED_TO_NETWORK = 3;
-	private EditText usernameText;
-    private EditText passwordText;
-    private Button cancelButton;
+	private EditText alias;
+	private Button loginButton;
     private IAppManager imService;
     public static final int SIGN_UP_ID = Menu.FIRST;
     public static final int EXIT_APP_ID = Menu.FIRST + 1;
@@ -82,11 +81,9 @@ public class Login extends Activity {
         setContentView(R.layout.login_screen);
         setTitle("Login");
         
-        Button loginButton = (Button) findViewById(R.id.login);
-        cancelButton = (Button) findViewById(R.id.cancel_login);
-        usernameText = (EditText) findViewById(R.id.userName);
-        passwordText = (EditText) findViewById(R.id.password);        
-        
+        loginButton = (Button) findViewById(R.id.loginButton);
+        alias = (EditText) findViewById(R.id.loginAlias);
+         
         loginButton.setOnClickListener(new OnClickListener(){
 			public void onClick(View arg0) 
 			{					
@@ -99,28 +96,25 @@ public class Login extends Activity {
 					showDialog(NOT_CONNECTED_TO_NETWORK);
 					
 				}
-				else if (usernameText.length() > 0 && 
-					passwordText.length() > 0)
+				else if (alias.length() > 0)
 				{
 					
 					Thread loginThread = new Thread(){
 						private Handler handler = new Handler();
 						@Override
 						public void run() {
-							String result = imService.authenticateUser(usernameText.getText().toString(), passwordText.getText().toString());
+							/*String result = imService.authenticateUser(alias.getText().toString());
 							if (result == null || result.equals(AUTHENTICATION_FAILED)) 
 							{
-								/*
-								 * Authenticatin failed, inform the user
-								 */
+								//Authenticatin failed, inform the user
 								handler.post(new Runnable(){
 									public void run() {										
 										showDialog(MAKE_SURE_USERNAME_AND_PASSWORD_CORRECT);
 									}									
 								});
 														
-							}
-							else {
+							}*/
+							//else {
 							
 								/*
 								 * if result not equal to authentication failed,
@@ -135,7 +129,7 @@ public class Login extends Activity {
 									}									
 								});
 								
-							}
+							//}
 							
 						}
 					};
@@ -150,19 +144,7 @@ public class Login extends Activity {
 				}				
 			}       	
         });
-        
-        cancelButton.setOnClickListener(new OnClickListener(){
-
-			public void onClick(View arg0) 
-			{					
-				imService.exit();
-				finish();
-				
-			}
-        	
-        });
-        
-        
+               
     }
     
     @Override
@@ -238,9 +220,6 @@ public class Login extends Activity {
 	    	case SIGN_UP_ID:
 	    		Intent i = new Intent(Login.this, SignUp.class);
 	    		startActivity(i);
-	    		return true;
-	    	case EXIT_APP_ID:
-	    		cancelButton.performClick();
 	    		return true;
 	    }
 	       
