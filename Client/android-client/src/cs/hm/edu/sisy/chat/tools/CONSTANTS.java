@@ -8,7 +8,9 @@ public class CONSTANTS {
 	   public static final String ID = "idKey"; 
 	   public static final String ALIAS = "aliasKey";
 	   public static final String SESSION_ID = "sessionID"; 
-	   
+     public static final String DATE_FOR_PIN_REFRESH = "date4PinRefresh";
+     public static final String PIN = "pin";
+
 	   //REST
      public static final String REST_SERVER = "localhost/SecChat/Server" ;
      public static final String REST_LOGIN = REST_SERVER + "/users/login";

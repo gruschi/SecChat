@@ -8,6 +8,12 @@ import android.annotation.SuppressLint;
 
 public class PinHashGenerator {
 	
+     //PIN, 6 default length
+     public static String generatePIN() 
+     {
+       return generatePIN( 6 );
+     }  
+  
 	   public static String generatePIN( int length ) 
 	   {
 		    String pin = "";

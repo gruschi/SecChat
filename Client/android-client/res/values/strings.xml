@@ -8,6 +8,15 @@
     <string name="login">Login</string>
 
     <string name="cancel">Cancel</string>
+    <string name="menu_settings">menu</string>
+    <string name="menuChat">Chat</string>
+    <string name="menuOptions">Options</string>
+    
+    <string name="yourAlias">Your Alias:</string>
+    <string name="yourID">Your SecChat-ID:</string>
+    <string name="yourPIN">Your PIN:</string>
+    <string name="hisid">SecChat-ID:</string>
+    <string name="hispin">PIN:</string>
 
     <string name="messaging">Messaging</string>
     <string name="local_service_started">App service started</string>

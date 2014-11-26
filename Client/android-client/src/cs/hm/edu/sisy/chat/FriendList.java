@@ -44,9 +44,7 @@ public class FriendList extends ListActivity
 			TextView text;
 			ImageView icon;
 		}
-		private LayoutInflater mInflater;
-		private Bitmap mOnlineIcon;
-		private Bitmap mOfflineIcon;		
+		private LayoutInflater mInflater;	
 
 		private FriendInfo[] friends = null;
 
@@ -55,9 +53,6 @@ public class FriendList extends ListActivity
 			super();			
 
 			mInflater = LayoutInflater.from(context);
-
-			mOnlineIcon = BitmapFactory.decodeResource(context.getResources(), R.drawable.greenstar);
-			mOfflineIcon = BitmapFactory.decodeResource(context.getResources(), R.drawable.redstar);
 
 		}
 
@@ -110,7 +105,7 @@ public class FriendList extends ListActivity
 
 			// Bind the data efficiently with the holder.
 			holder.text.setText(friends[position].userName);
-			holder.icon.setImageBitmap(friends[position].status == STATUS.ONLINE ? mOnlineIcon : mOfflineIcon);
+			//holder.icon.setImageBitmap(friends[position].status == STATUS.ONLINE ? mOnlineIcon : mOfflineIcon);
 
 			return convertView;
 		}

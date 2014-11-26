@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity" >
+
+    <TextView
+        android:id="@+id/TextView03"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/yourPinID"
+        android:layout_alignBottom="@+id/yourPinID"
+        android:layout_alignLeft="@+id/textView3"
+        android:text="-"
+        tools:context=".MainActivity" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/yourSecChatID"
+        android:layout_marginLeft="81dp"
+        android:layout_toRightOf="@+id/yourAliasID"
+        android:text="-"
+        tools:context=".MainActivity" />
+
+    <TextView
+        android:id="@+id/yourAliasID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="35dp"
+        android:layout_marginTop="35dp"
+        android:text="@string/yourAlias"
+        tools:context=".MainActivity" />
+
+    <TextView
+        android:id="@+id/yourSecChatID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/yourAliasID"
+        android:layout_below="@+id/yourAliasID"
+        android:layout_marginTop="25dp"
+        android:text="@string/yourID"
+        tools:context=".MainActivity" />
+
+    <TextView
+        android:id="@+id/yourPinID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/yourSecChatID"
+        android:layout_below="@+id/yourSecChatID"
+        android:layout_marginTop="30dp"
+        android:text="@string/yourPIN"
+        tools:context=".MainActivity" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/yourPinID"
+        android:layout_alignLeft="@+id/textView2"
+        android:text="-"
+        tools:context=".MainActivity" />
+
+    <Button
+        android:id="@+id/HintID"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:text="Hint" />
+
+</RelativeLayout>

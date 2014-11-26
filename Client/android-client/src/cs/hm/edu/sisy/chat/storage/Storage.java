@@ -1,9 +1,9 @@
 package cs.hm.edu.sisy.chat.storage;
 
-import cs.hm.edu.sisy.chat.tools.CONSTANTS;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import cs.hm.edu.sisy.chat.tools.CONSTANTS;
 
 public class Storage {
 		   
@@ -114,4 +114,43 @@ public class Storage {
 			      editor.commit();
 		      }
 	   }
+	   
+     public static void saveDate4PinRefresh(Context context, int currentDate) 
+     {
+       SharedPreferences sharedpreferences = context.getSharedPreferences(CONSTANTS.MyPREFERENCES, Context.MODE_PRIVATE);
+       
+       sharedpreferences.edit().putString(CONSTANTS.DATE_FOR_PIN_REFRESH, Integer.toString(currentDate)).apply();
+
+     }
+     
+     public static int getStoragedPinDate(Context context) 
+     {
+       SharedPreferences sharedpreferences = context.getSharedPreferences(CONSTANTS.MyPREFERENCES, Context.MODE_PRIVATE);
+       
+       if (sharedpreferences.contains( CONSTANTS.DATE_FOR_PIN_REFRESH ))
+       {
+         return sharedpreferences.getInt( CONSTANTS.DATE_FOR_PIN_REFRESH, 0 );
+       }
+       
+       return 0;
+     }
+     
+     public static void savePIN(Context context, String hash)
+     {
+       SharedPreferences sharedpreferences = context.getSharedPreferences(CONSTANTS.MyPREFERENCES, Context.MODE_PRIVATE);
+  
+       sharedpreferences.edit().putString(CONSTANTS.PIN, hash).apply();
+     }
+     
+     public static String getPIN(Context context)
+     {
+       SharedPreferences sharedpreferences = context.getSharedPreferences(CONSTANTS.MyPREFERENCES, Context.MODE_PRIVATE);
+       
+          if (sharedpreferences.contains( CONSTANTS.PIN ))
+          {
+            return sharedpreferences.getString( CONSTANTS.PIN, null );
+          }
+          
+      return null;
+     }
 }
