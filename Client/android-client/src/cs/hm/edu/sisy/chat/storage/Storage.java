@@ -29,7 +29,6 @@ public class Storage {
 		      
 			return null;
 	   }
-	  
 	   
 	   public static void saveID(Context context, int id) 
 	   {
@@ -115,11 +114,11 @@ public class Storage {
 		      }
 	   }
 	   
-     public static void saveDate4PinRefresh(Context context, int currentDate) 
+     public static void saveStoragedPinDate(Context context, int currentDate) 
      {
        SharedPreferences sharedpreferences = context.getSharedPreferences(CONSTANTS.MyPREFERENCES, Context.MODE_PRIVATE);
        
-       sharedpreferences.edit().putString(CONSTANTS.DATE_FOR_PIN_REFRESH, Integer.toString(currentDate)).apply();
+       sharedpreferences.edit().putInt(CONSTANTS.DATE_FOR_PIN_REFRESH, currentDate).apply();
 
      }
      
@@ -154,3 +153,24 @@ public class Storage {
       return null;
      }
 }
+
+/*
+//get data from activity to another
+
+Intent i = new Intent(FirstScreen.this, SecondScreen.class);   
+String keyIdentifer  = null;
+i.putExtra("STRING_I_NEED", strName);
+
+
+String newString;
+if (savedInstanceState == null) {
+    extras = getIntent().getExtras();
+    if(extras == null) {
+        newString= null;
+    } else {
+        newString= extras.getString("STRING_I_NEED");
+    }
+} else {
+    newString= (String) savedInstanceState.getSerializable("STRING_I_NEED");
+}
+*/

@@ -6,23 +6,24 @@
     tools:context=".MainActivity" >
 
     <TextView
-        android:id="@+id/TextView03"
+        android:id="@+id/txtYourPin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/yourPinID"
         android:layout_alignBottom="@+id/yourPinID"
-        android:layout_alignLeft="@+id/textView3"
+        android:layout_alignLeft="@+id/txtYourId"
         android:text="-"
         tools:context=".MainActivity" />
 
-    <TextView
-        android:id="@+id/textView2"
+    <EditText
+        android:id="@+id/txtYourAlias"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/yourSecChatID"
         android:layout_marginLeft="81dp"
         android:layout_toRightOf="@+id/yourAliasID"
         android:text="-"
+        android:ems="5"
         tools:context=".MainActivity" />
 
     <TextView
@@ -57,11 +58,11 @@
         tools:context=".MainActivity" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/txtYourId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/yourPinID"
-        android:layout_alignLeft="@+id/textView2"
+        android:layout_alignLeft="@+id/txtYourAlias"
         android:text="-"
         tools:context=".MainActivity" />
 
@@ -70,8 +71,20 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:text="Hint" />
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/yourPinID"
+        android:layout_marginLeft="21dp"
+        android:layout_marginTop="18dp"
+        android:text="@string/generateNewPIN" />
+
+    <Button
+        android:id="@+id/Button01"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/HintID"
+        android:layout_alignBottom="@+id/HintID"
+        android:layout_alignRight="@+id/txtYourAlias"
+        android:text="@string/saveAlias" />
 
 </RelativeLayout>

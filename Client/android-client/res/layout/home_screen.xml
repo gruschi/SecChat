@@ -6,17 +6,17 @@
     tools:context=".MainActivity" >
 
     <TextView
-        android:id="@+id/TextView03"
+        android:id="@+id/txtYourPin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/yourPinID"
         android:layout_alignBottom="@+id/yourPinID"
-        android:layout_alignLeft="@+id/textView3"
+        android:layout_alignLeft="@+id/txtYourId"
         android:text="-"
         tools:context=".MainActivity" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/txtYourAlias"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/yourSecChatID"
@@ -57,11 +57,11 @@
         tools:context=".MainActivity" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/txtYourId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/yourPinID"
-        android:layout_alignLeft="@+id/textView2"
+        android:layout_alignLeft="@+id/txtYourAlias"
         android:text="-"
         tools:context=".MainActivity" />
 

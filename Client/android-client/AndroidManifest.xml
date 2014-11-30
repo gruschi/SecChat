@@ -15,19 +15,20 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-    <activity android:name="cs.hm.edu.sisy.chat.FriendList">
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN"></action>
-        <category
-          android:name="android.intent.category.NORMAL">
-        </category>
-      </intent-filter>
-    </activity>
+        
     <service android:name="cs.hm.edu.sisy.chat.services.IMService"></service>
+   
     <activity android:name="cs.hm.edu.sisy.chat.Login">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"></action>
         <category android:name="android.intent.category.LAUNCHER">
+        </category>
+      </intent-filter>
+    </activity>
+    <activity android:name="cs.hm.edu.sisy.chat.Home">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"></action>
+        <category android:name="android.intent.category.NORMAL">
         </category>
       </intent-filter>
     </activity>
@@ -39,20 +40,22 @@
         </category>
       </intent-filter>
     </activity>
+    <activity android:name="cs.hm.edu.sisy.chat.Settings">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"></action>
+        <category android:name="android.intent.category.NORMAL">
+        </category>
+      </intent-filter>
+    </activity>
+    <activity android:name="cs.hm.edu.sisy.chat.Chat">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"></action>
+        <category
+          android:name="android.intent.category.NORMAL">
+        </category>
+      </intent-filter>
+    </activity>
     
-    
-  <activity android:name="cs.hm.edu.sisy.chat.SignUp"><intent-filter><action android:name="android.intent.action.MAIN"></action>
-<category android:name="android.intent.category.NORMAL"></category>
-</intent-filter>
-</activity>
-<activity android:name="cs.hm.edu.sisy.chat.AddFriend"><intent-filter><action android:name="android.intent.action.MAIN"></action>
-<category android:name="android.intent.category.NORMAL"></category>
-</intent-filter>
-</activity>
-<activity android:name="cs.hm.edu.sisy.chat.UnApprovedFriendList"><intent-filter><action android:name="android.intent.action.MAIN"></action>
-<category android:name="android.intent.category.NORMAL"></category>
-</intent-filter>
-</activity>
 </application>
 
 </manifest>

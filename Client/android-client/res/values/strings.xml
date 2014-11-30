@@ -6,6 +6,7 @@
     
     <string name="alias">Please enter your nickname:</string>
     <string name="login">Login</string>
+    <string name="index">Index</string>
 
     <string name="cancel">Cancel</string>
     <string name="menu_settings">menu</string>
@@ -17,6 +18,9 @@
     <string name="yourPIN">Your PIN:</string>
     <string name="hisid">SecChat-ID:</string>
     <string name="hispin">PIN:</string>
+    
+    <string name="generateNewPIN">generate new PIN</string>
+    <string name="saveAlias">save new Alias</string>
 
     <string name="messaging">Messaging</string>
     <string name="local_service_started">App service started</string>

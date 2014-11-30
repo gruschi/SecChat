@@ -45,10 +45,7 @@ import cs.hm.edu.sisy.chat.R;
 import cs.hm.edu.sisy.chat.communication.SocketOperator;
 import cs.hm.edu.sisy.chat.interfaces.IAppManager;
 import cs.hm.edu.sisy.chat.interfaces.ISocketOperator;
-import cs.hm.edu.sisy.chat.interfaces.IUpdateData;
-import cs.hm.edu.sisy.chat.tools.FriendController;
-import cs.hm.edu.sisy.chat.tools.XMLHandler;
-import cs.hm.edu.sisy.chat.types.FriendInfo;
+import cs.hm.edu.sisy.chat.storage.Partner;
 
 /**
  * This is an example of implementing an application service that runs locally
@@ -61,7 +58,7 @@ import cs.hm.edu.sisy.chat.types.FriendInfo;
  * interact with the user, rather than doing something more disruptive such as
  * calling startActivity().
  */
-public class IMService extends Service implements IAppManager, IUpdateData {
+public class IMService extends Service implements IAppManager {
 //	private NotificationManager mNM;
 	
 	public static final String TAKE_MESSAGE = "Take_Message";
@@ -163,8 +160,8 @@ public class IMService extends Service implements IAppManager, IUpdateData {
                 System.currentTimeMillis());
 
         Intent i = new Intent(this, Messaging.class);
-        i.putExtra(FriendInfo.USERNAME, username);
-        i.putExtra(FriendInfo.MESSAGE, msg);	
+        i.putExtra(Partner.USERNAME, username);
+        i.putExtra(Partner.MESSAGE, msg);	
         
         // The PendingIntent to launch our activity if the user selects this notification
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
@@ -190,16 +187,19 @@ public class IMService extends Service implements IAppManager, IUpdateData {
 	}
 
 	public boolean sendMessage(String  username, String message) {
-		FriendInfo friendInfo = FriendController.getFriendInfo(username);
+		Partner friendInfo = Partner.getFriendInfo(username);
+		String msg = null, IP = null;
+		int port = 0;
+		/*
 		String IP = friendInfo.ip;
 		//IP = "10.0.2.2";
 		int port = Integer.parseInt(friendInfo.port);
 		
-		String msg = FriendInfo.USERNAME +"=" + URLEncoder.encode(this.username) +
+		msg = FriendInfo.USERNAME +"=" + URLEncoder.encode(this.username) +
 		 "&" + FriendInfo.USER_KEY + "=" + URLEncoder.encode(userKey) +
 		 "&" + FriendInfo.MESSAGE + "=" + URLEncoder.encode(message) +
 		 "&";
-		
+		*/
 		return socketOperator.sendMessage(msg, IP,  port);
 	}
 
@@ -234,7 +234,7 @@ public class IMService extends Service implements IAppManager, IUpdateData {
 			rawFriendList = result;
 			
 			Intent i = new Intent(FRIEND_LIST_UPDATED);					
-			i.putExtra(FriendInfo.FRIEND_LIST, rawFriendList);
+			//i.putExtra(FriendInfo.FRIEND_LIST, rawFriendList);
 			sendBroadcast(i);
 			
 			timer.schedule(new TimerTask()
@@ -247,7 +247,7 @@ public class IMService extends Service implements IAppManager, IUpdateData {
 						Intent i = new Intent(FRIEND_LIST_UPDATED);
 						String tmp = IMService.this.getFriendList();
 						if (tmp != null) {
-							i.putExtra(FriendInfo.FRIEND_LIST, tmp);
+							//i.putExtra(FriendInfo.FRIEND_LIST, tmp);
 							sendBroadcast(i);	
 							Log.i("friend list broadcast sent ", "");
 						}
@@ -271,6 +271,7 @@ public class IMService extends Service implements IAppManager, IUpdateData {
 		String username= new String();
 		String userKey = new String();
 		String msg = new String();
+		/*
 		for (int i = 0; i < params.length; i++) {
 			String[] localpar = params[i].split("=");
 			if (localpar[0].equals(FriendInfo.USERNAME)) {
@@ -300,6 +301,7 @@ public class IMService extends Service implements IAppManager, IUpdateData {
 			}
 			Log.i("TAKE_MESSAGE broadcast sent by im service", "");
 		}	
+		*/
 		
 	}  
 	
@@ -393,26 +395,23 @@ public class IMService extends Service implements IAppManager, IUpdateData {
 		try 
 		{
 			SAXParser sp = SAXParserFactory.newInstance().newSAXParser();
-			sp.parse(new ByteArrayInputStream(xml.getBytes()), new XMLHandler(IMService.this));		
+			//sp.parse(new ByteArrayInputStream(xml.getBytes()), new XMLHandler(IMService.this));		
 		} 
 		catch (ParserConfigurationException e) {			
 			e.printStackTrace();
 		}
 		catch (SAXException e) {			
 			e.printStackTrace();
-		} 
-		catch (IOException e) {			
-			e.printStackTrace();
 		}	
 	}
 
-	public void updateData(FriendInfo[] friends,
-			FriendInfo[] unApprovedFriends, String userKey) 
+	public void updateData(Partner[] friends,
+			Partner[] unApprovedFriends, String userKey) 
 	{
 		this.setUserKey(userKey);
 		//FriendController.		
-		FriendController.setFriendsInfo(friends);
-		FriendController.setUnapprovedFriendsInfo(unApprovedFriends);
+		//FriendController.setFriendsInfo(friends);
+		//FriendController.setUnapprovedFriendsInfo(unApprovedFriends);
 		
 	}
 	

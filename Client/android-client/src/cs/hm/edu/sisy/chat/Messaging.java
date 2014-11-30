@@ -23,8 +23,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 import cs.hm.edu.sisy.chat.interfaces.IAppManager;
 import cs.hm.edu.sisy.chat.services.IMService;
-import cs.hm.edu.sisy.chat.tools.FriendController;
-import cs.hm.edu.sisy.chat.types.FriendInfo;
+import cs.hm.edu.sisy.chat.storage.Partner;
 
 public class Messaging extends Activity {
 
@@ -33,7 +32,7 @@ public class Messaging extends Activity {
 	private EditText messageHistoryText;
 	private Button sendMessageButton;
 	private IAppManager imService;
-	private FriendInfo friend = new FriendInfo();
+	private Partner partner = new Partner();
 	
 	private ServiceConnection mConnection = new ServiceConnection() {
       
@@ -65,18 +64,21 @@ public class Messaging extends Activity {
 		
 		Bundle extras = this.getIntent().getExtras();
 		
+		/*
 		friend.userName = extras.getString(FriendInfo.USERNAME);
 		friend.ip = extras.getString(FriendInfo.IP);
 		friend.port = extras.getString(FriendInfo.PORT);
 		String msg = extras.getString(FriendInfo.MESSAGE);
+		*/
 		
 		
-		setTitle("Messaging with " + friend.userName);
+		//setTitle("Messaging with " + friend.userName);
 	
 		
 	//	EditText friendUserName = (EditText) findViewById(R.id.friendUserName);
 	//	friendUserName.setText(friend.userName);
 		
+		/*
 		if (msg != null) 
 		{
 			this.appendToMessageHistory(friend.userName , msg);
@@ -113,7 +115,7 @@ public class Messaging extends Activity {
 				}
 				
 			}});
-		
+		*/
 		messageText.setOnKeyListener(new OnKeyListener(){
 			public boolean onKey(View v, int keyCode, KeyEvent event) 
 			{
@@ -162,7 +164,7 @@ public class Messaging extends Activity {
 		unregisterReceiver(messageReceiver);
 		unbindService(mConnection);
 		
-		FriendController.setActiveFriend(null);
+		//FriendController.setActiveFriend(null);
 		
 	}
 
@@ -177,7 +179,7 @@ public class Messaging extends Activity {
 		
 		registerReceiver(messageReceiver, i);
 		
-		FriendController.setActiveFriend(friend.userName);		
+		//FriendController.setActiveFriend(friend.userName);		
 		
 		
 		
@@ -188,10 +190,12 @@ public class Messaging extends Activity {
 
 		@Override
 		public void onReceive(Context context, Intent intent) 
-		{		
+		{	
+			/*	
 			Bundle extra = intent.getExtras();
 			String username = extra.getString(FriendInfo.USERNAME);			
 			String message = extra.getString(FriendInfo.MESSAGE);
+			
 			
 			if (username != null && message != null)
 			{
@@ -206,7 +210,7 @@ public class Messaging extends Activity {
 													message + "'",
 													Toast.LENGTH_SHORT).show();		
 				}
-			}			
+			}	*/		
 		}
 		
 	};
