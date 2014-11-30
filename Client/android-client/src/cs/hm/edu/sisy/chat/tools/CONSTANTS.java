@@ -13,7 +13,7 @@ public class CONSTANTS {
 
 	   //REST
      public static final String REST_SERVER = "localhost/SecChat/Server" ;
-     //public static final String REST_SERVER = "http://x.x.x.x/SecChat/Server" ;
+     //public static final String REST_SERVER = "https://x.x.x.x/SecChat/Server" ;
      public static final String REST_LOGIN = REST_SERVER + "/users/login";
      public static final String REST_LOGOUT = REST_SERVER + "/users/logout"; 
      public static final String REST_REGISTER = REST_SERVER + "/users/add"; 

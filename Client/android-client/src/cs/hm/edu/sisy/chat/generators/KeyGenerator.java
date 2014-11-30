@@ -1,5 +1,7 @@
 package cs.hm.edu.sisy.chat.generators;
 
+import java.math.BigInteger;
+import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -10,7 +12,15 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
 import org.bouncycastle.util.encoders.Base64;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -23,6 +33,12 @@ public class KeyGenerator extends Activity{
     PublicKey pubKey;
     PrivateKey privKey; 
     Context context;
+    
+    KeyPairGenerator kpg;
+    KeyPair kp;
+    byte[] encryptedBytes, decryptedBytes;
+    Cipher cipher, cipher1;
+    String encrypted, decrypted;
 
     public KeyGenerator(Context context){
         this.context = context;
@@ -33,7 +49,7 @@ public class KeyGenerator extends Activity{
 	public void generateKeys(){
         try {
             KeyPairGenerator generator;
-            generator = KeyPairGenerator.getInstance("RSA", "BC");
+            generator = KeyPairGenerator.getInstance("RSA", "BC"); //AES
             generator.initialize(256, new SecureRandom());
             KeyPair pair = generator.generateKeyPair();
             pubKey = pair.getPublic();
@@ -58,7 +74,7 @@ public class KeyGenerator extends Activity{
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(sigBytes);
         KeyFactory keyFact = null;
         try {
-            keyFact = KeyFactory.getInstance("RSA", "BC");
+            keyFact = KeyFactory.getInstance("RSA", "BC"); //AES
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (NoSuchProviderException e) {
@@ -96,4 +112,84 @@ public class KeyGenerator extends Activity{
     public String getPrivateKeyAsString(){
         return SP.getString("PrivateKey", "");      
     }
+    
+    // decrypts the message
+    public String encrypt (String message) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchProviderException 
+    {
+        kpg = KeyPairGenerator.getInstance("RSA", "BC"); //AES
+        kpg.initialize(1024);
+        kp = kpg.genKeyPair();
+        pubKey = kp.getPublic();
+        privKey = kp.getPrivate();
+
+        cipher = Cipher.getInstance("RSA", "BC");
+        cipher.init(Cipher.ENCRYPT_MODE, pubKey);
+        encryptedBytes = cipher.doFinal(message.getBytes());
+
+        encrypted = bytesToString(encryptedBytes);
+        return encrypted;
+
+    }
+
+    // decrypts the message
+    public String decrypt (String message) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchProviderException 
+    {           
+        cipher1=Cipher.getInstance("RSA", "BC");
+        cipher1.init(Cipher.DECRYPT_MODE, privKey);
+        //decryptedBytes = cipher1.doFinal(stringToBytes(message)); //TODO: stringToBytes = Base64.decodeBase64(message)
+        decryptedBytes = cipher1.doFinal(Base64.decode(message)); //TODO: stringToBytes = Base64.decodeBase64(message)
+        decrypted = new String(decryptedBytes);
+        return decrypted;
+    }
+
+    public  String bytesToString(byte[] b) {
+        byte[] b2 = new byte[b.length + 1];
+        b2[0] = 1;
+        System.arraycopy(b, 0, b2, 1, b.length);
+        return new BigInteger(b2).toString(36);
+    }
+
+    public  byte[] stringToBytes(String s) {
+        byte[] b2 = new BigInteger(s, 36).toByteArray();
+        return Arrays.copyOfRange(b2, 1, b2.length);
+    }
+    
+    /*
+    //ALTERNATIVE
+
+    KeyPairGenerator kpg;
+    KeyPair kp;
+    PublicKey publicKey;
+    PrivateKey privateKey;
+    byte [] encryptedBytes,decryptedBytes;
+    Cipher cipher,cipher1;
+    String encrypted,decrypted;
+    
+    public byte[] RSAEncrypt(final String plain) throws NoSuchAlgorithmException, NoSuchPaddingException,
+    InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+		kpg = KeyPairGenerator.getInstance("RSA");
+		kpg.initialize(1024);
+		kp = kpg.genKeyPair();
+		publicKey = kp.getPublic();
+		privateKey = kp.getPrivate();
+		
+		cipher = Cipher.getInstance("RSA");
+		cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+		encryptedBytes = cipher.doFinal(plain.getBytes());
+		System.out.println("EEncrypted?????" + org.apache.commons.codec.binary.Hex.encodeHexString(encryptedBytes));
+		return encryptedBytes;
+    }
+
+	public String RSADecrypt(final byte[] encryptedBytes) throws NoSuchAlgorithmException, NoSuchPaddingException,
+	    InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+		cipher1 = Cipher.getInstance("RSA");
+		cipher1.init(Cipher.DECRYPT_MODE, privateKey);
+		decryptedBytes = cipher1.doFinal(encryptedBytes);
+		decrypted = new String(decryptedBytes);
+		System.out.println("DDecrypted?????" + decrypted);
+		return decrypted;
+	}
+	*/
+    
+    
 }
