@@ -5,7 +5,7 @@ class UsersController extends AppController {
 	public function beforeFilter() {
 		parent::beforeFilter();
 		// Allow users to register and logout.
-		$this->Auth->allow('add', 'login');
+		$this->Auth->allow('add', 'login', 'logout');
 	}
 	
 	public function index() {
@@ -24,14 +24,16 @@ class UsersController extends AppController {
 	public function add() {
 		if ($this->request->is('post')) {
 			$this->User->create();
-			if ($this->User->save($this->request->data)) {
-				$this->Session->setFlash(__('The user has been saved'));
-				return $this->redirect(array('action' => 'index'));
-			}
-			$this->Session->setFlash(
-					__('The user could not be saved. Please, try again.')
-			);
+			if ($this->User->save($this->request->data)) {								
+				$user = $this->User->find("first", array("conditions" => array("User.id" => $this->User->id)));				
+				$return = array('userId' => $user["User"]["username"]);				
+			}else{
+				$return = null;
+			}	
+			$this->set("return", json_encode($return));
 		}
+		
+		$this->layout = "ajax";
 	}
 
 	public function edit($id = null) {
@@ -74,23 +76,29 @@ class UsersController extends AppController {
 	public function login() {
 		if ($this->request->is('post')) {
 			if ($this->Auth->login()) {
-				$this->updateSessionId();
-				$this->Session->setFlash(__('Logged In'));			
-			}
-			$this->Session->setFlash(__('Invalid username or password, try again'));
+				$this->updateSessionId($this->Session->id());
+				$return = array("sessionId" => "'".$this->Session->id()."'");
+			}else{				
+				$return = array("sessionId" => null);
+			}							
 		}
+		
+		$this->set("return", json_encode($return));
+ 		$this->layout = "ajax";
 	}
 	
-	private function updateSessionId(){
+	private function updateSessionId($sessionId){
 		$this->User->updateAll(
-				array('User.sessionId' => "'".$this->Session->id()."'"),
+				array('User.sessionId' => "'".$sessionId."'"),
     			array('User.id' => $this->Auth->user('id'))
 		);
 	}
 	
 	public function logout() {
+		$this->updateSessionId("");
 		$this->Session->destroy();
-		return $this->redirect($this->Auth->logout());
+		
+		$this->set("return", "null");
 	}
 
 }
