@@ -67,7 +67,7 @@
         tools:context=".MainActivity" />
 
     <Button
-        android:id="@+id/HintID"
+        android:id="@+id/btnGenerateNewPIN"
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -78,13 +78,21 @@
         android:text="@string/generateNewPIN" />
 
     <Button
-        android:id="@+id/Button01"
+        android:id="@+id/btnSaveAlias"
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/HintID"
-        android:layout_alignBottom="@+id/HintID"
+        android:layout_alignBaseline="@+id/btnGenerateNewPIN"
+        android:layout_alignBottom="@+id/btnGenerateNewPIN"
         android:layout_alignRight="@+id/txtYourAlias"
         android:text="@string/saveAlias" />
 
+	  <ImageView
+	      android:id="@+id/qrImg"
+	      android:layout_width="wrap_content"
+	      android:layout_height="wrap_content"
+	      android:layout_alignLeft="@+id/btnGenerateNewPIN"
+	      android:layout_below="@+id/btnGenerateNewPIN"
+	      android:layout_marginTop="28dp" />
+    
 </RelativeLayout>

@@ -6,6 +6,7 @@
     
     <string name="alias">Please enter your nickname:</string>
     <string name="login">Login</string>
+    <string name="register">register</string>
     <string name="index">Index</string>
 
     <string name="cancel">Cancel</string>

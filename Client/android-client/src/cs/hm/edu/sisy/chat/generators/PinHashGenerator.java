@@ -28,12 +28,12 @@ public class PinHashGenerator {
 
 	   public static String createHash() throws NoSuchAlgorithmException 
 	   {
-	        String randomStringToHash = generatePIN( 8 );
+	        String randomStringToHash = generatePIN( 5 );
 	        String salt = getSalt();
 	        
 	        String generatedHash = null;
 	        try {
-	            MessageDigest md = MessageDigest.getInstance("SHA-256");
+	            MessageDigest md = MessageDigest.getInstance("SHA-1");
 	            md.update(salt.getBytes());
 	            byte[] bytes = md.digest(randomStringToHash.getBytes());
 	            StringBuilder sb = new StringBuilder();

@@ -227,7 +227,7 @@ public class IMService extends Service implements IAppManager {
 		this.authenticatedUser = false;
 		
 		String result = this.getFriendList(); //socketOperator.sendHttpRequest(getAuthenticateUserParams(username, password));
-		if (result != null && !result.equals(Login.AUTHENTICATION_FAILED)) 
+		if (result != null);//WICHTIG && !result.equals(Login.AUTHENTICATION_FAILED)) 
 		{			
 			// if user is authenticated then return string from server is not equal to AUTHENTICATION_FAILED
 			this.authenticatedUser = true;

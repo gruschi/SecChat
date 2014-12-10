@@ -24,11 +24,18 @@
     			  android:layout_width="fill_parent"
     			  android:layout_height="wrap_content">
 			  
-    <Button android:id="@+id/loginButton"
+    <Button android:id="@+id/registerButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/login"
+        android:text="@string/register"
     />
+
+    <Button
+        android:id="@+id/loginButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/login" />
+
 	</LinearLayout>
 
 </LinearLayout>

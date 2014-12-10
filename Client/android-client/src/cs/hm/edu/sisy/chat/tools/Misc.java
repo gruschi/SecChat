@@ -2,6 +2,10 @@ package cs.hm.edu.sisy.chat.tools;
 
 import java.util.Calendar;
 
+import android.content.Context;
+import android.widget.Toast;
+import cs.hm.edu.sisy.chat.types.STATUS;
+
 public class Misc {
      
      public static int getCurrentDate() //int like 20141212 for 12.12.2014
@@ -15,4 +19,59 @@ public class Misc {
      {
        return storagedDate == currentDate;
      }
+     
+     public static void doToast(Context context, String message)
+     {
+     	Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+     }
+     
+     public static String stateToString(int id) 
+     {
+	     String message = "";
+	     	
+     	switch (id) 
+     	{
+	     	case STATUS.NOT_REGISTERED:
+     			message = "";			
+     			break;
+     		default:
+     			message = "default";
+     			break;
+     	}
+     	
+     	return message;
+     }
+     
+     /*
+     public int stateToInt(int id) 
+     {
+     	int message = -1;    	
+     	switch (id) 
+     	{
+     		case STATUS.NOT_REGISTERED:
+     			message = R.string.not_connected_to_service;			
+     			break;
+     		default:
+     			break;
+     	}
+     	
+     	return message;
+     }
+     
+     public String stateToString(int id, Context context) 
+     {
+     	int message = -1;    	
+     	switch (id) 
+     	{
+     		case STATUS.NOT_REGISTERED:
+     			message = R.string.not_connected_to_service;			
+     			break;
+     		default:
+     			break;
+     	}
+     	
+     	return context.getResources().getString(message);
+     }
+     */
+
 }

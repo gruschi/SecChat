@@ -26,7 +26,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-public class KeyGenerator extends Activity{
+public class PubPrivKeyGenerator extends Activity{
 
     SharedPreferences SP;
     SharedPreferences.Editor SPE;
@@ -40,7 +40,7 @@ public class KeyGenerator extends Activity{
     Cipher cipher, cipher1;
     String encrypted, decrypted;
 
-    public KeyGenerator(Context context){
+    public PubPrivKeyGenerator(Context context){
         this.context = context;
         SP = context.getSharedPreferences("KeyPair", MODE_PRIVATE);
     }
@@ -69,7 +69,10 @@ public class KeyGenerator extends Activity{
         }           
     }
     public PublicKey getPublicKey(){
-        String pubKeyStr = SP.getString("PublicKey", "");       
+        String pubKeyStr = SP.getString("PublicKey", "");    
+    	if(pubKeyStr == null || pubKeyStr == "")
+    		return null; 
+        
         byte[] sigBytes = Base64.decode(pubKeyStr);
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(sigBytes);
         KeyFactory keyFact = null;
@@ -92,6 +95,8 @@ public class KeyGenerator extends Activity{
     }
     public PrivateKey getPrivateKey(){
         String privKeyStr = SP.getString("PrivateKey", "");
+    	if(privKeyStr == null || privKeyStr == "")
+    		return null; 
         byte[] sigBytes = Base64.decode(privKeyStr);
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(sigBytes);
         KeyFactory keyFact = null;
