@@ -2,12 +2,14 @@ package cs.hm.edu.sisy.chat.services;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 import cs.hm.edu.sisy.chat.storage.Storage;
+import cs.hm.edu.sisy.chat.tools.CONST;
 import cs.hm.edu.sisy.chat.types.STATUS;
 import cs.hm.edu.sisy.chat.types.TYPES;
 
-//Params: AsyncTask<doInBG, onPrgoressUpdate, onPostExecute>
+//Params: < Param doInBG, onPrgoressUpdate, Return doInBG >
 public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
 
     private TYPES type; 
@@ -25,6 +27,7 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
     }
 
     protected Boolean doInBackground(String... params) {
+    	
 		switch (this.type) {
 			case REGISTER: 
 				return RestService.registerUser( params[0], Storage.getHash(context), context );
@@ -46,13 +49,14 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
 		        break;
 		};
         
-		return null;
+		return false;
     }
     
     protected void onProgressUpdate(){
     }
 
-    protected void onPostExecute(boolean result) {
+    @Override
+    protected void onPostExecute(Boolean result) {
        
         switch (type) {
             case LOGIN: 
@@ -98,6 +102,7 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
         
         Toast.makeText(context, result+"", Toast.LENGTH_SHORT).show();
         
-        STATUS.setState(state);;
+        STATUS.setState(state);
     }
+
 }

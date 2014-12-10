@@ -28,7 +28,6 @@ public class Login extends Activity {
     public static final int SIGN_UP_ID = Menu.FIRST;
     public static final int EXIT_APP_ID = Menu.FIRST + 1;
     
-    private int currentState = -1;
     private boolean timerIsStarted = false;
     
     //handler - background thread which acts as state machine handler
@@ -42,11 +41,14 @@ public class Login extends Activity {
 			    		  TestData.printInterestingData(Login.this);
 			    		  		    		  
 			    		  if( STATUS.getState() == STATUS.REGISTERED || STATUS.getState() == STATUS.NOT_LOGGED_IN )
+			    		  {
 			    		        loginButton.setVisibility(View.VISIBLE);
+			    		        registerButton.setEnabled(false);
+			    		        alias.setEnabled(false);
+			    		  }
 			    		  
 						  if( STATUS.getState() == STATUS.LOGGED_IN ) {
 								redirectToHome();
-								currentState = STATUS.getState();
 						  }
 			    	  }
 			    	});
@@ -91,10 +93,9 @@ public class Login extends Activity {
 					Thread registerThread = new Thread(runnable);
 					registerThread.start();
 				      
-						if( STATUS.getState() == STATUS.NOT_REGISTERED && currentState != STATUS.getState() ) {
+						if( STATUS.getState() == STATUS.NOT_REGISTERED ) {
 							if(RestWrapper.registerNeeded(Login.this, alias.getText().toString()))
 								new RestThreadTask(TYPES.REGISTER, (Context) Login.this).execute(alias.getText().toString());
-							currentState = STATUS.getState();
 						}	
 						
 						//TODO: Timer überhaupt nötig? Und falls ja: Dann auch für Login?
@@ -111,7 +112,6 @@ public class Login extends Activity {
 							     public void onFinish() {
 							    	if(STATUS.getState() == STATUS.NOT_REGISTERED)
 							    		STATUS.setState(STATUS.TIMED_OUT);
-									currentState = -1;
 									timerIsStarted = false;
 									Misc.doToast(Login.this, "Timeout!");
 							     }
@@ -121,14 +121,13 @@ public class Login extends Activity {
 			}
         });
         
-        registerButton.setOnClickListener(new OnClickListener(){
+        loginButton.setOnClickListener(new OnClickListener(){
         	@Override
 			public void onClick(View arg0) 
 			{
 				if( STATUS.getState() == STATUS.REGISTERED || STATUS.getState() == STATUS.NOT_LOGGED_IN ) {
 					if (RestWrapper.loginNeeded(Login.this))
 						new RestThreadTask(TYPES.LOGIN, (Context) Login.this).execute();
-					currentState = STATUS.getState();
 				}
 			}
         });
@@ -463,7 +462,7 @@ public class Login extends Activity {
     private void redirectToHome() {
 		Intent i = new Intent(Login.this, Home.class);												
 		startActivity(i);	
-		onDestroy();
+		Login.this.onDestroy();
 	}
     
 }
