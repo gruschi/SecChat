@@ -74,6 +74,7 @@ class UsersController extends AppController {
 	}
 		
 	public function login() {
+		$return = null;
 		if ($this->request->is('post')) {
 			if ($this->Auth->login()) {
 				$this->updateSessionId($this->Session->id());
