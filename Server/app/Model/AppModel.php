@@ -30,4 +30,11 @@ App::uses('Model', 'Model');
  * @package       app.Model
  */
 class AppModel extends Model {
+	
+	public function loadModel($modelName, $force=false){
+		if(!isset($this->$modelName) || $force){
+			$this->$modelName = ClassRegistry::init($modelName);
+		}
+	}
+	
 }
