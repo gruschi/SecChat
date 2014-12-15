@@ -17,16 +17,34 @@ class SecChatController extends AppController {
 			data[Connection][pubKey] = senderPubKey (an Receiver weiterleiten)
 		 */
 		
-		$result = 0;
-		echo "foob";
-		if($type == "contact"){
-			$this->Connection->create();
-			if($this->Connection->save($this->request)){
+		$result = null;		
+		if($type == "contact"){			
+			$this->Connection->create();			
+			if($this->Connection->save($this->request->data)){				
 				$result = array("chatSessionId" => $this->Connection->id);
+			}else{
+ 				debug($this->Connection->invalidFields()); 
 			}
 		}
 		
-		$this->set("result", json_encode($chatSessionId));
+		
+		$this->set("result", json_encode($result));
+		
+		$this->layout = "ajax";
+	}
+	
+	public function service(){
+		$this->loadModel("Connection");
+		
+		//Get Incoming Connections
+//  		echo "<br>UserId: ".$this->Auth->user("user");
+		$result = $this->Connection->find('all', array("conditions" => array("Connection.receiverId" => $this->Auth->user("username"))));
+		
+		$return = array("chatSession" => $result);
+		
+		$this->set("result", json_encode($return));
+		
+		$this->layout = "ajax";
 	}
 }
 
