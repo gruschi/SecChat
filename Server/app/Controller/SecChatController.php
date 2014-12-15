@@ -44,7 +44,30 @@ class SecChatController extends AppController {
 		
 		$this->set("result", json_encode($return));
 		
+		//TODO Löschen der Anfrage
+		$cR = count($result);
+		for($i = 0; $i < $cR; $i++){
+			$this->Connection->delete($result[$i]["Connection"]["id"]);
+		}
+		
 		$this->layout = "ajax";
+	}
+	
+	public function serviceConnect(){
+		$this->loadModel("Connection");
+		
+		//Tut das gleiche wie Contact
+		$this->Connection->create();
+		if($this->Connection->save($this->request->data)){
+			$result = array("chatSessionId" => $this->Connection->id);
+		}else{
+			debug($this->Connection->invalidFields());
+		}
+		
+		$this->set("result", json_encode($result));
+		
+		$this->layout = "ajax";
+		
 	}
 }
 

@@ -33,9 +33,6 @@ class User extends AppModel {
 	        $this->data[$this->alias]['password'] = $passwordHasher->hash($this->data[$this->alias]['password']);
 	    }
 	    
-	    //ID Creation	    
-	    $this->data[$this->alias]['username'] = uniqid();
-	    
 	    return true;
 	}		
 }

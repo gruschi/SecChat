@@ -7,7 +7,7 @@ class Connection extends AppModel {
 							
 		$objCurUser = $this->User->find('first', array("conditions" => array("User.sessionId" => $this->data["User"]["sessionId"])));				
 		
-		$this->data["Connection"]["username"] = $objCurUser["User"]["username"];			
+		$this->data["Connection"]["senderId"] = $objCurUser["User"]["id"];			
 		
 		return true;
 	}
