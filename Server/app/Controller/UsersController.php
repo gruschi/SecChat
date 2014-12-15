@@ -100,6 +100,8 @@ class UsersController extends AppController {
 		$this->Session->destroy();
 		
 		$this->set("return", "null");
+		
+		$this->layout = "ajax";
 	}
 
 }
