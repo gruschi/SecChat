@@ -38,7 +38,7 @@ class SecChatController extends AppController {
 		
 		//Get Incoming Connections
 //  		echo "<br>UserId: ".$this->Auth->user("user");
-		$result = $this->Connection->find('all', array("conditions" => array("Connection.receiverId" => $this->Auth->user("username"))));
+		$result = $this->Connection->find('all', array("conditions" => array("Connection.receiverId" => $this->Auth->user("username"), "Connection.receiverPin != NULL")));			
 		
 		$return = array("chatSession" => $result);
 		

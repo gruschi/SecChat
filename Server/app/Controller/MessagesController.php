@@ -52,7 +52,7 @@ class MessagesController extends AppController {
 		$return = array("receivedMessages" => $messages);
 		
 		$this->set("messages", json_encode($return));
-// 		$this->layout = "ajax";
+ 		$this->layout = "ajax";
 	}
 	
 }
