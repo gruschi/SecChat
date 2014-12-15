@@ -44,11 +44,11 @@ class SecChatController extends AppController {
 		
 		$this->set("result", json_encode($return));
 		
-		//TODO Löschen der Anfrage
-		$cR = count($result);
-		for($i = 0; $i < $cR; $i++){
-			$this->Connection->delete($result[$i]["Connection"]["id"]);
-		}
+		//TODO Löschen der Anfrage (oder doch nicht? Nur bei Schließen der Verbindung)
+// 		$cR = count($result);
+// 		for($i = 0; $i < $cR; $i++){
+// 			$this->Connection->delete($result[$i]["Connection"]["id"]);
+// 		}
 		
 		$this->layout = "ajax";
 	}

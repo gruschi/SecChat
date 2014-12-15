@@ -30,15 +30,29 @@ class MessagesController extends AppController {
 	}
 	
 	public function receive(){
-		$this->loadModel("Message");		
+		$this->loadModel("Message");	
+		$this->loadModel("Connection");	
 		
-		$messages = $this->Message->find("all", array("condition" => array(
-				array("receiverId" => $this->Auth->user("id")))));
+		$connections = $this->Connection->find("all", array("conditions" => array("Connection.receiverId" => $this->Auth->user("id"))));
 		
+		$cC = count($connections);
+		$messages = array();
+		
+		for($i = 0; $i < $cC; $i++){
+			$tmpMessages = $this->Message->find("all", array("conditions" => array(
+				array("connectionId" => $connections[$i]["Connection"]["id"]))));
+			
+			$cM = count($tmpMessages);
+			
+			for($m = 0; $m < $cM; $m++){
+				$messages[] = $tmpMessages[$m];
+			}
+		}
+				
 		$return = array("receivedMessages" => $messages);
 		
 		$this->set("messages", json_encode($return));
-		$this->layout = "ajax";
+// 		$this->layout = "ajax";
 	}
 	
 }
