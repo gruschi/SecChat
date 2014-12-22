@@ -26,7 +26,7 @@ class UsersController extends AppController {
 			$this->User->create();
 			if ($this->User->save($this->request->data)) {								
 				$user = $this->User->find("first", array("conditions" => array("User.id" => $this->User->id)));				
-				$return = array('userId' => $user["User"]["username"]);				
+				$return = array('userId' => $this->User->id);				
 			}else{
 				$return = null;
 			}	
@@ -100,6 +100,8 @@ class UsersController extends AppController {
 		$this->Session->destroy();
 		
 		$this->set("return", "null");
+		
+		$this->layout = "ajax";
 	}
 
 }
