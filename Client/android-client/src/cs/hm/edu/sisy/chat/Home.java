@@ -71,9 +71,14 @@ public class Home extends Activity {
     
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case R.id.menuChat:
-          Intent createChat = new Intent(Home.this, Chat.class);
-          startActivity(createChat);
+        case R.id.menuPrivChat:
+          Intent createPrivChat = new Intent(Home.this, Chat.class);
+          startActivity(createPrivChat);
+          //Toast.makeText(this, "@string/menuChat", Toast.LENGTH_SHORT).show();
+          return true;
+        case R.id.menuPubChat:
+          //Intent createPubChat = new Intent(Home.this, Chat.class);
+          //startActivity(createPubChat);
           //Toast.makeText(this, "@string/menuChat", Toast.LENGTH_SHORT).show();
           return true;
         case R.id.menuOptions:
@@ -106,7 +111,7 @@ public class Home extends Activity {
     {
         super.onDestroy();
 
-        RestService.logoutUser(this);
+        //RestService.logoutUser(this);
     }
     
     private void updateDate()

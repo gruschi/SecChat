@@ -11,7 +11,8 @@
 
     <string name="cancel">Cancel</string>
     <string name="menu_settings">menu</string>
-    <string name="menuChat">Chat</string>
+    <string name="menuPrivChat">Private-Chat</string>
+    <string name="menuPubChat">Group-Chat</string>
     <string name="menuOptions">Options</string>
     
     <string name="yourAlias">Your Alias:</string>
@@ -19,9 +20,12 @@
     <string name="yourPIN">Your PIN:</string>
     <string name="hisid">SecChat-ID:</string>
     <string name="hispin">PIN:</string>
+    <string name="close">close</string>
     
     <string name="generateNewPIN">generate new PIN</string>
     <string name="saveAlias">save new Alias</string>
+    
+  <string name="exit_application">Exit</string>
 
     <string name="messaging">Messaging</string>
     <string name="local_service_started">App service started</string>
@@ -36,7 +40,7 @@
 	your username and password correct</string>
 	<string name="user_offline">This user is offline</string>
 	<string name="sign_up">Sign up</string>
-	<string name="exit_application">Exit</string>
+
 	<string name="password_again">Password(again):</string>
 	<string name="email">E-mail</string>
 	<string name="signup_fill_all_fields">Please fill all fields</string>

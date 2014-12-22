@@ -1,5 +1,7 @@
 package cs.hm.edu.sisy.chat.tools;
 
+import java.net.URI;
+
 public class CONST {
 
      //SHARED PREFERENCES
@@ -10,6 +12,7 @@ public class CONST {
 	 public static final String SESSION_ID = "sessionID"; 
      public static final String DATE_FOR_PIN_REFRESH = "date4PinRefresh";
      public static final String PIN = "pin";
+ 	 public static final String CHAT_SESSION_ID = "chatSessionId";
 
 	  //REST
      //public static final String REST_SERVER = "localhost/SecChat/Server" ;
@@ -22,6 +25,7 @@ public class CONST {
      public static final String REST_CONNECT_GROUP = REST_SERVER + "/connect/group";     
      public static final String REST_SEND_MSG = REST_SERVER + "/send";
      public static final String REST_RECEIVE_MSG = REST_SERVER + "/receive";
+     public static final String REST_SERVICE = REST_SERVER + "/service";
      
      //LOG
      public static final String LOG = "SecChat_LOGGING";

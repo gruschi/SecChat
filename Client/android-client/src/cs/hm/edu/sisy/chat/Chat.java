@@ -1,12 +1,16 @@
 package cs.hm.edu.sisy.chat;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
-import cs.hm.edu.sisy.chat.services.RestService;
+import cs.hm.edu.sisy.chat.services.RestThreadTask;
+import cs.hm.edu.sisy.chat.types.TYPES;
 
 public class Chat extends Activity {
   
@@ -20,17 +24,17 @@ public class Chat extends Activity {
         setContentView(R.layout.chat_screen);
         setTitle("Chat");
         
-        receiverPin = (TextView) findViewById(R.id.txtYourPin);
-        receiverID = (TextView) findViewById(R.id.txtYourId);
-        connectButton = (Button) findViewById(R.id.loginButton);
+        receiverPin = (TextView) findViewById(R.id.partnerPin);
+        receiverID = (TextView) findViewById(R.id.partnerId);
+        connectButton = (Button) findViewById(R.id.connectButton);
          
         connectButton.setOnClickListener(new OnClickListener(){
 			public void onClick(View arg0) 
 			{
-				RestService.connectPrivChat(Chat.this, receiverPin.toString(), receiverID.toString());
+				new RestThreadTask(TYPES.CONNCET_PRIVATE_CHAT, (Context) Chat.this).execute( receiverPin.toString(), receiverID.toString() );
+				//RestService.connectPrivChat(Chat.this, receiverPin.toString(), receiverID.toString());
 			}
         });
-    
     }
     
     @Override
@@ -44,4 +48,26 @@ public class Chat extends Activity {
     {   
       super.onResume();
     }
+    
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {		
+		boolean result = super.onCreateOptionsMenu(menu);
+		
+		 menu.add(0, 0, 0, R.string.close);
+
+		return result;
+	}
+	
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+	    
+		switch(item.getItemId()) 
+	    {
+	    	case 0:
+	    		finish();
+	    		return true;
+	    }
+	    
+	    return super.onMenuItemSelected(featureId, item);
+	}
 }

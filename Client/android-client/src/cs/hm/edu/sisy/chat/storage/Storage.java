@@ -152,6 +152,31 @@ public class Storage {
           
       return null;
      }
+     
+	   public static void saveChatSessionId(Context context, int chatSessionId) 
+	   {
+	  	   SharedPreferences sharedpreferences = context.getSharedPreferences(CONST.MyPREFERENCES, Context.MODE_PRIVATE);
+
+		   sharedpreferences.edit().putInt(CONST.CHAT_SESSION_ID, chatSessionId).apply();
+	   }
+	   
+	   public static int getChatSessionId(Context context) 
+	   {
+		   SharedPreferences sharedpreferences = context.getSharedPreferences(CONST.MyPREFERENCES, Context.MODE_PRIVATE);
+		   
+		      if (sharedpreferences.contains( CONST.CHAT_SESSION_ID ))
+		      {
+		    	  return sharedpreferences.getInt( CONST.CHAT_SESSION_ID, 0 );
+		      }
+		      
+			return 0;
+	   }
+
+	    public static String getPublicKeyAsString(Context context){
+	    	SharedPreferences sharedpreferences = context.getSharedPreferences("KeyPair", Context.MODE_PRIVATE);
+	        return sharedpreferences.getString("PublicKey", "");       
+	    }
+     
 }
 
 /*

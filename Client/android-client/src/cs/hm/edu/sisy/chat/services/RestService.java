@@ -29,13 +29,13 @@ public class RestService
 {
 	
     //login user
-	public static boolean loginUser(String alias, String hash, Context context) {
+	public static boolean loginUser(int id, String hash, Context context) {
 	    HttpClient httpclient = new DefaultHttpClient();
 	    HttpPost httppost = new HttpPost(CONST.REST_LOGIN);
 	
 		  try {
 		      List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-		      nameValuePairs.add(new BasicNameValuePair("data[User][username]", alias)); //alias
+		      nameValuePairs.add(new BasicNameValuePair("data[User][id]", id+"")); //alias at beginning?!
 		      nameValuePairs.add(new BasicNameValuePair("data[User][password]", hash)); //hash value
 		      httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 		
@@ -54,9 +54,9 @@ public class RestService
 		          String json = reader.readLine();
 		          JSONObject jsonobject = new JSONObject(json);
 		          
-		          Log.d(CONST.LOG, "HTTP-Response: SessionID: " + jsonobject.getString("sessionId"));
-		          
 		          String sessionId = jsonobject.getString("sessionId");
+		          
+		          Log.d(CONST.LOG, "HTTP-Response: SessionID: " + sessionId);	
 		
 		          Storage.saveSession(context, sessionId);
 		          return true;
@@ -122,13 +122,13 @@ public class RestService
 	          String json = reader.readLine();
 	          JSONObject jsonobject = new JSONObject(json);
 	          
-	          Log.d(CONST.LOG, "HTTP-Response: ID: " + jsonobject.getString("userId"));
-	          
 	          int userId = jsonobject.getInt("userId");
+	          
+	          Log.d(CONST.LOG, "HTTP-Response: ID: " + userId);
 	
 	          Storage.saveID(context, userId);
 	          
-	          httpclient.getConnectionManager().shutdown();
+	          //httpclient.getConnectionManager().shutdown(); //TODO überall??
 	          return true;
 	        }
 	        catch ( JSONException e )
@@ -140,7 +140,7 @@ public class RestService
 	  } catch (IOException e) {
 	  }
 	  
-	  httpclient.getConnectionManager().shutdown(); //TODO überall
+	  //httpclient.getConnectionManager().shutdown(); //TODO überall??
       return false;
   }
   
@@ -148,21 +148,25 @@ public class RestService
   //connect private chat
   public static Boolean connectPrivChat(Context context, String receiverPin, String receiverID) {
 	String sessionId = Storage.getSession(context);
-    PubPrivKeyGenerator kg = new PubPrivKeyGenerator(context);
+	String pubKey = Storage.getPublicKeyAsString(context);
+	String alias = Storage.getAlias(context);
+	
     HttpClient httpclient = new DefaultHttpClient();
     HttpPost httppost = new HttpPost(CONST.REST_CONNECT_FRIEND);
 
 	  try {
 	      List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 	      nameValuePairs.add(new BasicNameValuePair("data[User][sessionId]", sessionId));
-	      nameValuePairs.add(new BasicNameValuePair("data[User][receiverID ]", receiverID));
-	      nameValuePairs.add(new BasicNameValuePair("data[User][alias]", Storage.getAlias(context)));
-	      nameValuePairs.add(new BasicNameValuePair("data[User][receiverPin]", receiverPin));
-	      nameValuePairs.add(new BasicNameValuePair("data[User][pubKey]", kg.getPublicKeyAsString()));
+	      nameValuePairs.add(new BasicNameValuePair("data[Connection][receiverID ]", receiverID));
+	      nameValuePairs.add(new BasicNameValuePair("data[Connection][alias]", alias));
+	      nameValuePairs.add(new BasicNameValuePair("data[Connection][receiverPin]", receiverPin));
+	      nameValuePairs.add(new BasicNameValuePair("data[Connection][pubKey]", pubKey));
 	      httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 	
 	      // Execute HTTP Post Request
 	      HttpResponse response = httpclient.execute(httppost);
+	      
+		  Log.d(CONST.LOG, "HTTP-Status: "+response.getStatusLine().getStatusCode());
 	
 	      if(response.getStatusLine().getStatusCode() < 300 && 
 	          response.getStatusLine().getStatusCode() > 199)
@@ -174,15 +178,16 @@ public class RestService
 	          JSONTokener tokener = new JSONTokener(json);
 	          JSONArray jsonarray = new JSONArray(tokener);
 	
-	          //instead of 0, maybe -> for (int i = 0; i < jsonarray.length(); i++)
 	          JSONObject jsonobject = jsonarray.getJSONObject(0);
-	          String chatSessionId = jsonobject .getString("chatSessionId");
-	          String receiverPubKey = jsonobject .getString("receiverPubKey");
-	          String receiverAlias = jsonobject .getString("receiverAlias");
-	          //TODO: MODIFY THIS FUNCTION
-	          //Partner Object
-	          //Storage ID pubkey etc.
+	          int chatSessionId = jsonobject .getInt("chatSessionId");
 	          
+	          Log.d(CONST.LOG, "HTTP-Response: chatSessionId: " + chatSessionId);
+	          
+	          if(chatSessionId != 0)
+	        	  Storage.saveChatSessionId(context, chatSessionId);
+	          else 
+	        	  return false;
+
 	          return true;
 	        }
 	        catch ( JSONException e )
@@ -196,8 +201,54 @@ public class RestService
 	  return false;
   }
   
-  //TODO: connectedByPrivChat()
-  
+  //service
+  public static boolean service(Context context) {
+	  HttpClient httpclient = new DefaultHttpClient();
+	  HttpPost httppost = new HttpPost(CONST.REST_SERVICE);
+	  String session = Storage.getSession(context);
+	
+	  try {
+	      List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+	      nameValuePairs.add(new BasicNameValuePair("data[User][sessionId]", session));
+	      httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+	
+	      // Execute HTTP Post Request
+	      HttpResponse response = httpclient.execute(httppost);
+	      
+		  Log.d(CONST.LOG, "HTTP-Status: "+response.getStatusLine().getStatusCode());
+	
+	      if(response.getStatusLine().getStatusCode() < 300 && 
+	          response.getStatusLine().getStatusCode() > 199)
+	      {
+	        try
+	        {
+	          BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+
+	          String json = reader.readLine();
+	          JSONObject jsonobject = new JSONObject(json);
+	          
+	          Log.d(CONST.LOG, "HTTP-Response: ServiceJSON: " + jsonobject.toString());
+	          
+	          //TODO json-array?
+	          //int userId = jsonobject.getInt("userId");
+	          
+	          //Storage.saveID(context, userId);
+	          
+	          //httpclient.getConnectionManager().shutdown(); //TODO überall??
+	          return true;
+	        }
+	        catch ( JSONException e )
+	        {
+	          e.printStackTrace();
+	        }
+	      }
+	  } catch (ClientProtocolException e) {
+	  } catch (IOException e) {
+	  }
+	  
+	  //httpclient.getConnectionManager().shutdown(); //TODO überall??
+      return false;
+  }
   
   //send message
   public static boolean sendChatMessage(int receiverId, String message, Context context) {
@@ -284,4 +335,5 @@ public class RestService
 	  
       return receivedMessage;
   }
+  
 }

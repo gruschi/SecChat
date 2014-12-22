@@ -32,7 +32,7 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
 			case REGISTER: 
 				return RestService.registerUser( params[0], Storage.getHash(context), context );
 		    case LOGIN: 
-		    	return RestService.loginUser( Storage.getAlias(context), Storage.getHash(context), context);
+		    	return RestService.loginUser( Storage.getID(context), Storage.getHash(context), context);
 		    case LOGOUT:  
 		    	return RestService.logoutUser( context);
 		    case CONNCET_PRIVATE_CHAT:  
@@ -100,7 +100,7 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
                 break;
         }
         
-        Toast.makeText(context, result+"", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "RESULT: "+result+"", Toast.LENGTH_SHORT).show();
         
         STATUS.setState(state);
     }

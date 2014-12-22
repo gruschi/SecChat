@@ -5,9 +5,11 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -41,9 +43,11 @@ public class Settings extends Activity
      txtYourPin = (TextView) findViewById(R.id.txtYourPin);
      txtYourId = (TextView) findViewById(R.id.txtYourId);
      
-     txtYourAlias.setText(Storage.getAlias(this));
-     txtYourPin.setText(Storage.getPIN(this));
-     txtYourId.setText(Storage.getID(this));
+     txtYourAlias.setText(Storage.getAlias(this) +"");
+     txtYourPin.setText(Storage.getPIN(this) +"");
+     txtYourId.setText(Storage.getID(this) +"");
+     
+     GenerateQRCode();
      
      saveNewAlias = (Button) findViewById(R.id.btnSaveAlias);
      saveNewAlias.setOnClickListener(new OnClickListener(){
@@ -79,7 +83,7 @@ public class Settings extends Activity
       int height = point.y;
       int smallerDimension = width < height ? width : height;
       smallerDimension = smallerDimension * 3/4;
-    
+
       //Encode with a QR Code image
       QRCodeEncoder qrCodeEncoder = new QRCodeEncoder(qrInputText, 
                 null, 
@@ -90,8 +94,8 @@ public class Settings extends Activity
        Bitmap bitmap = qrCodeEncoder.encodeAsBitmap();
        ImageView myImage = (ImageView) findViewById(R.id.qrImg);
        myImage.setImageBitmap(bitmap);
-    
-      } catch (WriterException e) {
+      } 
+      catch (WriterException e) {
        e.printStackTrace();
       }
     }
@@ -113,4 +117,26 @@ public class Settings extends Activity
     {
         super.onDestroy();
     }
+    
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {		
+		boolean result = super.onCreateOptionsMenu(menu);
+		
+		 menu.add(0, 0, 0, R.string.close);
+
+		return result;
+	}
+	
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+	    
+		switch(item.getItemId()) 
+	    {
+	    	case 0:
+	    		finish();
+	    		return true;
+	    }
+	    
+	    return super.onMenuItemSelected(featureId, item);
+	}
 }
