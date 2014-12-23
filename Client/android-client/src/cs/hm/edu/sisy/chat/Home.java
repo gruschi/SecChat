@@ -11,9 +11,9 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import cs.hm.edu.sisy.chat.generators.PinHashGenerator;
-import cs.hm.edu.sisy.chat.interfaces.IAppManager;
+import cs.hm.edu.sisy.chat.services.BGService;
 import cs.hm.edu.sisy.chat.storage.Storage;
-import cs.hm.edu.sisy.chat.tools.Misc;
+import cs.hm.edu.sisy.chat.tools.Common;
 import cs.hm.edu.sisy.chat.tools.TestData;
 
 public class Home extends Activity {
@@ -21,9 +21,7 @@ public class Home extends Activity {
     private TextView yourAlias;
     private TextView yourPIN;
     private TextView yourID;
-    
-    private IAppManager bgService;
-    
+        
 	private Button hintButton;
 	
     /*private ServiceConnection mConnection = new ServiceConnection() {
@@ -90,6 +88,8 @@ public class Home extends Activity {
         TestData.printInterestingData(this);
         
         updateDate();
+        
+        startService(new Intent(this, BGService.class));
         
         //Start and bind the BGService 
      	//startService(new Intent(Home.this,  BGService.class));
@@ -209,10 +209,10 @@ public class Home extends Activity {
     
     private void updateDate()
     {
-      if( !Misc.isPinCurrent( Storage.getStoragedPinDate(this), Misc.getCurrentDate() ) )
+      if( !Common.isPinCurrent( Storage.getStoragedPinDate(this), Common.getCurrentDate() ) )
       {
         Storage.savePIN( this, PinHashGenerator.generatePIN() );
-        Storage.saveStoragedPinDate( this, Misc.getCurrentDate() );
+        Storage.saveStoragedPinDate( this, Common.getCurrentDate() );
       }
       
       yourAlias.setText( Storage.getAlias(this) +"" );

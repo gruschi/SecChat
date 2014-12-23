@@ -1,4 +1,4 @@
-package cs.hm.edu.sisy.chat.services;
+package cs.hm.edu.sisy.chat.communication;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,10 +22,10 @@ import org.json.JSONTokener;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
-import cs.hm.edu.sisy.chat.storage.Partner;
+import cs.hm.edu.sisy.chat.enums.Constants;
+import cs.hm.edu.sisy.chat.objects.Partner;
 import cs.hm.edu.sisy.chat.storage.Storage;
 import cs.hm.edu.sisy.chat.tools.EasySSLSocketFactory;
-import cs.hm.edu.sisy.chat.types.CONST;
 
 //alternative: rest lib: http://java.dzone.com/articles/android-%E2%80%93-volley-library
 
@@ -34,7 +34,7 @@ public class RestService
     //login user
 	public static boolean loginUser(int id, String hash, Context context) {
 		
-		  final String url = CONST.REST_LOGIN;
+		  final String url = Constants.REST_LOGIN;
 
 	      Uri uri = Uri.parse(url);
 	      HttpClient httpclient = EasySSLSocketFactory.getNewHttpClient();
@@ -50,7 +50,7 @@ public class RestService
 		      // Execute HTTP Post Request
 		      HttpResponse response = httpclient.execute(host, httppost);
 		
-		      Log.d(CONST.LOG, "HTTP-Status: "+response.getStatusLine().getStatusCode());
+		      Log.d(Constants.LOG, "HTTP-Status: "+response.getStatusLine().getStatusCode());
 		      
 		      if(response.getStatusLine().getStatusCode() < 300 && 
 		          response.getStatusLine().getStatusCode() > 199)
@@ -64,7 +64,7 @@ public class RestService
 		          
 		          String sessionId = jsonobject.getString("sessionId");
 		          
-		          Log.d(CONST.LOG, "HTTP-Response: SessionID: " + sessionId);	
+		          Log.d(Constants.LOG, "HTTP-Response: SessionID: " + sessionId);	
 		
 		          Storage.saveSessionId(context, sessionId);
 		          return true;
@@ -84,7 +84,7 @@ public class RestService
   //logout user
   public static Boolean logoutUser(Context context) {
 	  
-	  final String url = CONST.REST_LOGOUT;
+	  final String url = Constants.REST_LOGOUT;
 	  String sessionId = Storage.getSessionId(context);
 
       Uri uri = Uri.parse(url);
@@ -112,7 +112,7 @@ public class RestService
   //register user
   public static boolean registerUser(String alias, String hash, Context context) {
 	  
-	  final String url = CONST.REST_REGISTER;
+	  final String url = Constants.REST_REGISTER;
 
       Uri uri = Uri.parse(url);
       HttpClient httpclient = EasySSLSocketFactory.getNewHttpClient();
@@ -128,7 +128,7 @@ public class RestService
 	      // Execute HTTP Post Request
 	      HttpResponse response = httpclient.execute(host, httppost);
 
-		  Log.d(CONST.LOG, "HTTP-Status: "+response.getStatusLine().getStatusCode());
+		  Log.d(Constants.LOG, "HTTP-Status: "+response.getStatusLine().getStatusCode());
 	
 	      if(response.getStatusLine().getStatusCode() < 300 && 
 	          response.getStatusLine().getStatusCode() > 199)
@@ -142,11 +142,11 @@ public class RestService
 	          
 	          int userId = jsonobject.getInt("userId");
 	          
-	          Log.d(CONST.LOG, "HTTP-Response: ID: " + userId);
+	          Log.d(Constants.LOG, "HTTP-Response: ID: " + userId);
 	
 	          Storage.saveID(context, userId);
 	          
-	          //httpclient.getConnectionManager().shutdown(); //TODO überall??
+	          //httpclient.getConnectionManager().shutdown(); //TODO ï¿½berall??
 	          return true;
 	        }
 	        catch ( JSONException e )
@@ -158,7 +158,7 @@ public class RestService
 	  } catch (IOException e) {
 	  }
 	  
-	  //httpclient.getConnectionManager().shutdown(); //TODO überall??
+	  //httpclient.getConnectionManager().shutdown(); //TODO ï¿½berall??
       return false;
   }
   
@@ -166,7 +166,7 @@ public class RestService
   //connect private chat
   public static Boolean connectPrivChat(Context context, String receiverPin, String receiverID) {
 	  
-	  final String url = CONST.REST_CONNECT_FRIEND;
+	  final String url = Constants.REST_CONNECT_FRIEND;
 	  String sessionId = Storage.getSessionId(context);
 	  String pubKey = Storage.getPublicKeyAsString(context);
 	  String alias = Storage.getAlias(context);
@@ -188,7 +188,7 @@ public class RestService
 	      // Execute HTTP Post Request
 	      HttpResponse response = httpclient.execute(host, httppost);
 	      
-		  Log.d(CONST.LOG, "HTTP-Status: "+response.getStatusLine().getStatusCode());
+		  Log.d(Constants.LOG, "HTTP-Status: "+response.getStatusLine().getStatusCode());
 	
 	      if(response.getStatusLine().getStatusCode() < 300 && 
 	          response.getStatusLine().getStatusCode() > 199)
@@ -203,7 +203,7 @@ public class RestService
 	          JSONObject jsonobject = jsonarray.getJSONObject(0);
 	          int chatSessionId = jsonobject .getInt("chatSessionId");
 	          
-	          Log.d(CONST.LOG, "HTTP-Response: chatSessionId: " + chatSessionId);
+	          Log.d(Constants.LOG, "HTTP-Response: chatSessionId: " + chatSessionId);
 	          
 	          if(chatSessionId != 0)
 	        	  Storage.saveChatSessionId(context, chatSessionId);
@@ -226,7 +226,7 @@ public class RestService
   //service
   public static boolean service(Context context) {
 	  
-	  final String url = CONST.REST_SERVICE;
+	  final String url = Constants.REST_SERVICE;
 	  String sessionId = Storage.getSessionId(context);
 
       Uri uri = Uri.parse(url);
@@ -242,7 +242,7 @@ public class RestService
 	      // Execute HTTP Post Request
 	      HttpResponse response = httpclient.execute(host, httppost);
 	      
-		  Log.d(CONST.LOG, "HTTP-Status: "+response.getStatusLine().getStatusCode());
+		  Log.d(Constants.LOG, "HTTP-Status: "+response.getStatusLine().getStatusCode());
 	
 	      if(1==1 || (response.getStatusLine().getStatusCode() < 300 && 
 	          response.getStatusLine().getStatusCode() > 199))
@@ -256,7 +256,7 @@ public class RestService
 	          json = "{\"chatSession\":[{\"Connection\":{\"id\":\"2\",\"senderId\":\"5\",\"receiverId\":\"10\",\"alias\":\"tu001\",\"receiverPin\":\"1234\",\"pubKey\":\"g0kn4pg0kn4p23oge5ng0kn4p23oge5neqp5f73i1ghf5eqp5f73i1ghf523oge5neqp5f73i1ghf5\"}}]}";
 	          JSONObject jsonobject = new JSONObject(json);
 
-	          Log.d(CONST.LOG, "HTTP-Response: ServiceJSON1: " + jsonobject.toString());
+	          Log.d(Constants.LOG, "HTTP-Response: ServiceJSON1: " + jsonobject.toString());
 	          
 	          if(jsonobject.toString() == "{\"chatSession\":[]}")
 	        	  return false;
@@ -264,7 +264,7 @@ public class RestService
 	          JSONArray cast = jsonobject.getJSONArray("chatSession");
 	          for (int i=0; i<cast.length(); i++) 
 	          {
-	        	  Log.d(CONST.LOG, "HTTP-Response: ServiceJSON2: " + cast.getJSONObject(i).getJSONObject("Connection").toString());
+	        	  Log.d(Constants.LOG, "HTTP-Response: ServiceJSON2: " + cast.getJSONObject(i).getJSONObject("Connection").toString());
 	        	  
 	              JSONObject connection = cast.getJSONObject(i).getJSONObject("Connection");
 	              
@@ -283,7 +283,7 @@ public class RestService
 	              Storage.saveChatSessionId(context, id);
 	          }
 	          
-	          //httpclient.getConnectionManager().shutdown(); //TODO überall??
+	          //httpclient.getConnectionManager().shutdown(); //TODO ï¿½berall??
 	          return true;
 	        }
 	        catch ( JSONException e )
@@ -295,7 +295,7 @@ public class RestService
 	  } catch (IOException e) {
 	  }
 	  
-	  //httpclient.getConnectionManager().shutdown(); //TODO überall??
+	  //httpclient.getConnectionManager().shutdown(); //TODO ï¿½berall??
       return false;
   }
   
@@ -305,7 +305,7 @@ public class RestService
 	String pubKey = Storage.getPublicKeyAsString(context);
 	String alias = Storage.getAlias(context);
 	
-	final String url = CONST.REST_CONNECT_FRIEND;
+	final String url = Constants.REST_CONNECT_FRIEND;
 
     Uri uri = Uri.parse(url);
     HttpClient httpclient = EasySSLSocketFactory.getNewHttpClient();
@@ -322,7 +322,7 @@ public class RestService
 	
 	      HttpResponse response = httpclient.execute(host, httppost);
 	      
-		  Log.d(CONST.LOG, "HTTP-Status: "+response.getStatusLine().getStatusCode());
+		  Log.d(Constants.LOG, "HTTP-Status: "+response.getStatusLine().getStatusCode());
 	
 	      if(response.getStatusLine().getStatusCode() < 300 && 
 	          response.getStatusLine().getStatusCode() > 199)
@@ -337,7 +337,7 @@ public class RestService
 	          JSONObject jsonobject = jsonarray.getJSONObject(0);
 	          int chatSessionId = jsonobject .getInt("chatSessionId");
 	          
-	          Log.d(CONST.LOG, "HTTP-Response: chatSessionId: " + chatSessionId);
+	          Log.d(Constants.LOG, "HTTP-Response: chatSessionId: " + chatSessionId);
 	          
 	          if(chatSessionId != 0)
 	        	  Storage.saveChatSessionId(context, chatSessionId);
@@ -360,7 +360,7 @@ public class RestService
   //send message
   public static boolean sendChatMessage(int receiverId, String message, Context context) {
 	  String sessionId = Storage.getSessionId(context);
-	  final String url = CONST.REST_SEND_MSG;
+	  final String url = Constants.REST_SEND_MSG;
 
       Uri uri = Uri.parse(url);
       HttpClient httpclient = EasySSLSocketFactory.getNewHttpClient();
@@ -393,7 +393,7 @@ public class RestService
 	          JSONObject jsonobject = jsonarray.getJSONObject(0);
 	          messageReceived = jsonobject .getString("received").equals("true");
 	          
-	          Log.d(CONST.LOG, "HTTP-Response: messageReceived?: " + messageReceived);
+	          Log.d(Constants.LOG, "HTTP-Response: messageReceived?: " + messageReceived);
 	          
 	        }
 	        catch ( JSONException e )
@@ -410,11 +410,11 @@ public class RestService
  
   
   //receive message
-  public static String receiveChatMessage(Context context) {
+  public static boolean receiveChatMessage(Context context) {
 	  String sessionId = Storage.getSessionId(context);
 	  int chatSessionId = Storage.getChatSessionId(context);
 	  
-	  final String url = CONST.REST_SEND_MSG;
+	  final String url = Constants.REST_SEND_MSG;
 
       Uri uri = Uri.parse(url);
       HttpClient httpclient = EasySSLSocketFactory.getNewHttpClient();
@@ -446,8 +446,11 @@ public class RestService
 	          JSONObject jsonobject = jsonarray.getJSONObject(0);
 	          receivedMessage = jsonobject .getString("receivedMessage");
 	          
-	          Log.d(CONST.LOG, "HTTP-Response: receiveMessage: " + receivedMessage);
+	          Log.d(Constants.LOG, "HTTP-Response: receiveMessage: " + receivedMessage);
 	          
+	          //TODO push receivedMessage to chat (arraylist?)
+	          
+	          return true;
 	        }
 	        catch ( JSONException e )
 	        {
@@ -458,7 +461,7 @@ public class RestService
 	  } catch (IOException e) {
 	  }
 	  
-      return receivedMessage;
+    return false;
   }
   
 }

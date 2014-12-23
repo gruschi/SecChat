@@ -3,27 +3,18 @@ package cs.hm.edu.sisy.chat;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
-import cs.hm.edu.sisy.chat.interfaces.IAppManager;
 import cs.hm.edu.sisy.chat.services.BGService;
-import cs.hm.edu.sisy.chat.storage.Partner;
 
 public class Messaging extends Activity {
 
@@ -31,26 +22,13 @@ public class Messaging extends Activity {
 	private EditText messageText;
 	private EditText messageHistoryText;
 	private Button sendMessageButton;
-	private IAppManager imService;
-	private Partner partner = new Partner();
-	
-	private ServiceConnection mConnection = new ServiceConnection() {
-      
-		public void onServiceConnected(ComponentName className, IBinder service) {          
-            //imService = ((BGService.IMBinder)service).getService();          
-        }
-        public void onServiceDisconnected(ComponentName className) {          
-        	imService = null;
-            Toast.makeText(Messaging.this, R.string.local_service_stopped,
-                    Toast.LENGTH_SHORT).show();
-        }
-    };
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
-		// TODO Auto-generated method stub
-		super.onCreate(savedInstanceState);	   
+		super.onCreate(savedInstanceState);
+		
+		//TODO messageListArray + observerThread + decode on gettin/writin msg to array and encode on reading
 		
 		setContentView(R.layout.messaging_screen); //messaging_screen);
 				
@@ -162,7 +140,7 @@ public class Messaging extends Activity {
 	protected void onPause() {
 		super.onPause();
 		unregisterReceiver(messageReceiver);
-		unbindService(mConnection);
+		//unbindService(mConnection);
 		
 		//FriendController.setActiveFriend(null);
 		
@@ -172,7 +150,7 @@ public class Messaging extends Activity {
 	protected void onResume() 
 	{		
 		super.onResume();
-		bindService(new Intent(Messaging.this, BGService.class), mConnection , Context.BIND_AUTO_CREATE);
+		//bindService(new Intent(Messaging.this, BGService.class), mConnection , Context.BIND_AUTO_CREATE);
 				
 		IntentFilter i = new IntentFilter();
 		i.addAction(BGService.TAKE_MESSAGE);

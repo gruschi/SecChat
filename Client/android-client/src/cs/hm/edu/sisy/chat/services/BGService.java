@@ -14,11 +14,15 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.IBinder;
 import android.util.Log;
+import cs.hm.edu.sisy.chat.Home;
+import cs.hm.edu.sisy.chat.Login;
 import cs.hm.edu.sisy.chat.Messaging;
 import cs.hm.edu.sisy.chat.R;
-import cs.hm.edu.sisy.chat.tools.Misc;
-import cs.hm.edu.sisy.chat.types.STATUS;
-import cs.hm.edu.sisy.chat.types.TYPES;
+import cs.hm.edu.sisy.chat.communication.RestThreadTask;
+import cs.hm.edu.sisy.chat.enums.State;
+import cs.hm.edu.sisy.chat.enums.Types;
+import cs.hm.edu.sisy.chat.objects.Partner;
+import cs.hm.edu.sisy.chat.tools.Common;
 
 public class BGService extends Service {
 //	private NotificationManager mNM;
@@ -46,13 +50,13 @@ public class BGService extends Service {
  
     @Override
     public void onCreate() {
-    	Misc.doToast(this, "Congrats! MyService Created");
+    	Common.doToast(this, "Congrats! MyService Created");
         Log.d(TAG, "onCreate");
     }
  
     @Override
     public void onStart(Intent intent, int startId) {
-    	Misc.doToast(this, "MyService Started");
+    	Common.doToast(this, "MyService Started");
         Log.d(TAG, "onStart");
         
     //Note: You can start a new thread and use it for long background processing from here.
@@ -64,10 +68,19 @@ public class BGService extends Service {
    	
    	showNotification("Chris"); //Partner.alias
    	
-   	if(STATUS.getState() == STATUS.CONNECTED_TO_CHAT)
+   	if(State.getState() == State.CONNECTED_TO_CHAT) {
+      if(waitingScheduleExecutor != null)
+        waitingScheduleExecutor.shutdownNow();
    		messagingSchedule(BGService.this);
-   	else 
+   		
+      Intent i = new Intent(BGService.this, Messaging.class);                        
+      startActivity(i); 
+   	}
+   	else {
+      if(messagingScheduleExecutor != null)
+        messagingScheduleExecutor.shutdownNow();
    		waitingSchedule(BGService.this);
+   	}
    	
    	
    	// Timer is used to take the friendList info every UPDATE_TIME_PERIOD;
@@ -107,7 +120,7 @@ public class BGService extends Service {
     	if(messagingScheduleExecutor != null)
     		messagingScheduleExecutor.shutdownNow();
     	
-        Misc.doToast(this, "MyService Stopped");
+        Common.doToast(this, "MyService Stopped");
         Log.d(TAG, "onDestroy");
 		super.onDestroy();
     }
@@ -119,13 +132,12 @@ public class BGService extends Service {
     	waitingScheduleExecutor.scheduleAtFixedRate(new Runnable() {
     	  public void run() {
     		  Log.d(TAG, "wSCHEDULE");
-    		  new RestThreadTask(TYPES.SERVICE, context).execute();
+    		  new RestThreadTask(Types.SERVICE, context).execute();
     		  
-    		  //someone is calling me
-    		   	if(STATUS.getState() == STATUS.LOGGED_IN)
-    		   		//
-    		   	else if(STATUS.getState() == STATUS.CONNECT_TO_CHAT_PENDING) //I called someone and waiting for response
-    		   		//
+    		  //someone is calling me, call back
+    		  if(State.getState() == State.CHAT_CONNECTION_INCOMING) {
+            new RestThreadTask(Types.CONNECT_SERVICE, context).execute(Partner.getPartnerId()+"");
+        	}    		  
     		  
     	  }
     	}, 0, 5, TimeUnit.SECONDS);
@@ -138,11 +150,10 @@ public class BGService extends Service {
     	messagingScheduleExecutor.scheduleAtFixedRate(new Runnable() {
     	  public void run() {
     		  Log.d(TAG, "mSCHEDULE");
-    		  new RestThreadTask(TYPES.RECEIVE_MSG, context).execute();
+    		  new RestThreadTask(Types.RECEIVE_MSG, context).execute();
     	  }
     	}, 0, 1, TimeUnit.SECONDS);
     }
-	
 	
 
 

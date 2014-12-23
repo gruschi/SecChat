@@ -1,5 +1,6 @@
 package cs.hm.edu.sisy.chat.storage;
 
+import cs.hm.edu.sisy.chat.objects.PubKey;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;

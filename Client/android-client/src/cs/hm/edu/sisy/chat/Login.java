@@ -1,10 +1,5 @@
 package cs.hm.edu.sisy.chat;
 
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -17,12 +12,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import cs.hm.edu.sisy.chat.services.RestThreadTask;
-import cs.hm.edu.sisy.chat.services.RestWrapper;
-import cs.hm.edu.sisy.chat.tools.Misc;
-import cs.hm.edu.sisy.chat.tools.TestData;
-import cs.hm.edu.sisy.chat.types.STATUS;
-import cs.hm.edu.sisy.chat.types.TYPES;
+import cs.hm.edu.sisy.chat.communication.RestThreadTask;
+import cs.hm.edu.sisy.chat.communication.RestWrapper;
+import cs.hm.edu.sisy.chat.enums.State;
+import cs.hm.edu.sisy.chat.enums.Types;
+import cs.hm.edu.sisy.chat.tools.Common;
 
 public class Login extends Activity {	
 
@@ -45,14 +39,14 @@ public class Login extends Activity {
 			    	  public void run() {
 			    		  //TestData.printInterestingData(Login.this);
 			    		  		    		  
-			    		  if( STATUS.getState() == STATUS.REGISTERED || STATUS.getState() == STATUS.NOT_LOGGED_IN )
+			    		  if( State.getState() == State.REGISTERED || State.getState() == State.NOT_LOGGED_IN )
 			    		  {
 			    		        loginButton.setVisibility(View.VISIBLE);
 			    		        registerButton.setEnabled(false);
 			    		        alias.setEnabled(false);
 			    		  }
 			    		  
-						  if( STATUS.getState() == STATUS.LOGGED_IN ) {
+						  if( State.getState() == State.LOGGED_IN ) {
 								redirectToHome();
 						  }
 			    	  }
@@ -88,22 +82,22 @@ public class Login extends Activity {
 			{
 				if (alias.getText().toString().matches("")) 
 				{
-					Misc.doToast(Login.this, "Please write down an alias first!");
+					Common.doToast(Login.this, "Please write down an alias first!");
 				}
 				else
 				{
 					Thread registerThread = new Thread(runnable);
 					registerThread.start();
 					
-					if(STATUS.getState() == STATUS.TIMED_OUT)
-						STATUS.setState(STATUS.NOT_REGISTERED);
+					if(State.getState() == State.TIMED_OUT)
+						State.setState(State.NOT_REGISTERED);
 				      
-					if( STATUS.getState() == STATUS.NOT_REGISTERED ) {
+					if( State.getState() == State.NOT_REGISTERED ) {
 						if(RestWrapper.registerNeeded(Login.this, alias.getText().toString()))
-							new RestThreadTask(TYPES.REGISTER, (Context) Login.this).execute(alias.getText().toString());
+							new RestThreadTask(Types.REGISTER, (Context) Login.this).execute(alias.getText().toString());
 					}	
 						
-					//TODO: Timer überhaupt nötig?
+					//TODO: Timer ï¿½berhaupt nï¿½tig?
 					if(!timerIsStarted) {
 						timerIsStarted = true;
 						
@@ -115,10 +109,10 @@ public class Login extends Activity {
 						     }
 
 						     public void onFinish() {
-						    	if(STATUS.getState() == STATUS.NOT_REGISTERED)
+						    	if(State.getState() == State.NOT_REGISTERED)
 						    	{
-						    		STATUS.setState(STATUS.TIMED_OUT);
-						    		Misc.doToast(Login.this, STATUS.getStateMessage() +"");
+						    		State.setState(State.TIMED_OUT);
+						    		Common.doToast(Login.this, State.getStateMessage() +"");
 						    	}
 								timerIsStarted = false;
 						     }
@@ -132,9 +126,9 @@ public class Login extends Activity {
         	@Override
 			public void onClick(View arg0) 
 			{
-				if( STATUS.getState() == STATUS.REGISTERED || STATUS.getState() == STATUS.NOT_LOGGED_IN ) {
+				if( State.getState() == State.REGISTERED || State.getState() == State.NOT_LOGGED_IN ) {
 					if (RestWrapper.loginNeeded(Login.this))
-						new RestThreadTask(TYPES.LOGIN, (Context) Login.this).execute();
+						new RestThreadTask(Types.LOGIN, (Context) Login.this).execute();
 				}
 			}
         });

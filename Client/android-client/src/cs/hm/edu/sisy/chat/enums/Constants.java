@@ -1,6 +1,6 @@
-package cs.hm.edu.sisy.chat.types;
+package cs.hm.edu.sisy.chat.enums;
 
-public class CONST {
+public class Constants {
 
      //SHARED PREFERENCES
 	 public static final String MyPREFERENCES = "MyPrefs" ;

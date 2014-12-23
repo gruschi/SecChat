@@ -4,9 +4,9 @@ import java.util.Calendar;
 
 import android.content.Context;
 import android.widget.Toast;
-import cs.hm.edu.sisy.chat.types.STATUS;
+import cs.hm.edu.sisy.chat.enums.State;
 
-public class Misc {
+public class Common {
      
      public static int getCurrentDate() //int like 20141212 for 12.12.2014
      {
@@ -31,7 +31,7 @@ public class Misc {
 	     	
      	switch (id) 
      	{
-	     	case STATUS.NOT_REGISTERED:
+	     	case State.NOT_REGISTERED:
      			message = "";			
      			break;
      		default:

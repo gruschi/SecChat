@@ -1,13 +1,13 @@
-package cs.hm.edu.sisy.chat.services;
+package cs.hm.edu.sisy.chat.communication;
 
 import java.security.NoSuchAlgorithmException;
 
 import android.content.Context;
+import cs.hm.edu.sisy.chat.enums.State;
 import cs.hm.edu.sisy.chat.generators.PinHashGenerator;
 import cs.hm.edu.sisy.chat.generators.PubPrivKeyGenerator;
 import cs.hm.edu.sisy.chat.storage.Storage;
-import cs.hm.edu.sisy.chat.tools.Misc;
-import cs.hm.edu.sisy.chat.types.STATUS;
+import cs.hm.edu.sisy.chat.tools.Common;
 
 public class RestWrapper {
 
@@ -16,12 +16,12 @@ public class RestWrapper {
     {
 		boolean isRegistered = ( Storage.getID(context) != 0 );
 		
-		if( STATUS.getState() <= STATUS.NOT_LOGGED_IN )
+		if( State.getState() <= State.NOT_LOGGED_IN )
 		{
 			if(isRegistered)
-				STATUS.setState(STATUS.REGISTERED);
+				State.setState(State.REGISTERED);
 			else
-				STATUS.setState(STATUS.NOT_REGISTERED);
+				State.setState(State.NOT_REGISTERED);
 		}
 		
     	return isRegistered;
@@ -32,9 +32,9 @@ public class RestWrapper {
 		boolean isLoggedIn = ( Storage.getSessionId(context) != null );
 		
 		if(isLoggedIn)
-			STATUS.setState(STATUS.LOGGED_IN);
+			State.setState(State.LOGGED_IN);
 		else
-			STATUS.setState(STATUS.NOT_LOGGED_IN);
+			State.setState(State.NOT_LOGGED_IN);
 		
     	return isLoggedIn;
     }  
@@ -64,10 +64,10 @@ public class RestWrapper {
     
     public static boolean loginNeeded(Context context)
     {
-        if( !Misc.isPinCurrent( Storage.getStoragedPinDate(context), Misc.getCurrentDate() ) )
+        if( !Common.isPinCurrent( Storage.getStoragedPinDate(context), Common.getCurrentDate() ) )
         {
           Storage.savePIN( context, PinHashGenerator.generatePIN() );
-          Storage.saveStoragedPinDate( context, Misc.getCurrentDate() );
+          Storage.saveStoragedPinDate( context, Common.getCurrentDate() );
         }
     	
     	return ( Storage.getID(context) != 0 && Storage.getSessionId(context) == null );
@@ -80,7 +80,7 @@ public class RestWrapper {
     	//check oncreate in home or service
     	if( Storage.getID(context) != 0 && Storage.getSessionId(context) != null )//&& Storage.getChatSession(this) != null ) //oder callback funktion in REST-Service von IncomingChat
     	{
-    		//go to this chat, service überschrieb im hintergrund das globale partner-objekt mit alias, pubkey etc.
+    		//go to this chat, service ï¿½berschrieb im hintergrund das globale partner-objekt mit alias, pubkey etc.
     	}
     	else {
     		//go to home

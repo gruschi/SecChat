@@ -2,10 +2,10 @@ package cs.hm.edu.sisy.chat.tools;
 
 import android.content.Context;
 import android.util.Log;
+import cs.hm.edu.sisy.chat.enums.Constants;
+import cs.hm.edu.sisy.chat.enums.State;
 import cs.hm.edu.sisy.chat.generators.PubPrivKeyGenerator;
 import cs.hm.edu.sisy.chat.storage.Storage;
-import cs.hm.edu.sisy.chat.types.CONST;
-import cs.hm.edu.sisy.chat.types.STATUS;
 
 public class TestData {
 
@@ -21,19 +21,19 @@ public class TestData {
     	String pubK = kg.getPrivateKeyAsString();
     	String privK = kg.getPublicKeyAsString();
     	
-    	String state = STATUS.getStateMessage();
+    	String state = State.getStateMessage();
     	
-    	Log.d(CONST.LOG, "Alias: "+alias);
-    	Log.d(CONST.LOG, "Hash: "+hash);
-    	Log.d(CONST.LOG, "ID: "+id);
-    	Log.d(CONST.LOG, "PIN: "+pin);
-    	Log.d(CONST.LOG, "StoragedPinDate: "+storagedPinDate);
+    	Log.d(Constants.LOG, "Alias: "+alias);
+    	Log.d(Constants.LOG, "Hash: "+hash);
+    	Log.d(Constants.LOG, "ID: "+id);
+    	Log.d(Constants.LOG, "PIN: "+pin);
+    	Log.d(Constants.LOG, "StoragedPinDate: "+storagedPinDate);
     	
-    	Log.d(CONST.LOG, "SessionID: "+session);
-    	Log.d(CONST.LOG, "State: "+state);
+    	Log.d(Constants.LOG, "SessionID: "+session);
+    	Log.d(Constants.LOG, "State: "+state);
     	
-    	Log.d(CONST.LOG, "PublicKey: "+pubK);
-    	Log.d(CONST.LOG, "PrivateKey: "+privK);
+    	Log.d(Constants.LOG, "PublicKey: "+pubK);
+    	Log.d(Constants.LOG, "PrivateKey: "+privK);
 	}
 	
 }

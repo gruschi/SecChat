@@ -23,7 +23,7 @@ import cs.hm.edu.sisy.chat.generators.PubPrivKeyGenerator;
 import cs.hm.edu.sisy.chat.qr.Contents;
 import cs.hm.edu.sisy.chat.qr.QRCodeEncoder;
 import cs.hm.edu.sisy.chat.storage.Storage;
-import cs.hm.edu.sisy.chat.tools.Misc;
+import cs.hm.edu.sisy.chat.tools.Common;
 
 public class Settings extends Activity
 {
@@ -62,7 +62,7 @@ public class Settings extends Activity
 		@Override
 		public void onClick(View v) {
 			Storage.savePIN( Settings.this, PinHashGenerator.generatePIN() );
-			Storage.saveStoragedPinDate( Settings.this, Misc.getCurrentDate() );
+			Storage.saveStoragedPinDate( Settings.this, Common.getCurrentDate() );
 			txtYourPin.setText(Storage.getPIN(Settings.this));
 		}
 	});

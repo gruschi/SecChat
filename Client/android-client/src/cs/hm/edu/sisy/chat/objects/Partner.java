@@ -1,4 +1,4 @@
-package cs.hm.edu.sisy.chat.storage;
+package cs.hm.edu.sisy.chat.objects;
 
 public class Partner {
 	private static String partnerAlias;

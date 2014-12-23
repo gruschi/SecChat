@@ -1,25 +1,27 @@
-package cs.hm.edu.sisy.chat.services;
+package cs.hm.edu.sisy.chat.communication;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 import cs.hm.edu.sisy.chat.Login;
+import cs.hm.edu.sisy.chat.enums.Constants;
+import cs.hm.edu.sisy.chat.enums.State;
+import cs.hm.edu.sisy.chat.enums.Types;
+import cs.hm.edu.sisy.chat.services.BGService;
 import cs.hm.edu.sisy.chat.storage.Storage;
-import cs.hm.edu.sisy.chat.tools.Misc;
-import cs.hm.edu.sisy.chat.types.CONST;
-import cs.hm.edu.sisy.chat.types.STATUS;
-import cs.hm.edu.sisy.chat.types.TYPES;
+import cs.hm.edu.sisy.chat.tools.Common;
 
 //Params: < Param doInBG, onPrgoressUpdate, Return doInBG >
 public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
 
-    private TYPES type; 
+    private Types type; 
     private Context context;
     
     private int state = 0;
 	
-	public RestThreadTask(TYPES type, Context context)
+	public RestThreadTask(Types type, Context context)
 	{
 		this.type = type;
 		this.context = context;
@@ -48,7 +50,7 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
 		    case SEND_MSG:  
 		    	return RestService.sendChatMessage(Integer.parseInt(params[1]), params[0], context); //receiverID, message
 		    case RECEIVE_MSG: 
-		    	//return RestService.receiveChatMessage(context);
+		    	return RestService.receiveChatMessage(context);
 		    case SERVICE:  
 		    	return RestService.service(context);
 		    default: 
@@ -67,56 +69,68 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
         switch (type) {
             case LOGIN: 
             	if(result)
-            		state = STATUS.LOGGED_IN;
+            		state = State.LOGGED_IN;
             	else
-            		state = STATUS.NOT_LOGGED_IN;
+            		state = State.NOT_LOGGED_IN;
             	break;
             case LOGOUT:  
             	if(result)
-            		state = STATUS.LOGGED_OUT;
+            		state = State.LOGGED_OUT;
             	break;
             case REGISTER: 
             	if(result)
-            		state = STATUS.REGISTERED;
+            		state = State.REGISTERED;
             	else
-            		state = STATUS.NOT_REGISTERED;
+            		state = State.NOT_REGISTERED;
             	break;
             case CONNCET_PRIVATE_CHAT:  
             	if(result)
-            		state = STATUS.CONNECT_TO_CHAT_PENDING;
+            		state = State.CONNECT_TO_CHAT_PENDING;
             	else
-            		state = STATUS.NOT_CONNECTED_TO_CHAT;
+            		state = State.NOT_CONNECTED_TO_CHAT;
             	break;
            /* case CONNECT_PUBLIC_CHAT: 
             	//TODO
             	break;
             case SEND_MSG:  
             	if(result)
-            		state = STATUS.MSG_SENT;
+            		state = State.MSG_SENT;
             	else
-            		state = STATUS.MSG_NOT_SENT;
+            		state = State.MSG_NOT_SENT;
             	break;
             case RECEIVE_MSG: 
             	if(result)
-            		state = STATUS.MSG_RECEIVED;
+            		state = State.MSG_RECEIVED;
             	else
-            		state = STATUS.MSG_NOT_RECEIVED;
+            		state = State.MSG_NOT_RECEIVED;
             	break;*/
             case CONNECT_SERVICE: 
-            	if(result)
-            		state = STATUS.CONNECTED_TO_CHAT;
+            	if(result) {
+            		state = State.CONNECTED_TO_CHAT;
+            		context.stopService(new Intent(context, BGService.class));
+            		context.startService(new Intent(context, BGService.class));
+            	}
             	else
-            		state = STATUS.NOT_CONNECTED_TO_CHAT;
+            		state = State.NOT_CONNECTED_TO_CHAT;
             	break;
-            case SERVICE: 
+            case SERVICE:
+              if(State.getState() == State.CONNECT_TO_CHAT_PENDING)
+                if(result) {
+                  state = State.CONNECTED_TO_CHAT;
+                  context.stopService(new Intent(context, BGService.class));
+                  context.startService(new Intent(context, BGService.class));
+                }
+              else
+                if(result)
+                  state = State.CHAT_CONNECTION_INCOMING;
             	break;
             default: 
                 break;
         }
         
-        Misc.doToast(context, STATUS.getStateMessage() +"");
+        Common.doToast(context, State.getStateMessage() +"");
         
-        STATUS.setState(state);
+        State.setState(state);
     }
 
 }
