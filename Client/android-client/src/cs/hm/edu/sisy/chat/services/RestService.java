@@ -6,13 +6,13 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,18 +20,26 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
-import cs.hm.edu.sisy.chat.generators.PubPrivKeyGenerator;
+import cs.hm.edu.sisy.chat.storage.Partner;
 import cs.hm.edu.sisy.chat.storage.Storage;
-import cs.hm.edu.sisy.chat.tools.CONST;
+import cs.hm.edu.sisy.chat.tools.EasySSLSocketFactory;
+import cs.hm.edu.sisy.chat.types.CONST;
+
+//alternative: rest lib: http://java.dzone.com/articles/android-%E2%80%93-volley-library
 
 public class RestService
 {
-	
     //login user
 	public static boolean loginUser(int id, String hash, Context context) {
-	    HttpClient httpclient = new DefaultHttpClient();
-	    HttpPost httppost = new HttpPost(CONST.REST_LOGIN);
+		
+		  final String url = CONST.REST_LOGIN;
+
+	      Uri uri = Uri.parse(url);
+	      HttpClient httpclient = EasySSLSocketFactory.getNewHttpClient();
+	      HttpHost host = new HttpHost(uri.getHost(), 443, uri.getScheme());
+	      HttpPost httppost = new HttpPost(url);
 	
 		  try {
 		      List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
@@ -40,7 +48,7 @@ public class RestService
 		      httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 		
 		      // Execute HTTP Post Request
-		      HttpResponse response = httpclient.execute(httppost);
+		      HttpResponse response = httpclient.execute(host, httppost);
 		
 		      Log.d(CONST.LOG, "HTTP-Status: "+response.getStatusLine().getStatusCode());
 		      
@@ -58,7 +66,7 @@ public class RestService
 		          
 		          Log.d(CONST.LOG, "HTTP-Response: SessionID: " + sessionId);	
 		
-		          Storage.saveSession(context, sessionId);
+		          Storage.saveSessionId(context, sessionId);
 		          return true;
 		        }
 		        catch ( JSONException e )
@@ -75,18 +83,23 @@ public class RestService
   
   //logout user
   public static Boolean logoutUser(Context context) {
-	String sessionId = Storage.getSession(context);
-    HttpClient httpclient = new DefaultHttpClient();
-    HttpPost httppost = new HttpPost(CONST.REST_LOGOUT);
+	  
+	  final String url = CONST.REST_LOGOUT;
+	  String sessionId = Storage.getSessionId(context);
+
+      Uri uri = Uri.parse(url);
+      HttpClient httpclient = EasySSLSocketFactory.getNewHttpClient();
+      HttpHost host = new HttpHost(uri.getHost(), 443, uri.getScheme());
+      HttpPost httppost = new HttpPost(url);
+      
 
 	  try {
 	      List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 	      nameValuePairs.add(new BasicNameValuePair("data[User][sessionId]", sessionId));
 	      httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 	
-	      // Execute HTTP Post Request
-	      httpclient.execute(httppost);
-	      Storage.saveSession(context, null);
+	      // Execute HTTP Post Request	      httpclient.execute(host, httppost);;
+	      Storage.saveSessionId(context, null);
 	      return true;
 	  }
 	  catch (ClientProtocolException e) {
@@ -98,8 +111,13 @@ public class RestService
   
   //register user
   public static boolean registerUser(String alias, String hash, Context context) {
-	  HttpClient httpclient = new DefaultHttpClient();
-	  HttpPost httppost = new HttpPost(CONST.REST_REGISTER);
+	  
+	  final String url = CONST.REST_REGISTER;
+
+      Uri uri = Uri.parse(url);
+      HttpClient httpclient = EasySSLSocketFactory.getNewHttpClient();
+      HttpHost host = new HttpHost(uri.getHost(), 443, uri.getScheme());
+      HttpPost httppost = new HttpPost(url);
 	
 	  try {
 	      List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
@@ -108,8 +126,8 @@ public class RestService
 	      httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 	
 	      // Execute HTTP Post Request
-	      HttpResponse response = httpclient.execute(httppost);
-	      
+	      HttpResponse response = httpclient.execute(host, httppost);
+
 		  Log.d(CONST.LOG, "HTTP-Status: "+response.getStatusLine().getStatusCode());
 	
 	      if(response.getStatusLine().getStatusCode() < 300 && 
@@ -147,14 +165,18 @@ public class RestService
   
   //connect private chat
   public static Boolean connectPrivChat(Context context, String receiverPin, String receiverID) {
-	String sessionId = Storage.getSession(context);
-	String pubKey = Storage.getPublicKeyAsString(context);
-	String alias = Storage.getAlias(context);
-	
-    HttpClient httpclient = new DefaultHttpClient();
-    HttpPost httppost = new HttpPost(CONST.REST_CONNECT_FRIEND);
+	  
+	  final String url = CONST.REST_CONNECT_FRIEND;
+	  String sessionId = Storage.getSessionId(context);
+	  String pubKey = Storage.getPublicKeyAsString(context);
+	  String alias = Storage.getAlias(context);
 
-	  try {
+      Uri uri = Uri.parse(url);
+      HttpClient httpclient = EasySSLSocketFactory.getNewHttpClient();
+      HttpHost host = new HttpHost(uri.getHost(), 443, uri.getScheme());
+      HttpPost httppost = new HttpPost(url);
+	
+      try {
 	      List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 	      nameValuePairs.add(new BasicNameValuePair("data[User][sessionId]", sessionId));
 	      nameValuePairs.add(new BasicNameValuePair("data[Connection][receiverID ]", receiverID));
@@ -164,7 +186,7 @@ public class RestService
 	      httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 	
 	      // Execute HTTP Post Request
-	      HttpResponse response = httpclient.execute(httppost);
+	      HttpResponse response = httpclient.execute(host, httppost);
 	      
 		  Log.d(CONST.LOG, "HTTP-Status: "+response.getStatusLine().getStatusCode());
 	
@@ -203,36 +225,63 @@ public class RestService
   
   //service
   public static boolean service(Context context) {
-	  HttpClient httpclient = new DefaultHttpClient();
-	  HttpPost httppost = new HttpPost(CONST.REST_SERVICE);
-	  String session = Storage.getSession(context);
+	  
+	  final String url = CONST.REST_SERVICE;
+	  String sessionId = Storage.getSessionId(context);
+
+      Uri uri = Uri.parse(url);
+      HttpClient httpclient = EasySSLSocketFactory.getNewHttpClient();
+      HttpHost host = new HttpHost(uri.getHost(), 443, uri.getScheme());
+      HttpPost httppost = new HttpPost(url);
 	
 	  try {
 	      List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-	      nameValuePairs.add(new BasicNameValuePair("data[User][sessionId]", session));
+	      nameValuePairs.add(new BasicNameValuePair("data[Connection][sessionId]", sessionId));
 	      httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 	
 	      // Execute HTTP Post Request
-	      HttpResponse response = httpclient.execute(httppost);
+	      HttpResponse response = httpclient.execute(host, httppost);
 	      
 		  Log.d(CONST.LOG, "HTTP-Status: "+response.getStatusLine().getStatusCode());
 	
-	      if(response.getStatusLine().getStatusCode() < 300 && 
-	          response.getStatusLine().getStatusCode() > 199)
+	      if(1==1 || (response.getStatusLine().getStatusCode() < 300 && 
+	          response.getStatusLine().getStatusCode() > 199))
 	      {
 	        try
 	        {
 	          BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
 
 	          String json = reader.readLine();
+	          //TODO TEST JSON
+	          json = "{\"chatSession\":[{\"Connection\":{\"id\":\"2\",\"senderId\":\"5\",\"receiverId\":\"10\",\"alias\":\"tu001\",\"receiverPin\":\"1234\",\"pubKey\":\"g0kn4pg0kn4p23oge5ng0kn4p23oge5neqp5f73i1ghf5eqp5f73i1ghf523oge5neqp5f73i1ghf5\"}}]}";
 	          JSONObject jsonobject = new JSONObject(json);
+
+	          Log.d(CONST.LOG, "HTTP-Response: ServiceJSON1: " + jsonobject.toString());
 	          
-	          Log.d(CONST.LOG, "HTTP-Response: ServiceJSON: " + jsonobject.toString());
-	          
-	          //TODO json-array?
-	          //int userId = jsonobject.getInt("userId");
-	          
-	          //Storage.saveID(context, userId);
+	          if(jsonobject.toString() == "{\"chatSession\":[]}")
+	        	  return false;
+
+	          JSONArray cast = jsonobject.getJSONArray("chatSession");
+	          for (int i=0; i<cast.length(); i++) 
+	          {
+	        	  Log.d(CONST.LOG, "HTTP-Response: ServiceJSON2: " + cast.getJSONObject(i).getJSONObject("Connection").toString());
+	        	  
+	              JSONObject connection = cast.getJSONObject(i).getJSONObject("Connection");
+	              
+	              int id = connection.getInt("id");
+	              //String senderId = connection.getString("senderId");
+	              int receiverId = connection.getInt("receiverId");
+	              String alias = connection.getString("alias");
+	              String receiverPin = connection.getString("receiverPin");
+	              String pubKey = connection.getString("pubKey");
+	              
+	              Partner.setPartnerAlias(alias);
+	              Partner.setPartnerId(receiverId);
+	              Partner.setPartnerPin(receiverPin);
+	              Partner.setPartnerPubKey(pubKey);
+	              
+	              Storage.saveChatSessionId(context, id);
+	          }
 	          
 	          //httpclient.getConnectionManager().shutdown(); //TODO überall??
 	          return true;
@@ -250,22 +299,85 @@ public class RestService
       return false;
   }
   
+  //TODO serivceConnect
+  public static Boolean serviceConnect(Context context, String receiverID) {
+	String sessionId = Storage.getSessionId(context);
+	String pubKey = Storage.getPublicKeyAsString(context);
+	String alias = Storage.getAlias(context);
+	
+	final String url = CONST.REST_CONNECT_FRIEND;
+
+    Uri uri = Uri.parse(url);
+    HttpClient httpclient = EasySSLSocketFactory.getNewHttpClient();
+    HttpHost host = new HttpHost(uri.getHost(), 443, uri.getScheme());
+    HttpPost httppost = new HttpPost(url);
+	
+	  try {
+	      List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+	      nameValuePairs.add(new BasicNameValuePair("data[User][sessionId]", sessionId));
+	      nameValuePairs.add(new BasicNameValuePair("data[Connection][receiverID ]", receiverID));
+	      nameValuePairs.add(new BasicNameValuePair("data[Connection][alias]", alias));
+	      nameValuePairs.add(new BasicNameValuePair("data[Connection][pubKey]", pubKey));
+	      httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+	
+	      HttpResponse response = httpclient.execute(host, httppost);
+	      
+		  Log.d(CONST.LOG, "HTTP-Status: "+response.getStatusLine().getStatusCode());
+	
+	      if(response.getStatusLine().getStatusCode() < 300 && 
+	          response.getStatusLine().getStatusCode() > 199)
+	      {
+	        try
+	        {
+	          BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+	          String json = reader.readLine();
+	          JSONTokener tokener = new JSONTokener(json);
+	          JSONArray jsonarray = new JSONArray(tokener);
+	
+	          JSONObject jsonobject = jsonarray.getJSONObject(0);
+	          int chatSessionId = jsonobject .getInt("chatSessionId");
+	          
+	          Log.d(CONST.LOG, "HTTP-Response: chatSessionId: " + chatSessionId);
+	          
+	          if(chatSessionId != 0)
+	        	  Storage.saveChatSessionId(context, chatSessionId);
+	          else 
+	        	  return false;
+
+	          return true;
+	        }
+	        catch ( JSONException e )
+	        {
+	          e.printStackTrace();
+	        }
+	      }
+		  } catch (ClientProtocolException e) {
+		  } catch (IOException e) {
+		  }
+	  return false;
+  }
+  
   //send message
   public static boolean sendChatMessage(int receiverId, String message, Context context) {
-	  String sessionId = Storage.getSession(context);
-      HttpClient httpclient = new DefaultHttpClient();
-      HttpPost httppost = new HttpPost(CONST.REST_SEND_MSG);
+	  String sessionId = Storage.getSessionId(context);
+	  final String url = CONST.REST_SEND_MSG;
+
+      Uri uri = Uri.parse(url);
+      HttpClient httpclient = EasySSLSocketFactory.getNewHttpClient();
+      HttpHost host = new HttpHost(uri.getHost(), 443, uri.getScheme());
+      HttpPost httppost = new HttpPost(url);
+	
       boolean messageReceived = false;
 
 	  try {
 	      List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 	      nameValuePairs.add(new BasicNameValuePair("data[User][sessionId]", sessionId));
-	      nameValuePairs.add(new BasicNameValuePair("data[User][receiverId]", Integer.toString(receiverId)));
-	      nameValuePairs.add(new BasicNameValuePair("data[User][message]", message));
+	      nameValuePairs.add(new BasicNameValuePair("data[Message][connectionId]", Integer.toString(receiverId)));
+	      nameValuePairs.add(new BasicNameValuePair("data[Message][message]", message));
 	      httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 	
 	      // Execute HTTP Post Request
-	      HttpResponse response = httpclient.execute(httppost);
+	      HttpResponse response = httpclient.execute(host, httppost);
 	
 	      if(response.getStatusLine().getStatusCode() < 300 && 
 	          response.getStatusLine().getStatusCode() > 199)
@@ -280,6 +392,9 @@ public class RestService
 	          //instead of 0, maybe -> for (int i = 0; i < jsonarray.length(); i++)
 	          JSONObject jsonobject = jsonarray.getJSONObject(0);
 	          messageReceived = jsonobject .getString("received").equals("true");
+	          
+	          Log.d(CONST.LOG, "HTTP-Response: messageReceived?: " + messageReceived);
+	          
 	        }
 	        catch ( JSONException e )
 	        {
@@ -296,18 +411,26 @@ public class RestService
   
   //receive message
   public static String receiveChatMessage(Context context) {
-	  String sessionId = Storage.getSession(context);
-      HttpClient httpclient = new DefaultHttpClient();
-      HttpPost httppost = new HttpPost(CONST.REST_SEND_MSG);
+	  String sessionId = Storage.getSessionId(context);
+	  int chatSessionId = Storage.getChatSessionId(context);
+	  
+	  final String url = CONST.REST_SEND_MSG;
+
+      Uri uri = Uri.parse(url);
+      HttpClient httpclient = EasySSLSocketFactory.getNewHttpClient();
+      HttpHost host = new HttpHost(uri.getHost(), 443, uri.getScheme());
+      HttpPost httppost = new HttpPost(url);
+
       String receivedMessage = "";
 
 	  try {
 	      List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 	      nameValuePairs.add(new BasicNameValuePair("data[User][sessionId]", sessionId));
+	      nameValuePairs.add(new BasicNameValuePair("data[User][chatSessionId]", chatSessionId +""));
 	      httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 	
 	      // Execute HTTP Post Request
-	      HttpResponse response = httpclient.execute(httppost);
+	      HttpResponse response = httpclient.execute(host, httppost);
 	
 	      if(response.getStatusLine().getStatusCode() < 300 && 
 	          response.getStatusLine().getStatusCode() > 199)
@@ -322,6 +445,8 @@ public class RestService
 	          //instead of 0, maybe -> for (int i = 0; i < jsonarray.length(); i++)
 	          JSONObject jsonobject = jsonarray.getJSONObject(0);
 	          receivedMessage = jsonobject .getString("receivedMessage");
+	          
+	          Log.d(CONST.LOG, "HTTP-Response: receiveMessage: " + receivedMessage);
 	          
 	        }
 	        catch ( JSONException e )

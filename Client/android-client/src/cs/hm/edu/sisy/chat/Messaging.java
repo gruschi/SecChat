@@ -22,7 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import cs.hm.edu.sisy.chat.interfaces.IAppManager;
-import cs.hm.edu.sisy.chat.services.IMService;
+import cs.hm.edu.sisy.chat.services.BGService;
 import cs.hm.edu.sisy.chat.storage.Partner;
 
 public class Messaging extends Activity {
@@ -37,7 +37,7 @@ public class Messaging extends Activity {
 	private ServiceConnection mConnection = new ServiceConnection() {
       
 		public void onServiceConnected(ComponentName className, IBinder service) {          
-            imService = ((IMService.IMBinder)service).getService();          
+            //imService = ((BGService.IMBinder)service).getService();          
         }
         public void onServiceDisconnected(ComponentName className) {          
         	imService = null;
@@ -172,10 +172,10 @@ public class Messaging extends Activity {
 	protected void onResume() 
 	{		
 		super.onResume();
-		bindService(new Intent(Messaging.this, IMService.class), mConnection , Context.BIND_AUTO_CREATE);
+		bindService(new Intent(Messaging.this, BGService.class), mConnection , Context.BIND_AUTO_CREATE);
 				
 		IntentFilter i = new IntentFilter();
-		i.addAction(IMService.TAKE_MESSAGE);
+		i.addAction(BGService.TAKE_MESSAGE);
 		
 		registerReceiver(messageReceiver, i);
 		

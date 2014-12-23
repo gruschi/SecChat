@@ -20,10 +20,10 @@ import com.google.zxing.WriterException;
 
 import cs.hm.edu.sisy.chat.generators.PinHashGenerator;
 import cs.hm.edu.sisy.chat.generators.PubPrivKeyGenerator;
+import cs.hm.edu.sisy.chat.qr.Contents;
+import cs.hm.edu.sisy.chat.qr.QRCodeEncoder;
 import cs.hm.edu.sisy.chat.storage.Storage;
 import cs.hm.edu.sisy.chat.tools.Misc;
-import cs.hm.edu.sisy.qr.Contents;
-import cs.hm.edu.sisy.qr.QRCodeEncoder;
 
 public class Settings extends Activity
 {

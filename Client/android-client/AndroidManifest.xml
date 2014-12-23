@@ -18,7 +18,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         
-    <service android:name="cs.hm.edu.sisy.chat.services.IMService"></service>
+    <service android:name="cs.hm.edu.sisy.chat.services.BGService"></service>
    
     <activity android:name="cs.hm.edu.sisy.chat.Login">
       <intent-filter>
@@ -57,6 +57,19 @@
         </category>
       </intent-filter>
     </activity>
+    <activity android:name="cs.hm.edu.sisy.chat.Debug">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"></action>
+        <category
+          android:name="android.intent.category.NORMAL">
+        </category>
+      </intent-filter>
+    </activity>
+
+    <service
+        android:name="cs.hm.edu.sisy.chat.services.BGService"
+        android:enabled="true"
+        android:exported="false"/>
     
 </application>
 

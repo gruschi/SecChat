@@ -1,6 +1,4 @@
-package cs.hm.edu.sisy.chat.tools;
-
-import java.net.URI;
+package cs.hm.edu.sisy.chat.types;
 
 public class CONST {
 
@@ -17,7 +15,7 @@ public class CONST {
 	  //REST
      //public static final String REST_SERVER = "localhost/SecChat/Server" ;
      //public static final String REST_SERVER = "https://x.x.x.x/SecChat/Server" ;
-     public static final String REST_SERVER = "http://secchat.bg-world.de" ;
+     public static final String REST_SERVER = "https://secchat.bg-world.de" ;
      public static final String REST_LOGIN = REST_SERVER + "/users/login";
      public static final String REST_LOGOUT = REST_SERVER + "/users/logout"; 
      public static final String REST_REGISTER = REST_SERVER + "/users/add"; 

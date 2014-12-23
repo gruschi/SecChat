@@ -14,6 +14,7 @@
     <string name="menuPrivChat">Private-Chat</string>
     <string name="menuPubChat">Group-Chat</string>
     <string name="menuOptions">Options</string>
+    <string name="menuDebug">*Debug*</string>
     
     <string name="yourAlias">Your Alias:</string>
     <string name="yourID">Your SecChat-ID:</string>

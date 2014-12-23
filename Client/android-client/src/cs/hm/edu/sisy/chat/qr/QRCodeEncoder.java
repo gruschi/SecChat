@@ -1,4 +1,4 @@
-package cs.hm.edu.sisy.qr;
+package cs.hm.edu.sisy.chat.qr;
 
 /*
  * Copyright (C) 2008 ZXing authors

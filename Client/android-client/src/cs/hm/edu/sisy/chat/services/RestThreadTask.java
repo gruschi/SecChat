@@ -4,8 +4,10 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
+import cs.hm.edu.sisy.chat.Login;
 import cs.hm.edu.sisy.chat.storage.Storage;
-import cs.hm.edu.sisy.chat.tools.CONST;
+import cs.hm.edu.sisy.chat.tools.Misc;
+import cs.hm.edu.sisy.chat.types.CONST;
 import cs.hm.edu.sisy.chat.types.STATUS;
 import cs.hm.edu.sisy.chat.types.TYPES;
 
@@ -35,6 +37,8 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
 		    	return RestService.loginUser( Storage.getID(context), Storage.getHash(context), context);
 		    case LOGOUT:  
 		    	return RestService.logoutUser( context);
+		    case CONNECT_SERVICE:  
+		    	return RestService.serviceConnect(context, params[0]); //String String receiverID
 		    case CONNCET_PRIVATE_CHAT:  
 		    	//return RestWrapper.connect2Chat(context);
 		    	return RestService.connectPrivChat(context, params[0], params[1]); //String receiverPin, String receiverID
@@ -45,6 +49,8 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
 		    	return RestService.sendChatMessage(Integer.parseInt(params[1]), params[0], context); //receiverID, message
 		    case RECEIVE_MSG: 
 		    	//return RestService.receiveChatMessage(context);
+		    case SERVICE:  
+		    	return RestService.service(context);
 		    default: 
 		        break;
 		};
@@ -77,11 +83,11 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
             	break;
             case CONNCET_PRIVATE_CHAT:  
             	if(result)
-            		state = STATUS.CONNECTED_TO_CHAT;
+            		state = STATUS.CONNECT_TO_CHAT_PENDING;
             	else
             		state = STATUS.NOT_CONNECTED_TO_CHAT;
             	break;
-            case CONNECT_PUBLIC_CHAT: 
+           /* case CONNECT_PUBLIC_CHAT: 
             	//TODO
             	break;
             case SEND_MSG:  
@@ -95,12 +101,20 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
             		state = STATUS.MSG_RECEIVED;
             	else
             		state = STATUS.MSG_NOT_RECEIVED;
+            	break;*/
+            case CONNECT_SERVICE: 
+            	if(result)
+            		state = STATUS.CONNECTED_TO_CHAT;
+            	else
+            		state = STATUS.NOT_CONNECTED_TO_CHAT;
+            	break;
+            case SERVICE: 
             	break;
             default: 
                 break;
         }
         
-        Toast.makeText(context, "RESULT: "+result+"", Toast.LENGTH_SHORT).show();
+        Misc.doToast(context, STATUS.getStateMessage() +"");
         
         STATUS.setState(state);
     }

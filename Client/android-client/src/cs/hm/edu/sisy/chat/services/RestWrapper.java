@@ -29,7 +29,7 @@ public class RestWrapper {
     
     public static boolean isLoggedIn(Context context)
     {
-		boolean isLoggedIn = ( Storage.getSession(context) != null );
+		boolean isLoggedIn = ( Storage.getSessionId(context) != null );
 		
 		if(isLoggedIn)
 			STATUS.setState(STATUS.LOGGED_IN);
@@ -70,7 +70,7 @@ public class RestWrapper {
           Storage.saveStoragedPinDate( context, Misc.getCurrentDate() );
         }
     	
-    	return ( Storage.getID(context) != 0 && Storage.getSession(context) == null );
+    	return ( Storage.getID(context) != 0 && Storage.getSessionId(context) == null );
     }
     
     public static boolean connect2Chat(Context context) 
@@ -78,7 +78,7 @@ public class RestWrapper {
     	boolean status = false;
     	
     	//check oncreate in home or service
-    	if( Storage.getID(context) != 0 && Storage.getSession(context) != null )//&& Storage.getChatSession(this) != null ) //oder callback funktion in REST-Service von IncomingChat
+    	if( Storage.getID(context) != 0 && Storage.getSessionId(context) != null )//&& Storage.getChatSession(this) != null ) //oder callback funktion in REST-Service von IncomingChat
     	{
     		//go to this chat, service überschrieb im hintergrund das globale partner-objekt mit alias, pubkey etc.
     	}

@@ -6,4 +6,5 @@
     <item android:id="@+id/menuPrivChat" android:title="@string/menuPrivChat"></item>
     <item android:id="@+id/menuPubChat" android:title="@string/menuPubChat"></item>
     <item android:id="@+id/menuOptions" android:title="@string/menuOptions"></item>
+    <item android:id="@+id/menuDebug" android:title="@string/menuDebug"></item>
 </menu>

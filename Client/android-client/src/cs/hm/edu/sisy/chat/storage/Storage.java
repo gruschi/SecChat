@@ -3,7 +3,7 @@ package cs.hm.edu.sisy.chat.storage;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import cs.hm.edu.sisy.chat.tools.CONST;
+import cs.hm.edu.sisy.chat.types.CONST;
 
 public class Storage {
 		   
@@ -83,14 +83,14 @@ public class Storage {
 	     return dbh.getPubKey(id).getPubKey();
 	   }
      
-	   public static void saveSession(Context context, String alias) 
+	   public static void saveSessionId(Context context, String alias) 
 	   {
 	  	   SharedPreferences sharedpreferences = context.getSharedPreferences(CONST.MyPREFERENCES, Context.MODE_PRIVATE);
 
 		   sharedpreferences.edit().putString(CONST.SESSION_ID, alias).apply();
 	   }
 	   
-	   public static String getSession(Context context) 
+	   public static String getSessionId(Context context) 
 	   {
 		   SharedPreferences sharedpreferences = context.getSharedPreferences(CONST.MyPREFERENCES, Context.MODE_PRIVATE);
 		   
@@ -170,6 +170,16 @@ public class Storage {
 		      }
 		      
 			return 0;
+	   }
+	   
+	   public static void resetChatSessionId(Context context) 
+	   {
+	  	   SharedPreferences sharedpreferences = context.getSharedPreferences(CONST.MyPREFERENCES, Context.MODE_PRIVATE);
+		   
+		      if (sharedpreferences.contains( CONST.CHAT_SESSION_ID ))
+		      {
+		    	  sharedpreferences.edit().putInt(CONST.CHAT_SESSION_ID, 0).apply();
+		      }
 	   }
 
 	    public static String getPublicKeyAsString(Context context){
