@@ -3,25 +3,21 @@ package cs.hm.edu.sisy.chat.communication;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.util.Log;
-import android.widget.Toast;
-import cs.hm.edu.sisy.chat.Login;
-import cs.hm.edu.sisy.chat.enums.Constants;
-import cs.hm.edu.sisy.chat.enums.State;
-import cs.hm.edu.sisy.chat.enums.Types;
+import cs.hm.edu.sisy.chat.enums.SCState;
+import cs.hm.edu.sisy.chat.enums.SCTypes;
 import cs.hm.edu.sisy.chat.services.BGService;
-import cs.hm.edu.sisy.chat.storage.Storage;
+import cs.hm.edu.sisy.chat.storage.SharedPrefs;
 import cs.hm.edu.sisy.chat.tools.Common;
 
 //Params: < Param doInBG, onPrgoressUpdate, Return doInBG >
 public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
 
-    private Types type; 
+    private SCTypes type; 
     private Context context;
     
     private int state = 0;
 	
-	public RestThreadTask(Types type, Context context)
+	public RestThreadTask(SCTypes type, Context context)
 	{
 		this.type = type;
 		this.context = context;
@@ -34,9 +30,9 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
     	
 		switch (this.type) {
 			case REGISTER: 
-				return RestService.registerUser( params[0], Storage.getHash(context), context );
+				return RestService.registerUser( params[0], SharedPrefs.getHash(context), context );
 		    case LOGIN: 
-		    	return RestService.loginUser( Storage.getID(context), Storage.getHash(context), context);
+		    	return RestService.loginUser( SharedPrefs.getID(context), SharedPrefs.getHash(context), context);
 		    case LOGOUT:  
 		    	return RestService.logoutUser( context);
 		    case CONNECT_SERVICE:  
@@ -48,7 +44,7 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
 		    	//TODO
 		    	break;
 		    case SEND_MSG:  
-		    	return RestService.sendChatMessage(Integer.parseInt(params[1]), params[0], context); //receiverID, message
+		    	return RestService.sendChatMessage(Integer.parseInt(params[0]), params[1], context); //receiverID, message
 		    case RECEIVE_MSG: 
 		    	return RestService.receiveChatMessage(context);
 		    case SERVICE:  
@@ -69,68 +65,76 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
         switch (type) {
             case LOGIN: 
             	if(result)
-            		state = State.LOGGED_IN;
+            		state = SCState.LOGGED_IN;
             	else
-            		state = State.NOT_LOGGED_IN;
+            		state = SCState.NOT_LOGGED_IN;
             	break;
             case LOGOUT:  
             	if(result)
-            		state = State.LOGGED_OUT;
+            		state = SCState.LOGGED_OUT;
             	break;
             case REGISTER: 
             	if(result)
-            		state = State.REGISTERED;
+            		state = SCState.REGISTERED;
             	else
-            		state = State.NOT_REGISTERED;
+            		state = SCState.NOT_REGISTERED;
             	break;
             case CONNCET_PRIVATE_CHAT:  
             	if(result)
-            		state = State.CONNECT_TO_CHAT_PENDING;
+            		state = SCState.CONNECT_TO_CHAT_PENDING;
             	else
-            		state = State.NOT_CONNECTED_TO_CHAT;
+            		state = SCState.NOT_CONNECTED_TO_CHAT;
             	break;
-           /* case CONNECT_PUBLIC_CHAT: 
+            case CONNECT_PUBLIC_CHAT: 
             	//TODO
             	break;
             case SEND_MSG:  
-            	if(result)
-            		state = State.MSG_SENT;
+            	if(result) {
+            		SCState.setMsgState(SCState.MSG_SENT);
+            		return;
+            	}
             	else
-            		state = State.MSG_NOT_SENT;
-            	break;
+            	{
+            		SCState.setMsgState(SCState.MSG_NOT_SENT);
+            		return;
+            	}
             case RECEIVE_MSG: 
-            	if(result)
-            		state = State.MSG_RECEIVED;
+            	if(result) {
+            		SCState.setMsgState(SCState.MSG_RECEIVED);
+            		return;
+            	}
             	else
-            		state = State.MSG_NOT_RECEIVED;
-            	break;*/
+            	{
+            		SCState.setMsgState(SCState.MSG_NOT_RECEIVED);
+            		return;
+            	}
             case CONNECT_SERVICE: 
             	if(result) {
-            		state = State.CONNECTED_TO_CHAT;
+            		state = SCState.CONNECTED_TO_CHAT;
             		context.stopService(new Intent(context, BGService.class));
             		context.startService(new Intent(context, BGService.class));
             	}
             	else
-            		state = State.NOT_CONNECTED_TO_CHAT;
+            		state = SCState.NOT_CONNECTED_TO_CHAT;
             	break;
             case SERVICE:
-              if(State.getState() == State.CONNECT_TO_CHAT_PENDING)
+              if(SCState.getState() == SCState.CONNECT_TO_CHAT_PENDING)
                 if(result) {
-                  state = State.CONNECTED_TO_CHAT;
+                  state = SCState.CONNECTED_TO_CHAT;
                   context.stopService(new Intent(context, BGService.class));
                   context.startService(new Intent(context, BGService.class));
                 }
               else
                 if(result)
-                  state = State.CHAT_CONNECTION_INCOMING;
+                  state = SCState.CHAT_CONNECTION_INCOMING;
             	break;
             default: 
                 break;
         }
         
-        Common.doToast(context, State.getStateMessage() +"");
+        Common.doToast(context, SCState.getStateMessage() +"");
         
-        State.setState(state);
+        SCState.setState(state);
     }
 
 }

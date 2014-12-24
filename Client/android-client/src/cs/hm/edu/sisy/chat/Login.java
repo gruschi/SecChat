@@ -14,8 +14,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import cs.hm.edu.sisy.chat.communication.RestThreadTask;
 import cs.hm.edu.sisy.chat.communication.RestWrapper;
-import cs.hm.edu.sisy.chat.enums.State;
-import cs.hm.edu.sisy.chat.enums.Types;
+import cs.hm.edu.sisy.chat.enums.SCState;
+import cs.hm.edu.sisy.chat.enums.SCTypes;
 import cs.hm.edu.sisy.chat.tools.Common;
 
 public class Login extends Activity {	
@@ -39,16 +39,15 @@ public class Login extends Activity {
 			    	  public void run() {
 			    		  //TestData.printInterestingData(Login.this);
 			    		  		    		  
-			    		  if( State.getState() == State.REGISTERED || State.getState() == State.NOT_LOGGED_IN )
+			    		  if( SCState.getState() == SCState.REGISTERED || SCState.getState() == SCState.NOT_LOGGED_IN )
 			    		  {
 			    		        loginButton.setVisibility(View.VISIBLE);
 			    		        registerButton.setEnabled(false);
 			    		        alias.setEnabled(false);
 			    		  }
 			    		  
-						  if( State.getState() == State.LOGGED_IN ) {
+						  if( SCState.getState() == SCState.LOGGED_IN )
 								redirectToHome();
-						  }
 			    	  }
 			    	});
 			      
@@ -89,15 +88,15 @@ public class Login extends Activity {
 					Thread registerThread = new Thread(runnable);
 					registerThread.start();
 					
-					if(State.getState() == State.TIMED_OUT)
-						State.setState(State.NOT_REGISTERED);
+					if(SCState.getState() == SCState.TIMED_OUT)
+						SCState.setState(SCState.NOT_REGISTERED);
 				      
-					if( State.getState() == State.NOT_REGISTERED ) {
+					if( SCState.getState() == SCState.NOT_REGISTERED ) {
 						if(RestWrapper.registerNeeded(Login.this, alias.getText().toString()))
-							new RestThreadTask(Types.REGISTER, (Context) Login.this).execute(alias.getText().toString());
+							new RestThreadTask(SCTypes.REGISTER, (Context) Login.this).execute(alias.getText().toString());
 					}	
 						
-					//TODO: Timer �berhaupt n�tig?
+					//TODO: Timer necessary?
 					if(!timerIsStarted) {
 						timerIsStarted = true;
 						
@@ -109,10 +108,10 @@ public class Login extends Activity {
 						     }
 
 						     public void onFinish() {
-						    	if(State.getState() == State.NOT_REGISTERED)
+						    	if(SCState.getState() == SCState.NOT_REGISTERED)
 						    	{
-						    		State.setState(State.TIMED_OUT);
-						    		Common.doToast(Login.this, State.getStateMessage() +"");
+						    		SCState.setState(SCState.TIMED_OUT);
+						    		Common.doToast(Login.this, SCState.getStateMessage() +"");
 						    	}
 								timerIsStarted = false;
 						     }
@@ -126,9 +125,9 @@ public class Login extends Activity {
         	@Override
 			public void onClick(View arg0) 
 			{
-				if( State.getState() == State.REGISTERED || State.getState() == State.NOT_LOGGED_IN ) {
+				if( SCState.getState() == SCState.REGISTERED || SCState.getState() == SCState.NOT_LOGGED_IN ) {
 					if (RestWrapper.loginNeeded(Login.this))
-						new RestThreadTask(Types.LOGIN, (Context) Login.this).execute();
+						new RestThreadTask(SCTypes.LOGIN, (Context) Login.this).execute();
 				}
 			}
         });

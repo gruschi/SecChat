@@ -4,7 +4,7 @@ import java.util.Calendar;
 
 import android.content.Context;
 import android.widget.Toast;
-import cs.hm.edu.sisy.chat.enums.State;
+import cs.hm.edu.sisy.chat.enums.SCState;
 
 public class Common {
      
@@ -31,7 +31,7 @@ public class Common {
 	     	
      	switch (id) 
      	{
-	     	case State.NOT_REGISTERED:
+	     	case SCState.NOT_REGISTERED:
      			message = "";			
      			break;
      		default:

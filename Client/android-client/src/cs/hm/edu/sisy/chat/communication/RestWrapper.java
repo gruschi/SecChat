@@ -3,10 +3,10 @@ package cs.hm.edu.sisy.chat.communication;
 import java.security.NoSuchAlgorithmException;
 
 import android.content.Context;
-import cs.hm.edu.sisy.chat.enums.State;
+import cs.hm.edu.sisy.chat.enums.SCState;
 import cs.hm.edu.sisy.chat.generators.PinHashGenerator;
 import cs.hm.edu.sisy.chat.generators.PubPrivKeyGenerator;
-import cs.hm.edu.sisy.chat.storage.Storage;
+import cs.hm.edu.sisy.chat.storage.SharedPrefs;
 import cs.hm.edu.sisy.chat.tools.Common;
 
 public class RestWrapper {
@@ -14,14 +14,14 @@ public class RestWrapper {
 
 	public static boolean isRegistered(Context context)
     {
-		boolean isRegistered = ( Storage.getID(context) != 0 );
+		boolean isRegistered = ( SharedPrefs.getID(context) != 0 );
 		
-		if( State.getState() <= State.NOT_LOGGED_IN )
+		if( SCState.getState() <= SCState.NOT_LOGGED_IN )
 		{
 			if(isRegistered)
-				State.setState(State.REGISTERED);
+				SCState.setState(SCState.REGISTERED);
 			else
-				State.setState(State.NOT_REGISTERED);
+				SCState.setState(SCState.NOT_REGISTERED);
 		}
 		
     	return isRegistered;
@@ -29,12 +29,12 @@ public class RestWrapper {
     
     public static boolean isLoggedIn(Context context)
     {
-		boolean isLoggedIn = ( Storage.getSessionId(context) != null );
+		boolean isLoggedIn = ( SharedPrefs.getSessionId(context) != null );
 		
 		if(isLoggedIn)
-			State.setState(State.LOGGED_IN);
+			SCState.setState(SCState.LOGGED_IN);
 		else
-			State.setState(State.NOT_LOGGED_IN);
+			SCState.setState(SCState.NOT_LOGGED_IN);
 		
     	return isLoggedIn;
     }  
@@ -50,8 +50,8 @@ public class RestWrapper {
 	    	
 	    	try 
 	    	{
-	    		Storage.saveAlias( context, alias );
-				Storage.saveHash( context, PinHashGenerator.createHash() );
+	    		SharedPrefs.saveAlias( context, alias );
+				SharedPrefs.saveHash( context, PinHashGenerator.createHash() );
 			} 
 	    	catch (NoSuchAlgorithmException e) 
 	    	{
@@ -64,13 +64,13 @@ public class RestWrapper {
     
     public static boolean loginNeeded(Context context)
     {
-        if( !Common.isPinCurrent( Storage.getStoragedPinDate(context), Common.getCurrentDate() ) )
+        if( !Common.isPinCurrent( SharedPrefs.getStoragedPinDate(context), Common.getCurrentDate() ) )
         {
-          Storage.savePIN( context, PinHashGenerator.generatePIN() );
-          Storage.saveStoragedPinDate( context, Common.getCurrentDate() );
+          SharedPrefs.savePIN( context, PinHashGenerator.generatePIN() );
+          SharedPrefs.saveStoragedPinDate( context, Common.getCurrentDate() );
         }
     	
-    	return ( Storage.getID(context) != 0 && Storage.getSessionId(context) == null );
+    	return ( SharedPrefs.getID(context) != 0 && SharedPrefs.getSessionId(context) == null );
     }
     
     public static boolean connect2Chat(Context context) 
@@ -78,7 +78,7 @@ public class RestWrapper {
     	boolean status = false;
     	
     	//check oncreate in home or service
-    	if( Storage.getID(context) != 0 && Storage.getSessionId(context) != null )//&& Storage.getChatSession(this) != null ) //oder callback funktion in REST-Service von IncomingChat
+    	if( SharedPrefs.getID(context) != 0 && SharedPrefs.getSessionId(context) != null )//&& Storage.getChatSession(this) != null ) //oder callback funktion in REST-Service von IncomingChat
     	{
     		//go to this chat, service �berschrieb im hintergrund das globale partner-objekt mit alias, pubkey etc.
     	}

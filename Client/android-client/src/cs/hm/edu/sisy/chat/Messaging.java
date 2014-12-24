@@ -8,13 +8,23 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.widget.Button;
 import android.widget.EditText;
+import cs.hm.edu.sisy.chat.communication.RestThreadTask;
+import cs.hm.edu.sisy.chat.enums.SCState;
+import cs.hm.edu.sisy.chat.enums.SCTypes;
+import cs.hm.edu.sisy.chat.generators.PubPrivKeyGenerator;
+import cs.hm.edu.sisy.chat.objects.Partner;
 import cs.hm.edu.sisy.chat.services.BGService;
+import cs.hm.edu.sisy.chat.storage.SharedPrefs;
 
 public class Messaging extends Activity {
 
@@ -22,6 +32,8 @@ public class Messaging extends Activity {
 	private EditText messageText;
 	private EditText messageHistoryText;
 	private Button sendMessageButton;
+	
+    private static boolean activityVisible;	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -42,14 +54,6 @@ public class Messaging extends Activity {
 		
 		Bundle extras = this.getIntent().getExtras();
 		
-		/*
-		friend.userName = extras.getString(FriendInfo.USERNAME);
-		friend.ip = extras.getString(FriendInfo.IP);
-		friend.port = extras.getString(FriendInfo.PORT);
-		String msg = extras.getString(FriendInfo.MESSAGE);
-		*/
-		
-		
 		//setTitle("Messaging with " + friend.userName);
 	
 		
@@ -61,39 +65,43 @@ public class Messaging extends Activity {
 		{
 			this.appendToMessageHistory(friend.userName , msg);
 			((NotificationManager)getSystemService(NOTIFICATION_SERVICE)).cancel((friend.userName+msg).hashCode());
-		}
+		}*/
 		
 		sendMessageButton.setOnClickListener(new OnClickListener(){
 			CharSequence message;
-			Handler handler = new Handler();
 			public void onClick(View arg0) {
 				message = messageText.getText();
 				if (message.length()>0) 
-				{		
-					appendToMessageHistory(imService.getUsername(), message.toString());
+				{
+					appendToMessageHistory(SharedPrefs.getAlias(Messaging.this), message.toString());
 								
 					messageText.setText("");
 					Thread thread = new Thread(){					
 						public void run() {
+							new RestThreadTask(SCTypes.SEND_MSG, Messaging.this).execute(Partner.getPartnerId()+"", message.toString()); 
+							
+							//TODO timer "message sent" or "message not sent"
+							/*
 							if (!imService.sendMessage(friend.userName, message.toString()))
 							{
 								
 								handler.post(new Runnable(){	
-
+	
 									public void run() {
 										showDialog(MESSAGE_CANNOT_BE_SENT);										
 									}
 									
 								});
 							}
+							*/
 						}						
 					};
 					thread.start();
 										
 				}
 				
-			}});
-		*/
+			}
+		});
 		messageText.setOnKeyListener(new OnKeyListener(){
 			public boolean onKey(View v, int keyCode, KeyEvent event) 
 			{
@@ -103,10 +111,10 @@ public class Messaging extends Activity {
 				}
 				return false;
 			}
-			
-			
 		});
-				
+		
+		
+		receiveMessages();
 	}
 
 	@Override
@@ -143,7 +151,7 @@ public class Messaging extends Activity {
 		//unbindService(mConnection);
 		
 		//FriendController.setActiveFriend(null);
-		
+		Messaging.activityPaused();
 	}
 
 	@Override
@@ -157,10 +165,7 @@ public class Messaging extends Activity {
 		
 		registerReceiver(messageReceiver, i);
 		
-		//FriendController.setActiveFriend(friend.userName);		
-		
-		
-		
+		Messaging.activityResumed();
 	}
 	
 	
@@ -201,8 +206,157 @@ public class Messaging extends Activity {
 		}
 	}
 	
-	
-	
-	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {		
+		boolean result = super.onCreateOptionsMenu(menu);
+		
+		 menu.add(0, 0, 0, R.string.exit);
 
+		return result;
+	}
+	
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+	    
+		switch(item.getItemId()) 
+	    {
+	    	case 0:
+	    		exitChat();
+	    		return true;
+	    }
+	    
+	    return super.onMenuItemSelected(featureId, item);
+	}
+
+	private void exitChat() {
+		// TODO Auto-generated method stub
+		// destroy objects chat-msg-log,  ...
+		
+		//change state from CONNECTED_TO_CHAT to
+		SCState.setState(SCState.LOGGED_IN);
+		
+		//reset partner
+		Partner.setPartnerAlias(null);
+		Partner.setPartnerId(0);
+		Partner.setPartnerPin(null);
+		Partner.setPartnerPubKey(null);
+		
+		//reset chatSession
+		SharedPrefs.resetChatSessionId(Messaging.this);
+		
+		finish();
+	}
+	
+	@Override
+	public void onBackPressed() {
+		backButtonHandler();
+	    return;
+	}
+
+	/*
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event)  {
+	    if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+	    	
+	    	backButtonHandler()
+	    }
+
+	    return super.onKeyDown(keyCode, event);
+	}
+	*/
+	
+    public void backButtonHandler() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(
+                Messaging.this);
+        alertDialog.setTitle("Leave chat?");
+        alertDialog.setMessage("Are you sure you want to leave the chat? Consider that you 're not able to come back to this chat session!");
+        alertDialog.setIcon(R.drawable.ic_launcher);
+        alertDialog.setPositiveButton("YES",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    	exitChat();
+                    }
+                });
+        alertDialog.setNegativeButton("NO",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        alertDialog.show();
+    }
+    
+    public static boolean isActivityVisible() {
+        return activityVisible;
+      }  
+
+      public static void activityResumed() {
+        activityVisible = true;
+      }
+
+      public static void activityPaused() {
+        activityVisible = false;
+      }
+      
+      
+	private void receiveMessages() {
+		
+	    AsyncTaskRunner runner = new AsyncTaskRunner();
+	    String sleepTime = (1*1000)+"";
+	    runner.execute(sleepTime);
+		
+		/*
+		final Handler handler = new Handler();
+		final Runnable runnable = new Runnable() {
+			   @Override
+			   public void run() {
+				   
+				    		  new RestThreadTask(SCTypes.RECEIVE_MSG, Messaging.this).execute(); 
+				    		  
+								if (Partner.getPartnerNewMsg() != "")
+								{
+									handler.post(new Runnable(){
+
+										@Override
+										public void run() {
+											appendToMessageHistory(Partner.getPartnerAlias(), Partner.getPartnerNewMsg());
+										}	
+									});
+								}
+				      
+			      handler.postDelayed(runnable, 2000);
+			   }
+			};*/
+	}
+      
+      
+    private class AsyncTaskRunner extends AsyncTask<String, String, String> {
+
+    	  private String resp;
+
+    	  @Override
+    	  protected String doInBackground(String... params) {
+
+    	   try {
+    		   //TODO: add this to BGService?
+    		   if (Partner.getPartnerNewMsg() != "")
+				{
+					appendToMessageHistory(Partner.getPartnerAlias(), Partner.getPartnerNewMsg());
+					
+					Partner.resetPartnerNewMsg();
+				}
+    		   
+	    	    int time = Integer.parseInt(params[0]);    
+	    	    Thread.sleep(time);
+    	    
+    	   } catch (InterruptedException e) {
+    	    e.printStackTrace();
+    	    resp = e.getMessage();
+    	   } catch (Exception e) {
+    	    e.printStackTrace();
+    	    resp = e.getMessage();
+    	   }
+    	   return resp;
+    	  }
+    }
 }

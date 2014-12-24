@@ -1,6 +1,6 @@
 package cs.hm.edu.sisy.chat.enums;
 
-public class Constants {
+public class SCConstants {
 
      //SHARED PREFERENCES
 	 public static final String MyPREFERENCES = "MyPrefs" ;

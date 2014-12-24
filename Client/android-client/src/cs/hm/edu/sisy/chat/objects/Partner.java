@@ -6,6 +6,8 @@ public class Partner {
 	private static String partnerPin;
 	private static int partnerId;
 	
+	private static String partnerNewMsg;
+	
 	public static String getPartnerAlias() {
 		return partnerAlias;
 	}
@@ -29,5 +31,17 @@ public class Partner {
 	}
 	public static void setPartnerId(int receiverId) {
 		Partner.partnerId = receiverId;
+	}
+	public static String getPartnerNewMsg() {
+		return partnerNewMsg;
+	}
+	public static void setPartnerNewMsg(String partnerNewMsg) {
+	    if (Partner.partnerNewMsg == "")
+	    	Partner.partnerNewMsg = partnerNewMsg;
+	    else
+	    	Partner.partnerNewMsg += "\n" + partnerNewMsg;
+	}
+	public static void resetPartnerNewMsg() {
+		Partner.partnerNewMsg = "";
 	}
 }

@@ -1,6 +1,6 @@
 package cs.hm.edu.sisy.chat.enums;
 
-public class State {
+public class SCState {
 	
 	public static final int TIMED_OUT = 0;
     public static final int NOT_REGISTERED = 1;
@@ -10,17 +10,23 @@ public class State {
     public static final int LOGGED_IN = 6;
     public static final int NOT_CONNECTED_TO_CHAT = 7;
     public static final int CHAT_CONNECTION_INCOMING = 8;
-	  public static final int CONNECT_TO_CHAT_PENDING = 9;
+	public static final int CONNECT_TO_CHAT_PENDING = 9;
     public static final int CONNECTED_TO_CHAT = 10;
-    public static final int MSG_NOT_SENT = 11;
-    public static final int MSG_SENT = 12;
-	  public static final int MSG_NOT_RECEIVED = 13;
-    public static final int MSG_RECEIVED = 14;
+    public static final int MSG_DEFAULT = 11;
+    public static final int MSG_NOT_SENT = 12;
+    public static final int MSG_SENT = 13;
+	public static final int MSG_NOT_RECEIVED = 14;
+    public static final int MSG_RECEIVED = 15;
 	
 	private static int state;
+	private static int msgState = MSG_DEFAULT;
 
 	public static int getState() {
 		return state;
+	}
+	
+	public static int getMsgState() {
+		return msgState;
 	}
 	
 	public static String getStateMessage() {
@@ -57,18 +63,6 @@ public class State {
 	        case 9:
 	        	stateMessage = "Connected To Chat";
 	        	break;
-	        case 10:
-	        	stateMessage = "Msg Not Sent";
-	        	break;
-	        case 11:
-	        	stateMessage = "Msg Sent";
-	        	break;
-	        case 12:
-	        	stateMessage = "Msg Not Received";
-	        	break;
-	        case 13:
-	        	stateMessage = "Msg Received";
-	        	break;
             default:
             	stateMessage = "-";
 	        	break;
@@ -76,8 +70,36 @@ public class State {
         
 		return stateMessage;
 	}
+	
+	public static String getMsgStateMessage() {
+		String msgStateMessage;
+		
+        switch (state) {
+	        case 12:
+	        	msgStateMessage = "Msg Not Sent";
+	        	break;
+	        case 13:
+	        	msgStateMessage = "Msg Sent";
+	        	break;
+	        case 14:
+	        	msgStateMessage = "Msg Not Received";
+	        	break;
+	        case 15:
+	        	msgStateMessage = "Msg Received";
+	        	break;
+            default:
+            	msgStateMessage = "-";
+	        	break;
+        }
+        
+		return msgStateMessage;
+	}
 
 	public static void setState(int state) {
-		State.state = state;
+		SCState.state = state;
+	}
+	
+	public static void setMsgState(int msgState) {
+		SCState.msgState = msgState;
 	}
 }

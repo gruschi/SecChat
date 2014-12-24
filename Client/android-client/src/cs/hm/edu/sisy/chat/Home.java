@@ -12,7 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import cs.hm.edu.sisy.chat.generators.PinHashGenerator;
 import cs.hm.edu.sisy.chat.services.BGService;
-import cs.hm.edu.sisy.chat.storage.Storage;
+import cs.hm.edu.sisy.chat.storage.SharedPrefs;
 import cs.hm.edu.sisy.chat.tools.Common;
 import cs.hm.edu.sisy.chat.tools.TestData;
 
@@ -209,15 +209,15 @@ public class Home extends Activity {
     
     private void updateDate()
     {
-      if( !Common.isPinCurrent( Storage.getStoragedPinDate(this), Common.getCurrentDate() ) )
+      if( !Common.isPinCurrent( SharedPrefs.getStoragedPinDate(this), Common.getCurrentDate() ) )
       {
-        Storage.savePIN( this, PinHashGenerator.generatePIN() );
-        Storage.saveStoragedPinDate( this, Common.getCurrentDate() );
+        SharedPrefs.savePIN( this, PinHashGenerator.generatePIN() );
+        SharedPrefs.saveStoragedPinDate( this, Common.getCurrentDate() );
       }
       
-      yourAlias.setText( Storage.getAlias(this) +"" );
-      yourPIN.setText( Storage.getPIN(this) +"" );
-      yourID.setText( Storage.getID(this) +"" );
+      yourAlias.setText( SharedPrefs.getAlias(this) +"" );
+      yourPIN.setText( SharedPrefs.getPIN(this) +"" );
+      yourID.setText( SharedPrefs.getID(this) +"" );
     }
     
     

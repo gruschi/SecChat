@@ -22,6 +22,7 @@
     <string name="hisid">SecChat-ID:</string>
     <string name="hispin">PIN:</string>
     <string name="close">close</string>
+    <string name="exit">exit</string>
     
     <string name="generateNewPIN">generate new PIN</string>
     <string name="saveAlias">save new Alias</string>

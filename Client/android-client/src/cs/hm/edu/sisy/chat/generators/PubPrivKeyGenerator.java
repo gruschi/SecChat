@@ -119,32 +119,63 @@ public class PubPrivKeyGenerator extends Activity{
     }
     
     // decrypts the message
-    public String encrypt (String message) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchProviderException 
+    public String encrypt (String message) 
     {
-        kpg = KeyPairGenerator.getInstance("RSA", "BC"); //AES
-        kpg.initialize(1024);
-        kp = kpg.genKeyPair();
-        pubKey = kp.getPublic();
-        privKey = kp.getPrivate();
+		try {
+	        kpg = KeyPairGenerator.getInstance("RSA", "BC"); //AES
+	        kpg.initialize(1024);
+	        kp = kpg.genKeyPair();
+	        pubKey = kp.getPublic();
+	        privKey = kp.getPrivate();
 
-        cipher = Cipher.getInstance("RSA", "BC");
-        cipher.init(Cipher.ENCRYPT_MODE, pubKey);
-        encryptedBytes = cipher.doFinal(message.getBytes());
+	        cipher = Cipher.getInstance("RSA", "BC");
+	        cipher.init(Cipher.ENCRYPT_MODE, pubKey);
+	        encryptedBytes = cipher.doFinal(message.getBytes());
 
-        encrypted = bytesToString(encryptedBytes);
-        return encrypted;
-
+	        encrypted = bytesToString(encryptedBytes);
+	        return encrypted;
+		} catch (InvalidKeyException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (NoSuchPaddingException e) {
+			e.printStackTrace();
+		} catch (IllegalBlockSizeException e) {
+			e.printStackTrace();
+		} catch (BadPaddingException e) {
+			e.printStackTrace();
+		} catch (NoSuchProviderException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
     }
 
     // decrypts the message
     public String decrypt (String message) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchProviderException 
-    {           
-        cipher1=Cipher.getInstance("RSA", "BC");
-        cipher1.init(Cipher.DECRYPT_MODE, privKey);
-        //decryptedBytes = cipher1.doFinal(stringToBytes(message)); //TODO: stringToBytes = Base64.decodeBase64(message)
-        decryptedBytes = cipher1.doFinal(Base64.decode(message)); //TODO: stringToBytes = Base64.decodeBase64(message)
-        decrypted = new String(decryptedBytes);
-        return decrypted;
+    {
+		try {
+	        cipher1=Cipher.getInstance("RSA", "BC");
+	        cipher1.init(Cipher.DECRYPT_MODE, privKey);
+	        //decryptedBytes = cipher1.doFinal(stringToBytes(message)); //TODO: stringToBytes = Base64.decodeBase64(message)
+	        decryptedBytes = cipher1.doFinal(Base64.decode(message)); //TODO: stringToBytes = Base64.decodeBase64(message)
+	        decrypted = new String(decryptedBytes);
+	        return decrypted;
+		} catch (InvalidKeyException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (NoSuchPaddingException e) {
+			e.printStackTrace();
+		} catch (IllegalBlockSizeException e) {
+			e.printStackTrace();
+		} catch (BadPaddingException e) {
+			e.printStackTrace();
+		} catch (NoSuchProviderException e) {
+			e.printStackTrace();
+		}
+	
+	return null;
     }
 
     public  String bytesToString(byte[] b) {

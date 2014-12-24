@@ -14,14 +14,14 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.IBinder;
 import android.util.Log;
-import cs.hm.edu.sisy.chat.Home;
-import cs.hm.edu.sisy.chat.Login;
 import cs.hm.edu.sisy.chat.Messaging;
 import cs.hm.edu.sisy.chat.R;
 import cs.hm.edu.sisy.chat.communication.RestThreadTask;
-import cs.hm.edu.sisy.chat.enums.State;
-import cs.hm.edu.sisy.chat.enums.Types;
+import cs.hm.edu.sisy.chat.enums.SCState;
+import cs.hm.edu.sisy.chat.enums.SCTypes;
+import cs.hm.edu.sisy.chat.generators.PinHashGenerator;
 import cs.hm.edu.sisy.chat.objects.Partner;
+import cs.hm.edu.sisy.chat.storage.SharedPrefs;
 import cs.hm.edu.sisy.chat.tools.Common;
 
 public class BGService extends Service {
@@ -37,7 +37,6 @@ public class BGService extends Service {
 
 	private Timer timer;
 	
-	private NotificationManager mNM;
 	private static ScheduledExecutorService waitingScheduleExecutor;
 	private static ScheduledExecutorService messagingScheduleExecutor;
 	
@@ -66,15 +65,18 @@ public class BGService extends Service {
        // Display a notification about us starting.  We put an icon in the status bar.
    	//conManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
    	
-   	showNotification("Chris"); //Partner.alias
+        showNotification("test", BGService.this);
    	
-   	if(State.getState() == State.CONNECTED_TO_CHAT) {
+   	if(SCState.getState() == SCState.CONNECTED_TO_CHAT) {
       if(waitingScheduleExecutor != null)
         waitingScheduleExecutor.shutdownNow();
    		messagingSchedule(BGService.this);
    		
-      Intent i = new Intent(BGService.this, Messaging.class);                        
-      startActivity(i); 
+		SharedPrefs.savePIN( BGService.this, PinHashGenerator.generatePIN() );
+		SharedPrefs.saveStoragedPinDate( BGService.this, Common.getCurrentDate() );
+
+        Intent i = new Intent(BGService.this, Messaging.class);                        
+        startActivity(i); 
    	}
    	else {
       if(messagingScheduleExecutor != null)
@@ -131,13 +133,12 @@ public class BGService extends Service {
     	// This schedule a runnable task every 5 seconds
     	waitingScheduleExecutor.scheduleAtFixedRate(new Runnable() {
     	  public void run() {
-    		  Log.d(TAG, "wSCHEDULE");
-    		  new RestThreadTask(Types.SERVICE, context).execute();
+    		Log.d(TAG, "wSCHEDULE");
+    		new RestThreadTask(SCTypes.SERVICE, context).execute();
     		  
-    		  //someone is calling me, call back
-    		  if(State.getState() == State.CHAT_CONNECTION_INCOMING) {
-            new RestThreadTask(Types.CONNECT_SERVICE, context).execute(Partner.getPartnerId()+"");
-        	}    		  
+    		//someone is calling me, call back
+    		if(SCState.getState() == SCState.CHAT_CONNECTION_INCOMING)
+    			new RestThreadTask(SCTypes.CONNECT_SERVICE, context).execute(Partner.getPartnerId()+"");  		  
     		  
     	  }
     	}, 0, 5, TimeUnit.SECONDS);
@@ -150,7 +151,13 @@ public class BGService extends Service {
     	messagingScheduleExecutor.scheduleAtFixedRate(new Runnable() {
     	  public void run() {
     		  Log.d(TAG, "mSCHEDULE");
-    		  new RestThreadTask(Types.RECEIVE_MSG, context).execute();
+    		  new RestThreadTask(SCTypes.RECEIVE_MSG, context).execute();
+    		  
+    		  if(!Messaging.isActivityVisible() && SCState.getMsgState()==SCState.MSG_RECEIVED) 
+    		  {
+    			  showNotification( Partner.getPartnerAlias(), context );
+    			  SCState.setMsgState(SCState.MSG_DEFAULT);
+    		  }
     	  }
     	}, 0, 1, TimeUnit.SECONDS);
     }
@@ -182,24 +189,24 @@ public class BGService extends Service {
 	 * Show a notification while this service is running.
 	 * @param msg 
 	 **/
-	private void showNotification(String alias) 
+	private static void showNotification(String alias, Context context) 
 	{       
 		//ActivityManager.getRunningAppProcesses()
 		//http://stackoverflow.com/questions/2314969/how-to-determine-if-one-of-my-activities-is-in-the-foreground
 		
 	    // Prepare intent which is triggered if the
 	    // notification is selected
-	    Intent intent = new Intent(this, Messaging.class);
-	    PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
+	    Intent intent = new Intent(context, Messaging.class);
+	    PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
 	    // Build notification
 	    // Actions are just fake
-	    Notification noti = new Notification.Builder(this)
+	    Notification noti = new Notification.Builder(context)
 	        .setContentTitle("SecChat - Unread Message")
 	        .setContentText("Message from: " + alias)
 	        .setSmallIcon(R.drawable.ic_launcher)
 	        .setContentIntent(pIntent).build();
-	    mNM = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+	    NotificationManager mNM = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 	    // hide the notification after its selected
 	    noti.flags |= Notification.FLAG_AUTO_CANCEL;
 

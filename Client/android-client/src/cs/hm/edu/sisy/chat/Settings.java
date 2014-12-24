@@ -22,7 +22,7 @@ import cs.hm.edu.sisy.chat.generators.PinHashGenerator;
 import cs.hm.edu.sisy.chat.generators.PubPrivKeyGenerator;
 import cs.hm.edu.sisy.chat.qr.Contents;
 import cs.hm.edu.sisy.chat.qr.QRCodeEncoder;
-import cs.hm.edu.sisy.chat.storage.Storage;
+import cs.hm.edu.sisy.chat.storage.SharedPrefs;
 import cs.hm.edu.sisy.chat.tools.Common;
 
 public class Settings extends Activity
@@ -43,9 +43,9 @@ public class Settings extends Activity
      txtYourPin = (TextView) findViewById(R.id.txtYourPin);
      txtYourId = (TextView) findViewById(R.id.txtYourId);
      
-     txtYourAlias.setText(Storage.getAlias(this) +"");
-     txtYourPin.setText(Storage.getPIN(this) +"");
-     txtYourId.setText(Storage.getID(this) +"");
+     txtYourAlias.setText(SharedPrefs.getAlias(this) +"");
+     txtYourPin.setText(SharedPrefs.getPIN(this) +"");
+     txtYourId.setText(SharedPrefs.getID(this) +"");
      
      GenerateQRCode();
      
@@ -53,7 +53,7 @@ public class Settings extends Activity
      saveNewAlias.setOnClickListener(new OnClickListener(){
 		@Override
 		public void onClick(View v) {
-			Storage.saveAlias(Settings.this, txtYourAlias.getText().toString());
+			SharedPrefs.saveAlias(Settings.this, txtYourAlias.getText().toString());
 		}
 	});
     
@@ -61,9 +61,9 @@ public class Settings extends Activity
     generateNewPin.setOnClickListener(new OnClickListener(){
 		@Override
 		public void onClick(View v) {
-			Storage.savePIN( Settings.this, PinHashGenerator.generatePIN() );
-			Storage.saveStoragedPinDate( Settings.this, Common.getCurrentDate() );
-			txtYourPin.setText(Storage.getPIN(Settings.this));
+			SharedPrefs.savePIN( Settings.this, PinHashGenerator.generatePIN() );
+			SharedPrefs.saveStoragedPinDate( Settings.this, Common.getCurrentDate() );
+			txtYourPin.setText(SharedPrefs.getPIN(Settings.this));
 		}
 	});
    }
