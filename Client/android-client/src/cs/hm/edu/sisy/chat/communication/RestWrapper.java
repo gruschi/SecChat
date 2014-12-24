@@ -43,10 +43,8 @@ public class RestWrapper {
     {
     	if( !isRegistered(context) )
     	{
-	    	PubPrivKeyGenerator kg = new PubPrivKeyGenerator(context);
-	    	
-	    	if( kg.getPublicKeyAsString() == null || kg.getPublicKeyAsString() == "" )
-	    		kg.generateKeys();
+    	  if( PubPrivKeyGenerator.getPublicKeyAsString(context) == null || PubPrivKeyGenerator.getPublicKeyAsString(context) == "" )
+	    	  PubPrivKeyGenerator.generateKeys(context);
 	    	
 	    	try 
 	    	{

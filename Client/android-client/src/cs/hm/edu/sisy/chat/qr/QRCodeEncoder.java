@@ -23,11 +23,13 @@ import android.os.Bundle;
 import android.telephony.PhoneNumberUtils;
  
 
+
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
  
+
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -36,7 +38,6 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
  
 public final class QRCodeEncoder {
-    private static final int WHITE = 0xFFFFFFFF;
     private static final int BLACK = 0xFF000000;
  
     private int dimension = Integer.MIN_VALUE;
@@ -84,6 +85,7 @@ public final class QRCodeEncoder {
         return contents != null && contents.length() > 0;
     }
  
+    @SuppressWarnings( "deprecation" )
     private void encodeQRCodeContents(String data, Bundle bundle, String type) {
         if (type.equals(Contents.Type.TEXT)) {
             if (data != null && data.length() > 0) {

@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -21,9 +20,7 @@ import android.widget.EditText;
 import cs.hm.edu.sisy.chat.communication.RestThreadTask;
 import cs.hm.edu.sisy.chat.enums.SCState;
 import cs.hm.edu.sisy.chat.enums.SCTypes;
-import cs.hm.edu.sisy.chat.generators.PubPrivKeyGenerator;
 import cs.hm.edu.sisy.chat.objects.Partner;
-import cs.hm.edu.sisy.chat.services.BGService;
 import cs.hm.edu.sisy.chat.storage.SharedPrefs;
 
 public class Messaging extends Activity {
@@ -52,7 +49,7 @@ public class Messaging extends Activity {
 		
 		sendMessageButton = (Button) findViewById(R.id.sendMessageButton);
 		
-		Bundle extras = this.getIntent().getExtras();
+		//Bundle extras = this.getIntent().getExtras();
 		
 		//setTitle("Messaging with " + friend.userName);
 	
@@ -147,7 +144,7 @@ public class Messaging extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		unregisterReceiver(messageReceiver);
+		//unregisterReceiver(messageReceiver);
 		//unbindService(mConnection);
 		
 		//FriendController.setActiveFriend(null);
@@ -160,10 +157,10 @@ public class Messaging extends Activity {
 		super.onResume();
 		//bindService(new Intent(Messaging.this, BGService.class), mConnection , Context.BIND_AUTO_CREATE);
 				
-		IntentFilter i = new IntentFilter();
-		i.addAction(BGService.TAKE_MESSAGE);
+		//IntentFilter i = new IntentFilter();
+		//i.addAction(BGService.TAKE_MESSAGE);
 		
-		registerReceiver(messageReceiver, i);
+		//registerReceiver(messageReceiver, i);
 		
 		Messaging.activityResumed();
 	}
@@ -197,7 +194,7 @@ public class Messaging extends Activity {
 		}
 		
 	};
-	private MessageReceiver messageReceiver = new MessageReceiver();
+	//private MessageReceiver messageReceiver = new MessageReceiver();
 	
 	private void appendToMessageHistory(String username, String message) {
 		if (username != null && message != null) {

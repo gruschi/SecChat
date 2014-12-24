@@ -33,7 +33,7 @@ public class BGService extends Service {
 
     // Check interval: every 24 hours
     //private static long UPDATES_CHECK_INTERVAL = 24 * 60 * 60 * 1000;
-    private static long UPDATES_CHECK_INTERVAL = 5000;
+    //private static long UPDATES_CHECK_INTERVAL = 5000;
 
 	private Timer timer;
 	
@@ -215,8 +215,8 @@ public class BGService extends Service {
 
 	public boolean sendMessage(String  username, String message) {
 		//Partner friendInfo = Partner.getFriendInfo(username);
-		String msg = null, IP = null;
-		int port = 0;
+		//String msg = null, IP = null;
+		//int port = 0;
 		/*
 		String IP = friendInfo.ip;
 		//IP = "10.0.2.2";
@@ -280,10 +280,10 @@ public class BGService extends Service {
 
 	public void messageReceived(String message) 
 	{				
-		String[] params = message.split("&");
-		String username= new String();
-		String userKey = new String();
-		String msg = new String();
+		//String[] params = message.split("&");
+		//String username= new String();
+		//String userKey = new String();
+		//String msg = new String();
 		/*
 		for (int i = 0; i < params.length; i++) {
 			String[] localpar = params[i].split("=");

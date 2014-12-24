@@ -22,7 +22,6 @@ import org.json.JSONTokener;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
-import cs.hm.edu.sisy.chat.Messaging;
 import cs.hm.edu.sisy.chat.enums.SCConstants;
 import cs.hm.edu.sisy.chat.generators.PubPrivKeyGenerator;
 import cs.hm.edu.sisy.chat.objects.Partner;
@@ -148,7 +147,7 @@ public class RestService
 	
 	          SharedPrefs.saveID(context, userId);
 	          
-	          //httpclient.getConnectionManager().shutdown(); //TODO �berall??
+	          //httpclient.getConnectionManager().shutdown(); //TODO ??
 	          return true;
 	        }
 	        catch ( JSONException e )
@@ -160,7 +159,7 @@ public class RestService
 	  } catch (IOException e) {
 	  }
 	  
-	  //httpclient.getConnectionManager().shutdown(); //TODO �berall??
+	  //httpclient.getConnectionManager().shutdown(); //TODO ??
       return false;
   }
   
@@ -170,7 +169,7 @@ public class RestService
 	  
 	  final String url = SCConstants.REST_CONNECT_FRIEND;
 	  String sessionId = SharedPrefs.getSessionId(context);
-	  String pubKey = SharedPrefs.getPublicKeyAsString(context);
+	  String pubKey = PubPrivKeyGenerator.getPublicKeyAsString(context);
 	  String alias = SharedPrefs.getAlias(context);
 
       Uri uri = Uri.parse(url);
@@ -244,8 +243,9 @@ public class RestService
 	      // Execute HTTP Post Request
 	      HttpResponse response = httpclient.execute(host, httppost);
 	      
-		  Log.d(SCConstants.LOG, "HTTP-Status: "+response.getStatusLine().getStatusCode());
+		    Log.d(SCConstants.LOG, "HTTP-Status: "+response.getStatusLine().getStatusCode());
 	
+		    //TODO TEST 1==1
 	      if(1==1 || (response.getStatusLine().getStatusCode() < 300 && 
 	          response.getStatusLine().getStatusCode() > 199))
 	      {
@@ -262,6 +262,12 @@ public class RestService
 	          
 	          if(jsonobject.toString() == "{\"chatSession\":[]}")
 	        	  return false;
+	          
+	          //TODO: if sessionId is expired, catch here through "special json response" which leads to ...
+	          //if(jsonobject.toString() == "BLABLA") {
+	          // new RestThreadTask(SCTypes.LOGIN, (Context) Login.this).execute()
+	          // return false;
+	          //}
 
 	          JSONArray cast = jsonobject.getJSONArray("chatSession");
 	          for (int i=0; i<cast.length(); i++) 
@@ -285,7 +291,7 @@ public class RestService
 	              SharedPrefs.saveChatSessionId(context, id);
 	          }
 	          
-	          //httpclient.getConnectionManager().shutdown(); //TODO �berall??
+	          //httpclient.getConnectionManager().shutdown(); //TODO ??
 	          return true;
 	        }
 	        catch ( JSONException e )
@@ -297,14 +303,14 @@ public class RestService
 	  } catch (IOException e) {
 	  }
 	  
-	  //httpclient.getConnectionManager().shutdown(); //TODO �berall??
+	  //httpclient.getConnectionManager().shutdown(); //TODO ??
       return false;
   }
   
   //TODO serivceConnect
   public static Boolean serviceConnect(Context context, String receiverID) {
 	String sessionId = SharedPrefs.getSessionId(context);
-	String pubKey = SharedPrefs.getPublicKeyAsString(context);
+	String pubKey = PubPrivKeyGenerator.getPublicKeyAsString(context);
 	String alias = SharedPrefs.getAlias(context);
 	
 	final String url = SCConstants.REST_CONNECT_FRIEND;
@@ -434,8 +440,9 @@ public class RestService
 	      // Execute HTTP Post Request
 	      HttpResponse response = httpclient.execute(host, httppost);
 	
-	      if(response.getStatusLine().getStatusCode() < 300 && 
-	          response.getStatusLine().getStatusCode() > 199)
+	       //TODO TEST 1==1
+	      if(1==1 || (response.getStatusLine().getStatusCode() < 300 && 
+	          response.getStatusLine().getStatusCode() > 199))
 	      {
 	        try
 	        {
@@ -444,9 +451,11 @@ public class RestService
 	          JSONTokener tokener = new JSONTokener(json);
 	          JSONArray jsonarray = new JSONArray(tokener);
 	
-	          //instead of 0, maybe -> for (int i = 0; i < jsonarray.length(); i++)
 	          JSONObject jsonobject = jsonarray.getJSONObject(0);
 	          receivedMessage = jsonobject .getString("receivedMessage");
+	          
+	          //TODO for tests
+	          receivedMessage = encryptChatMsg("Hello, sub?",context);
 	          
 	          Log.d(SCConstants.LOG, "HTTP-Response: receiveMessage: " + decryptChatMsg(receivedMessage,context));
 	          
@@ -468,18 +477,14 @@ public class RestService
   
 	//ver...
 	private static String encryptChatMsg(String msg, Context context) {
-		//TODO: change, that so we are not force to create an object
-		PubPrivKeyGenerator ppg = new PubPrivKeyGenerator(context);
-		
-		return ppg.encrypt(msg);
+	
+		return PubPrivKeyGenerator.encrypt(msg, context);
 	}
 	
 	//ent...
 	private static String decryptChatMsg(String msg, Context context) {
-		//TODO: change, that so we are not force to create an object
-		PubPrivKeyGenerator ppg = new PubPrivKeyGenerator(context);
-		
-		return ppg.encrypt(msg);
+    
+	  return PubPrivKeyGenerator.decrypt(msg, context);
 	}
   
 }

@@ -28,25 +28,15 @@ import android.content.SharedPreferences;
 
 public class PubPrivKeyGenerator extends Activity{
 
-    SharedPreferences SP;
-    SharedPreferences.Editor SPE;
-    PublicKey pubKey;
-    PrivateKey privKey; 
-    Context context;
-    
-    KeyPairGenerator kpg;
-    KeyPair kp;
-    byte[] encryptedBytes, decryptedBytes;
-    Cipher cipher, cipher1;
-    String encrypted, decrypted;
-
-    public PubPrivKeyGenerator(Context context){
-        this.context = context;
-        SP = context.getSharedPreferences("KeyPair", MODE_PRIVATE);
-    }
-
-    @SuppressLint("TrulyRandom")
-	public void generateKeys(){
+  @SuppressLint("TrulyRandom")
+	public static void generateKeys(Context context){
+      SharedPreferences SP;
+      SharedPreferences.Editor SPE;
+      PublicKey pubKey;
+      PrivateKey privKey; 
+      
+      SP = context.getSharedPreferences("KeyPair", MODE_PRIVATE);
+      
         try {
             KeyPairGenerator generator;
             generator = KeyPairGenerator.getInstance("RSA", "BC"); //AES
@@ -68,7 +58,11 @@ public class PubPrivKeyGenerator extends Activity{
             e.printStackTrace();
         }           
     }
-    public PublicKey getPublicKey(){
+    
+    public static PublicKey getPublicKey(Context context){
+      SharedPreferences SP;
+      SP = context.getSharedPreferences("KeyPair", MODE_PRIVATE);
+      
         String pubKeyStr = SP.getString("PublicKey", "");    
     	if(pubKeyStr == null || pubKeyStr == "")
     		return null; 
@@ -90,11 +84,18 @@ public class PubPrivKeyGenerator extends Activity{
         }
         return null;
     }
-    public String getPublicKeyAsString(){
-        return SP.getString("PublicKey", "");       
+    
+    public static String getPublicKeyAsString(Context context){
+      SharedPreferences SP;
+      SP = context.getSharedPreferences("KeyPair", MODE_PRIVATE);
+      return SP.getString("PublicKey", "");       
     }
-    public PrivateKey getPrivateKey(){
-        String privKeyStr = SP.getString("PrivateKey", "");
+    
+    public static PrivateKey getPrivateKey(Context context){
+      SharedPreferences SP;
+      SP = context.getSharedPreferences("KeyPair", MODE_PRIVATE);
+      String privKeyStr = SP.getString("PrivateKey", "");
+        
     	if(privKeyStr == null || privKeyStr == "")
     		return null; 
         byte[] sigBytes = Base64.decode(privKeyStr);
@@ -114,20 +115,23 @@ public class PubPrivKeyGenerator extends Activity{
         }
         return null;
     }
-    public String getPrivateKeyAsString(){
-        return SP.getString("PrivateKey", "");      
+    
+    public static String getPrivateKeyAsString(Context context){
+      SharedPreferences SP;
+      SP = context.getSharedPreferences("KeyPair", MODE_PRIVATE);
+      return SP.getString("PrivateKey", "");      
     }
     
-    // decrypts the message
-    public String encrypt (String message) 
+    // encrypts the message
+    public static String encrypt (String message, Context context) 
     {
+      PublicKey pubKey = getPublicKey(context);
+ 
+      byte[] encryptedBytes;
+      Cipher cipher;
+      String encrypted;
+      
 		try {
-	        kpg = KeyPairGenerator.getInstance("RSA", "BC"); //AES
-	        kpg.initialize(1024);
-	        kp = kpg.genKeyPair();
-	        pubKey = kp.getPublic();
-	        privKey = kp.getPrivate();
-
 	        cipher = Cipher.getInstance("RSA", "BC");
 	        cipher.init(Cipher.ENCRYPT_MODE, pubKey);
 	        encryptedBytes = cipher.doFinal(message.getBytes());
@@ -152,13 +156,18 @@ public class PubPrivKeyGenerator extends Activity{
     }
 
     // decrypts the message
-    public String decrypt (String message) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchProviderException 
+    public static String decrypt (String message, Context context) 
     {
+      PrivateKey privKey = getPrivateKey(context);
+      
+      byte[] decryptedBytes;
+      Cipher cipher;
+      String decrypted;    
 		try {
-	        cipher1=Cipher.getInstance("RSA", "BC");
-	        cipher1.init(Cipher.DECRYPT_MODE, privKey);
-	        //decryptedBytes = cipher1.doFinal(stringToBytes(message)); //TODO: stringToBytes = Base64.decodeBase64(message)
-	        decryptedBytes = cipher1.doFinal(Base64.decode(message)); //TODO: stringToBytes = Base64.decodeBase64(message)
+	        cipher=Cipher.getInstance("RSA", "BC");
+	        cipher.init(Cipher.DECRYPT_MODE, privKey);
+	        //decryptedBytes = cipher.doFinal(stringToBytes(message)); //TODO: stringToBytes = Base64.decodeBase64(message)
+	        decryptedBytes = cipher.doFinal(Base64.decode(message)); //TODO: stringToBytes = Base64.decodeBase64(message)
 	        decrypted = new String(decryptedBytes);
 	        return decrypted;
 		} catch (InvalidKeyException e) {
@@ -178,14 +187,14 @@ public class PubPrivKeyGenerator extends Activity{
 	return null;
     }
 
-    public  String bytesToString(byte[] b) {
+    public static  String bytesToString(byte[] b) {
         byte[] b2 = new byte[b.length + 1];
         b2[0] = 1;
         System.arraycopy(b, 0, b2, 1, b.length);
         return new BigInteger(b2).toString(36);
     }
 
-    public  byte[] stringToBytes(String s) {
+    public static byte[] stringToBytes(String s) {
         byte[] b2 = new BigInteger(s, 36).toByteArray();
         return Arrays.copyOfRange(b2, 1, b2.length);
     }
@@ -226,6 +235,4 @@ public class PubPrivKeyGenerator extends Activity{
 		return decrypted;
 	}
 	*/
-    
-    
 }

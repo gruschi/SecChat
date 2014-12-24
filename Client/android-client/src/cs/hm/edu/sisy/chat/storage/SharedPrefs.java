@@ -183,10 +183,10 @@ public class SharedPrefs {
 		      }
 	   }
 
-	    public static String getPublicKeyAsString(Context context){
+	    /*public static String getPublicKeyAsString(Context context){
 	    	SharedPreferences sharedpreferences = context.getSharedPreferences("KeyPair", Context.MODE_PRIVATE);
 	        return sharedpreferences.getString("PublicKey", "");       
-	    }
+	    }*/
      
 }
 
