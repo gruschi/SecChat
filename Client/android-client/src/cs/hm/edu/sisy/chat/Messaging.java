@@ -1,5 +1,7 @@
 package cs.hm.edu.sisy.chat;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -7,28 +9,39 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import cs.hm.edu.sisy.chat.communication.RestThreadTask;
 import cs.hm.edu.sisy.chat.enums.SCState;
 import cs.hm.edu.sisy.chat.enums.SCTypes;
 import cs.hm.edu.sisy.chat.objects.Partner;
+import cs.hm.edu.sisy.chat.objects.Row;
 import cs.hm.edu.sisy.chat.storage.SharedPrefs;
+import cs.hm.edu.sisy.chat.tools.DiscussArrayAdapter;
+import cs.hm.edu.sisy.chat.tools.OneComment;
 
 public class Messaging extends Activity {
 
 	private static final int MESSAGE_CANNOT_BE_SENT = 0;
 	private EditText messageText;
-	private EditText messageHistoryText;
+	private ListView messageHistoryText;
 	private Button sendMessageButton;
+	
+	ArrayList<String> listItems;
+	ArrayAdapter<String> adapter;
+	
+	private DiscussArrayAdapter adapter2;
 	
     private static boolean activityVisible;	
 	
@@ -41,7 +54,7 @@ public class Messaging extends Activity {
 		
 		setContentView(R.layout.messaging_screen); //messaging_screen);
 				
-		messageHistoryText = (EditText) findViewById(R.id.messageHistory);
+		messageHistoryText = (ListView) findViewById(R.id.messageHistory);
 		
 		messageText = (EditText) findViewById(R.id.message);
 		
@@ -70,7 +83,9 @@ public class Messaging extends Activity {
 				message = messageText.getText();
 				if (message.length()>0) 
 				{
-					appendToMessageHistory(SharedPrefs.getAlias(Messaging.this), message.toString());
+					//appendToMessageHistory(SharedPrefs.getAlias(Messaging.this), message.toString());
+					//TODO wqith name ! SharedPrfes.getAlias();
+					adapter2.add(new OneComment(false, message.toString()));
 								
 					messageText.setText("");
 					Thread thread = new Thread(){					
@@ -99,6 +114,7 @@ public class Messaging extends Activity {
 				
 			}
 		});
+		
 		messageText.setOnKeyListener(new OnKeyListener(){
 			public boolean onKey(View v, int keyCode, KeyEvent event) 
 			{
@@ -110,6 +126,16 @@ public class Messaging extends Activity {
 			}
 		});
 		
+	    /*listItems = new ArrayList<String>();
+		
+		adapter = new ArrayAdapter<String>(this,
+	            android.R.layout.simple_list_item_1,
+	            listItems);
+		messageHistoryText.setAdapter(adapter);*/
+		
+		adapter2 = new DiscussArrayAdapter(getApplicationContext(), R.layout.listitem_discuss);
+		
+		messageHistoryText.setAdapter(adapter2);
 		
 		receiveMessages();
 	}
@@ -198,8 +224,12 @@ public class Messaging extends Activity {
 	
 	private void appendToMessageHistory(String username, String message) {
 		if (username != null && message != null) {
-			messageHistoryText.append(username + ":\n");								
-			messageHistoryText.append(message + "\n");	
+			//Row obj = new Row(username,message);
+			//listItems.add(username + "\n" + message + "\n");	
+			String that = username + "\n" + message + "\n";
+			//TODO
+			adapter2.add(new OneComment(true, that));
+			//adapter.notifyDataSetChanged();
 		}
 	}
 	
@@ -218,30 +248,11 @@ public class Messaging extends Activity {
 		switch(item.getItemId()) 
 	    {
 	    	case 0:
-	    		exitChat();
+	    		backButtonHandler();
 	    		return true;
 	    }
 	    
 	    return super.onMenuItemSelected(featureId, item);
-	}
-
-	private void exitChat() {
-		// TODO Auto-generated method stub
-		// destroy objects chat-msg-log,  ...
-		
-		//change state from CONNECTED_TO_CHAT to
-		SCState.setState(SCState.LOGGED_IN);
-		
-		//reset partner
-		Partner.setPartnerAlias(null);
-		Partner.setPartnerId(0);
-		Partner.setPartnerPin(null);
-		Partner.setPartnerPubKey(null);
-		
-		//reset chatSession
-		SharedPrefs.resetChatSessionId(Messaging.this);
-		
-		finish();
 	}
 	
 	@Override
@@ -296,64 +307,60 @@ public class Messaging extends Activity {
       }
       
       
-	private void receiveMessages() {
-		
-	    AsyncTaskRunner runner = new AsyncTaskRunner();
-	    String sleepTime = (1*1000)+"";
-	    runner.execute(sleepTime);
-		
-		/*
-		final Handler handler = new Handler();
-		final Runnable runnable = new Runnable() {
-			   @Override
-			   public void run() {
-				   
-				    		  new RestThreadTask(SCTypes.RECEIVE_MSG, Messaging.this).execute(); 
-				    		  
-								if (Partner.getPartnerNewMsg() != "")
-								{
-									handler.post(new Runnable(){
-
-										@Override
-										public void run() {
-											appendToMessageHistory(Partner.getPartnerAlias(), Partner.getPartnerNewMsg());
-										}	
-									});
-								}
-				      
-			      handler.postDelayed(runnable, 2000);
-			   }
-			};*/
+   // Our handler for received Intents. This will be called whenever an Intent
+   // with an action named "custom-event-name" is broadcasted.
+   private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+     @Override
+     public void onReceive(Context context, Intent intent) {
+       // Get extra data included in the Intent
+       //String message = intent.getStringExtra("message");
+    	 
+	   if (Partner.getPartnerNewMsg() != "")
+		{
+			appendToMessageHistory(Partner.getPartnerAlias(), Partner.getPartnerNewMsg());
+			
+			Partner.resetPartnerNewMsg();
+		}
+     }
+   };
+   
+   @Override
+   protected void onDestroy() {
+     // Unregister since the activity is about to be closed.
+     LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+     super.onDestroy();
+   }
+      
+      
+	private void receiveMessages() 
+	{
+		  // Register to receive messages.
+		  // We are registering an observer (mMessageReceiver) to receive Intents
+		  // with actions named "custom-event-name".
+		  LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+		      new IntentFilter("custom-event-name"));
 	}
-      
-      
-    private class AsyncTaskRunner extends AsyncTask<String, String, String> {
+	
+	private void exitChat() {
+		//change state from CONNECTED_TO_CHAT to
+		SCState.setState(SCState.LOGGED_IN);
+		
+		//reset partner-object
+		Partner.setPartnerAlias(null);
+		Partner.setPartnerId(0);
+		Partner.setPartnerPin(null);
+		Partner.setPartnerPubKey(null);
+		Partner.resetPartnerNewMsg();
+		
+		//reset chatSession
+		SharedPrefs.resetChatSessionId(Messaging.this);
+		
+		//TODO: workaround
+		Intent i = new Intent(Messaging.this, Home.class);
+	    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	    Messaging.this.startActivity(i);
+		
+		finish();
+	}
 
-    	  private String resp;
-
-    	  @Override
-    	  protected String doInBackground(String... params) {
-
-    	   try {
-    		   //TODO: add this to BGService?
-    		   if (Partner.getPartnerNewMsg() != "")
-				{
-					appendToMessageHistory(Partner.getPartnerAlias(), Partner.getPartnerNewMsg());
-					
-					Partner.resetPartnerNewMsg();
-				}
-    		   
-	    	    int time = Integer.parseInt(params[0]);    
-	    	    Thread.sleep(time);
-    	    
-    	   } catch (InterruptedException e) {
-    	    e.printStackTrace();
-    	    resp = e.getMessage();
-    	   } catch (Exception e) {
-    	    e.printStackTrace();
-    	    resp = e.getMessage();
-    	   }
-    	   return resp;
-    	  }
-    }
 }

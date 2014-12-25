@@ -23,17 +23,24 @@
        			android:layout_height="wrap_content"
         		android:layout_marginBottom="10dip"
         		android:text="Messages:"/>
-    
-    <EditText 	android:id="@+id/messageHistory"
-        		android:layout_width="fill_parent"
-        		android:layout_height="fill_parent"
-        		android:clickable="true"	
-        		android:layout_weight="1"
-        	    android:editable="false"
-        	    android:gravity="top"
-        	    android:scrollbars="vertical"
-        	    android:scrollbarSize="10px"
-        	    /> 
+           	    
+   <ListView
+       android:id="@+id/messageHistory"
+       android:layout_width="fill_parent"
+       android:layout_height="fill_parent"
+       android:layout_gravity="bottom"
+       android:layout_marginBottom="10dip"
+       android:layout_weight="1"
+       android:stackFromBottom="true"
+       android:transcriptMode="alwaysScroll" >
+   </ListView>
+   
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/black" />
+
         
     <LinearLayout android:orientation="horizontal"
     			  android:layout_width="fill_parent"

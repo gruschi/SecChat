@@ -71,7 +71,7 @@ public class Settings extends Activity
     //https://github.com/zxing/zxing/wiki/Getting-Started-Developing
     //http://www.mysamplecode.com/2012/09/android-generate-qr-code-using-zxing.html
     public void GenerateQRCode() {
-        String qrInputText = PubPrivKeyGenerator.getPublicKeyAsString(Settings.this);
+        String qrInputText = PubPrivKeyGenerator.getOwnPublicKeyAsString(Settings.this);
     
       //Find screen size
       WindowManager manager = (WindowManager) getSystemService(WINDOW_SERVICE);

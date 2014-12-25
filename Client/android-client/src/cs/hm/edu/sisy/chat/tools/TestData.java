@@ -17,8 +17,8 @@ public class TestData {
     	String session = SharedPrefs.getSessionId(thisC);
     	String storagedPinDate = Integer.toString(SharedPrefs.getStoragedPinDate(thisC));
     	
-    	String pubK = PubPrivKeyGenerator.getPrivateKeyAsString(thisC);
-    	String privK = PubPrivKeyGenerator.getPublicKeyAsString(thisC);
+    	String pubK = PubPrivKeyGenerator.getOwnPrivateKeyAsString(thisC);
+    	String privK = PubPrivKeyGenerator.getOwnPublicKeyAsString(thisC);
     	
     	String state = SCState.getStateMessage();
     	

@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import cs.hm.edu.sisy.chat.Messaging;
 import cs.hm.edu.sisy.chat.R;
@@ -65,18 +66,21 @@ public class BGService extends Service {
        // Display a notification about us starting.  We put an icon in the status bar.
    	//conManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
    	
-        showNotification("test", BGService.this);
-   	
-   	if(SCState.getState() == SCState.CONNECTED_TO_CHAT) {
+   	 //TODO TEST ==
+   	if(SCState.getState() != SCState.CONNECTED_TO_CHAT) {
       if(waitingScheduleExecutor != null)
         waitingScheduleExecutor.shutdownNow();
    		messagingSchedule(BGService.this);
    		
+   		Partner.setPartnerAlias("Peter");
+   		
 		SharedPrefs.savePIN( BGService.this, PinHashGenerator.generatePIN() );
 		SharedPrefs.saveStoragedPinDate( BGService.this, Common.getCurrentDate() );
 
-        Intent i = new Intent(BGService.this, Messaging.class);                        
-        startActivity(i); 
+        Intent i = new Intent();
+        i.setClass(BGService.this.getBaseContext(), Messaging.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
    	}
    	else {
       if(messagingScheduleExecutor != null)
@@ -151,7 +155,10 @@ public class BGService extends Service {
     	messagingScheduleExecutor.scheduleAtFixedRate(new Runnable() {
     	  public void run() {
     		  Log.d(TAG, "mSCHEDULE");
+    		  
     		  new RestThreadTask(SCTypes.RECEIVE_MSG, context).execute();
+    		  
+    		  sendMessage(context);
     		  
     		  if(!Messaging.isActivityVisible() && SCState.getMsgState()==SCState.MSG_RECEIVED) 
     		  {
@@ -162,7 +169,14 @@ public class BGService extends Service {
     	}, 0, 1, TimeUnit.SECONDS);
     }
 	
-
+ // Send an Intent with an action named "custom-event-name". The Intent sent should 
+ // be received by the ReceiverActivity.
+ private static void sendMessage(Context context) {
+   Intent intent = new Intent("custom-event-name");
+   // You can also include some extra data.
+   //intent.putExtra("message", "This is my message!");
+   LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+ }
 
 /*
     @Override
@@ -198,6 +212,7 @@ public class BGService extends Service {
 	    // notification is selected
 	    Intent intent = new Intent(context, Messaging.class);
 	    PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
+	    //TODO opens new itent? should open exits intent
 
 	    // Build notification
 	    // Actions are just fake

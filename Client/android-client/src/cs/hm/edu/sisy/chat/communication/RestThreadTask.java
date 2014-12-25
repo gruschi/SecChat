@@ -99,20 +99,26 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
             		return;
             	}
             case RECEIVE_MSG: 
-            	if(result) {
-            		SCState.setMsgState(SCState.MSG_RECEIVED);
-            		return;
-            	}
-            	else
-            	{
-            		SCState.setMsgState(SCState.MSG_NOT_RECEIVED);
-            		return;
-            	}
+            	//TODO
+            	//if(state == SCState.CONNECTED_TO_CHAT)
+            	//{
+	            	if(result) {
+	            		SCState.setMsgState(SCState.MSG_RECEIVED);
+	            		return;
+	            	}
+	            	else
+	            	{
+	            		SCState.setMsgState(SCState.MSG_NOT_RECEIVED);
+	            		return;
+	            	}
+            	//}
+            	//else {
+            	//	restartBGService();
+            	//}
             case CONNECT_SERVICE: 
             	if(result) {
             		state = SCState.CONNECTED_TO_CHAT;
-            		context.stopService(new Intent(context, BGService.class));
-            		context.startService(new Intent(context, BGService.class));
+            		restartBGService();
             	}
             	else
             		state = SCState.NOT_CONNECTED_TO_CHAT;
@@ -121,8 +127,7 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
               if(SCState.getState() == SCState.CONNECT_TO_CHAT_PENDING)
                 if(result) {
                   state = SCState.CONNECTED_TO_CHAT;
-                  context.stopService(new Intent(context, BGService.class));
-                  context.startService(new Intent(context, BGService.class));
+                  restartBGService();
                 }
               else
                 if(result)
@@ -135,6 +140,11 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
         Common.doToast(context, SCState.getStateMessage() +"");
         
         SCState.setState(state);
+    }
+    
+    private void restartBGService() {
+		context.stopService(new Intent(context, BGService.class));
+		context.startService(new Intent(context, BGService.class));
     }
 
 }

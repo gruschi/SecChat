@@ -169,7 +169,7 @@ public class RestService
 	  
 	  final String url = SCConstants.REST_CONNECT_FRIEND;
 	  String sessionId = SharedPrefs.getSessionId(context);
-	  String pubKey = PubPrivKeyGenerator.getPublicKeyAsString(context);
+	  String pubKey = PubPrivKeyGenerator.getOwnPublicKeyAsString(context);
 	  String alias = SharedPrefs.getAlias(context);
 
       Uri uri = Uri.parse(url);
@@ -237,7 +237,7 @@ public class RestService
 	
 	  try {
 	      List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-	      nameValuePairs.add(new BasicNameValuePair("data[Connection][sessionId]", sessionId));
+	      nameValuePairs.add(new BasicNameValuePair("data[Connection][sessionID]", sessionId));
 	      httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 	
 	      // Execute HTTP Post Request
@@ -310,7 +310,7 @@ public class RestService
   //TODO serivceConnect
   public static Boolean serviceConnect(Context context, String receiverID) {
 	String sessionId = SharedPrefs.getSessionId(context);
-	String pubKey = PubPrivKeyGenerator.getPublicKeyAsString(context);
+	String pubKey = PubPrivKeyGenerator.getOwnPublicKeyAsString(context);
 	String alias = SharedPrefs.getAlias(context);
 	
 	final String url = SCConstants.REST_CONNECT_FRIEND;
@@ -381,7 +381,7 @@ public class RestService
 	      List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 	      nameValuePairs.add(new BasicNameValuePair("data[User][sessionId]", sessionId));
 	      nameValuePairs.add(new BasicNameValuePair("data[Message][connectionId]", Integer.toString(receiverId)));
-	      nameValuePairs.add(new BasicNameValuePair("data[Message][message]", encryptChatMsg(message,context)));
+	      nameValuePairs.add(new BasicNameValuePair("data[Message][message]", encryptChatMsg(message,context,Partner.getPartnerPubKey())));
 	      httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 	
 	      // Execute HTTP Post Request
@@ -439,7 +439,39 @@ public class RestService
 	
 	      // Execute HTTP Post Request
 	      HttpResponse response = httpclient.execute(host, httppost);
+
+	       //TODO TEST 1==1
+	      if(1==1 || (response.getStatusLine().getStatusCode() < 300 && 
+	          response.getStatusLine().getStatusCode() > 199))
+	      {
+
+	          //TODO: for test outcommented
+	          /*BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+	          String json = reader.readLine();
+	          JSONTokener tokener = new JSONTokener(json);
+	          JSONArray jsonarray = new JSONArray(tokener);
 	
+	          JSONObject jsonobject = jsonarray.getJSONObject(0);
+	          receivedMessage = jsonobject .getString("receivedMessage");*/
+	          
+	          //TODO for tests
+	          receivedMessage = encryptChatMsg("Hello, sub?",context,PubPrivKeyGenerator.getOwnPublicKeyAsString(context));
+	          
+	          //Log.d(SCConstants.LOG, "HTTP-Response: receiveMessage: " + receivedMessage);
+	          //Log.d(SCConstants.LOG, "HTTP-Response: receiveMessage: " + decryptChatMsg(receivedMessage,context,PubPrivKeyGenerator.getOwnPrivateKeyAsString(context)));
+	          
+	          Partner.setPartnerNewMsg(decryptChatMsg(receivedMessage,context,PubPrivKeyGenerator.getOwnPrivateKeyAsString(context)));
+	          
+	          return true;
+	      }
+	  } catch (ClientProtocolException e) {
+	  } catch (IOException e) {
+	  }
+	  
+   return false;
+ }
+	      
+	      /*
 	       //TODO TEST 1==1
 	      if(1==1 || (response.getStatusLine().getStatusCode() < 300 && 
 	          response.getStatusLine().getStatusCode() > 199))
@@ -455,7 +487,7 @@ public class RestService
 	          receivedMessage = jsonobject .getString("receivedMessage");
 	          
 	          //TODO for tests
-	          receivedMessage = encryptChatMsg("Hello, sub?",context);
+	          receivedMessage = encryptChatMsg("Hello, sub?",context,Partner.getPartnerPubKey());
 	          
 	          Log.d(SCConstants.LOG, "HTTP-Response: receiveMessage: " + decryptChatMsg(receivedMessage,context));
 	          
@@ -473,18 +505,18 @@ public class RestService
 	  }
 	  
     return false;
-  }
+  }*/
   
-	//ver...
-	private static String encryptChatMsg(String msg, Context context) {
+	//ver... encrypt with partners public key
+	private static String encryptChatMsg(String msg, Context context, String pubKeyStr) {
 	
-		return PubPrivKeyGenerator.encrypt(msg, context);
+		return PubPrivKeyGenerator.encrypt(msg, context, pubKeyStr);
 	}
 	
-	//ent...
-	private static String decryptChatMsg(String msg, Context context) {
+	//ent... decrypt with my own private key
+	private static String decryptChatMsg(String msg, Context context, String privKeyStr) {
     
-	  return PubPrivKeyGenerator.decrypt(msg, context);
+	  return PubPrivKeyGenerator.decrypt(msg, context, privKeyStr);
 	}
   
 }

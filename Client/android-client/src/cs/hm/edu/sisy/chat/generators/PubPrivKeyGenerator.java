@@ -6,11 +6,11 @@ import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 
@@ -27,6 +27,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class PubPrivKeyGenerator extends Activity{
+	
+	final private static String algorithm = "RSA"; //RSA, AES, DSA or + provider BC
 
   @SuppressLint("TrulyRandom")
 	public static void generateKeys(Context context){
@@ -39,39 +41,68 @@ public class PubPrivKeyGenerator extends Activity{
       
         try {
             KeyPairGenerator generator;
-            generator = KeyPairGenerator.getInstance("RSA", "BC"); //AES
-            generator.initialize(256, new SecureRandom());
+            generator = KeyPairGenerator.getInstance(algorithm);
+            //generator.initialize(256, new SecureRandom());
+            generator.initialize(1024);
             KeyPair pair = generator.generateKeyPair();
             pubKey = pair.getPublic();
-            privKey = pair.getPrivate();            
-            byte[] publicKeyBytes = pubKey.getEncoded();
+            privKey = pair.getPrivate();        
+            
+            /*byte[] publicKeyBytes = pubKey.getEncoded();
             String pubKeyStr = new String(Base64.encode(publicKeyBytes));
             byte[] privKeyBytes = privKey.getEncoded();
-            String privKeyStr = new String(Base64.encode(privKeyBytes));            
+            String privKeyStr = new String(Base64.encode(privKeyBytes));*/  
+            
+            String pubKeyStr = null;
+			String privKeyStr = null;
+			
+			try {
+				KeyFactory fact = KeyFactory.getInstance(algorithm); //DSA
+				X509EncodedKeySpec spec = fact.getKeySpec(pubKey,
+				        X509EncodedKeySpec.class);
+				pubKeyStr = new String(Base64.encode(spec.getEncoded()));
+				
+				KeyFactory fact2 = KeyFactory.getInstance(algorithm);
+				PKCS8EncodedKeySpec spec2 = fact2.getKeySpec(privKey,
+				        PKCS8EncodedKeySpec.class);
+				byte[] packed = spec2.getEncoded();
+				String key64 = new String(Base64.encode(packed));
+				Arrays.fill(packed, (byte) 0);
+				privKeyStr = key64;
+			} catch (InvalidKeySpecException e) {
+				e.printStackTrace();
+			}
+            
             SPE = SP.edit();
             SPE.putString("PublicKey", pubKeyStr);
             SPE.putString("PrivateKey", privKeyStr);           
             SPE.commit();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
-        } catch (NoSuchProviderException e) {
-            e.printStackTrace();
         }           
     }
     
-    public static PublicKey getPublicKey(Context context){
-      SharedPreferences SP;
-      SP = context.getSharedPreferences("KeyPair", MODE_PRIVATE);
-      
-        String pubKeyStr = SP.getString("PublicKey", "");    
+    public static PublicKey getPublicKey(Context context, String pubKeyStr){
     	if(pubKeyStr == null || pubKeyStr == "")
     		return null; 
+    	
+        try {
+			byte[] data = Base64.decode(pubKeyStr);
+			X509EncodedKeySpec spec = new X509EncodedKeySpec(data);
+			KeyFactory fact = KeyFactory.getInstance(algorithm);
+			return fact.generatePublic(spec);
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (InvalidKeySpecException e) {
+			e.printStackTrace();
+		}
+		return null;
         
-        byte[] sigBytes = Base64.decode(pubKeyStr);
+        /*byte[] sigBytes = Base64.decode(pubKeyStr);
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(sigBytes);
         KeyFactory keyFact = null;
         try {
-            keyFact = KeyFactory.getInstance("RSA", "BC"); //AES
+            keyFact = KeyFactory.getInstance(algorithm); //AES
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (NoSuchProviderException e) {
@@ -82,27 +113,39 @@ public class PubPrivKeyGenerator extends Activity{
         } catch (InvalidKeySpecException e) {
             e.printStackTrace();
         }
-        return null;
+        return null;*/
     }
     
-    public static String getPublicKeyAsString(Context context){
+    public static String getOwnPublicKeyAsString(Context context){
       SharedPreferences SP;
       SP = context.getSharedPreferences("KeyPair", MODE_PRIVATE);
       return SP.getString("PublicKey", "");       
     }
     
-    public static PrivateKey getPrivateKey(Context context){
-      SharedPreferences SP;
-      SP = context.getSharedPreferences("KeyPair", MODE_PRIVATE);
-      String privKeyStr = SP.getString("PrivateKey", "");
-        
+    public static PrivateKey getPrivateKey(Context context, String privKeyStr){
     	if(privKeyStr == null || privKeyStr == "")
     		return null; 
-        byte[] sigBytes = Base64.decode(privKeyStr);
+    	
+        try {
+			byte[] clear = Base64.decode(privKeyStr);
+			PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(clear);
+			KeyFactory fact = KeyFactory.getInstance(algorithm);
+			PrivateKey priv = fact.generatePrivate(keySpec);
+			Arrays.fill(clear, (byte) 0);
+			return priv;
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (InvalidKeySpecException e) {
+			e.printStackTrace();
+		}
+        
+        return null;
+    	
+        /*byte[] sigBytes = Base64.decode(privKeyStr);
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(sigBytes);
         KeyFactory keyFact = null;
         try {
-            keyFact = KeyFactory.getInstance("RSA", "BC");
+            keyFact = KeyFactory.getInstance(algorithm);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (NoSuchProviderException e) {
@@ -113,26 +156,26 @@ public class PubPrivKeyGenerator extends Activity{
         } catch (InvalidKeySpecException e) {
             e.printStackTrace();
         }
-        return null;
+        return null;*/
     }
     
-    public static String getPrivateKeyAsString(Context context){
+    public static String getOwnPrivateKeyAsString(Context context){
       SharedPreferences SP;
       SP = context.getSharedPreferences("KeyPair", MODE_PRIVATE);
       return SP.getString("PrivateKey", "");      
     }
     
-    // encrypts the message
-    public static String encrypt (String message, Context context) 
+    // encrypts the message with partners public key
+    public static String encrypt (String message, Context context, String pubKeyStr) 
     {
-      PublicKey pubKey = getPublicKey(context);
+      PublicKey pubKey = getPublicKey(context, pubKeyStr);
  
       byte[] encryptedBytes;
       Cipher cipher;
       String encrypted;
       
 		try {
-	        cipher = Cipher.getInstance("RSA", "BC");
+	        cipher = Cipher.getInstance(algorithm);
 	        cipher.init(Cipher.ENCRYPT_MODE, pubKey);
 	        encryptedBytes = cipher.doFinal(message.getBytes());
 
@@ -148,26 +191,24 @@ public class PubPrivKeyGenerator extends Activity{
 			e.printStackTrace();
 		} catch (BadPaddingException e) {
 			e.printStackTrace();
-		} catch (NoSuchProviderException e) {
-			e.printStackTrace();
 		}
 		
 		return null;
     }
 
-    // decrypts the message
-    public static String decrypt (String message, Context context) 
+    // decrypts the message with my own private key
+    public static String decrypt (String message, Context context, String privKeyStr) 
     {
-      PrivateKey privKey = getPrivateKey(context);
+      PrivateKey privKey = getPrivateKey(context, privKeyStr);
       
       byte[] decryptedBytes;
       Cipher cipher;
       String decrypted;    
 		try {
-	        cipher=Cipher.getInstance("RSA", "BC");
+	        cipher=Cipher.getInstance(algorithm);
 	        cipher.init(Cipher.DECRYPT_MODE, privKey);
-	        //decryptedBytes = cipher.doFinal(stringToBytes(message)); //TODO: stringToBytes = Base64.decodeBase64(message)
-	        decryptedBytes = cipher.doFinal(Base64.decode(message)); //TODO: stringToBytes = Base64.decodeBase64(message)
+	        decryptedBytes = cipher.doFinal(stringToBytes(message)); //TODO: stringToBytes = Base64.decodeBase64(message)
+	        //decryptedBytes = cipher.doFinal(Base64.decode(message)); //TODO: stringToBytes = Base64.decodeBase64(message)
 	        decrypted = new String(decryptedBytes);
 	        return decrypted;
 		} catch (InvalidKeyException e) {
@@ -179,8 +220,6 @@ public class PubPrivKeyGenerator extends Activity{
 		} catch (IllegalBlockSizeException e) {
 			e.printStackTrace();
 		} catch (BadPaddingException e) {
-			e.printStackTrace();
-		} catch (NoSuchProviderException e) {
 			e.printStackTrace();
 		}
 	
