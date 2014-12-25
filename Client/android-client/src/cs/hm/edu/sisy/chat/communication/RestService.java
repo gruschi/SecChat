@@ -23,12 +23,11 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 import cs.hm.edu.sisy.chat.enums.SCConstants;
+import cs.hm.edu.sisy.chat.enums.SCState;
 import cs.hm.edu.sisy.chat.generators.PubPrivKeyGenerator;
 import cs.hm.edu.sisy.chat.objects.Partner;
 import cs.hm.edu.sisy.chat.storage.SharedPrefs;
 import cs.hm.edu.sisy.chat.tools.EasySSLSocketFactory;
-
-//alternative: rest lib: http://java.dzone.com/articles/android-%E2%80%93-volley-library
 
 public class RestService
 {
@@ -146,8 +145,7 @@ public class RestService
 	          Log.d(SCConstants.LOG, "HTTP-Response: ID: " + userId);
 	
 	          SharedPrefs.saveID(context, userId);
-	          
-	          //httpclient.getConnectionManager().shutdown(); //TODO ??
+
 	          return true;
 	        }
 	        catch ( JSONException e )
@@ -159,7 +157,6 @@ public class RestService
 	  } catch (IOException e) {
 	  }
 	  
-	  //httpclient.getConnectionManager().shutdown(); //TODO ??
       return false;
   }
   
@@ -202,6 +199,13 @@ public class RestService
 	          JSONArray jsonarray = new JSONArray(tokener);
 	
 	          JSONObject jsonobject = jsonarray.getJSONObject(0);
+	          
+	          //if sessionId is expired, catch here and logg out
+	          if(jsonobject.toString() == "{disconnected}") {
+	        	  SCState.setState(SCState.NOT_LOGGED_IN);
+	        	  return false;
+	          }
+	          
 	          int chatSessionId = jsonobject .getInt("chatSessionId");
 	          
 	          Log.d(SCConstants.LOG, "HTTP-Response: chatSessionId: " + chatSessionId);
@@ -237,7 +241,7 @@ public class RestService
 	
 	  try {
 	      List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-	      nameValuePairs.add(new BasicNameValuePair("data[Connection][sessionID]", sessionId));
+	      nameValuePairs.add(new BasicNameValuePair("data[Connection][sessionId]", sessionId));
 	      httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 	
 	      // Execute HTTP Post Request
@@ -245,17 +249,17 @@ public class RestService
 	      
 		    Log.d(SCConstants.LOG, "HTTP-Status: "+response.getStatusLine().getStatusCode());
 	
-		    //TODO TEST 1==1
-	      if(1==1 || (response.getStatusLine().getStatusCode() < 300 && 
-	          response.getStatusLine().getStatusCode() > 199))
+		  //TEST 1==1
+	      if(response.getStatusLine().getStatusCode() < 300 && 
+	          response.getStatusLine().getStatusCode() > 199)
 	      {
 	        try
 	        {
 	          BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
 
 	          String json = reader.readLine();
-	          //TODO TEST JSON
-	          json = "{\"chatSession\":[{\"Connection\":{\"id\":\"2\",\"senderId\":\"5\",\"receiverId\":\"10\",\"alias\":\"tu001\",\"receiverPin\":\"1234\",\"pubKey\":\"g0kn4pg0kn4p23oge5ng0kn4p23oge5neqp5f73i1ghf5eqp5f73i1ghf523oge5neqp5f73i1ghf5\"}}]}";
+	          //TEST-JSON
+	          //json = "{\"chatSession\":[{\"Connection\":{\"id\":\"2\",\"senderId\":\"5\",\"receiverId\":\"10\",\"alias\":\"tu001\",\"receiverPin\":\"1234\",\"pubKey\":\"g0kn4pg0kn4p23oge5ng0kn4p23oge5neqp5f73i1ghf5eqp5f73i1ghf523oge5neqp5f73i1ghf5\"}}]}";
 	          JSONObject jsonobject = new JSONObject(json);
 
 	          Log.d(SCConstants.LOG, "HTTP-Response: ServiceJSON1: " + jsonobject.toString());
@@ -263,11 +267,17 @@ public class RestService
 	          if(jsonobject.toString() == "{\"chatSession\":[]}")
 	        	  return false;
 	          
-	          //TODO: if sessionId is expired, catch here through "special json response" which leads to ...
-	          //if(jsonobject.toString() == "BLABLA") {
-	          // new RestThreadTask(SCTypes.LOGIN, (Context) Login.this).execute()
-	          // return false;
-	          //}
+	          //if sessionId is expired, catch here and logg out
+	          if(jsonobject.toString() == "{disconnected}") {
+	        	  SCState.setState(SCState.NOT_LOGGED_IN);
+	        	  return false;
+	          }
+	          
+	          //if chatSessionId is expired, catch here and logg out
+	          if(jsonobject.toString() == "{chatDisconnected}") {
+	        	  SCState.setState(SCState.LOGGED_IN);
+	        	  return false;
+	          }
 
 	          JSONArray cast = jsonobject.getJSONArray("chatSession");
 	          for (int i=0; i<cast.length(); i++) 
@@ -291,7 +301,6 @@ public class RestService
 	              SharedPrefs.saveChatSessionId(context, id);
 	          }
 	          
-	          //httpclient.getConnectionManager().shutdown(); //TODO ??
 	          return true;
 	        }
 	        catch ( JSONException e )
@@ -303,17 +312,16 @@ public class RestService
 	  } catch (IOException e) {
 	  }
 	  
-	  //httpclient.getConnectionManager().shutdown(); //TODO ??
       return false;
   }
   
-  //TODO serivceConnect
+  //serivceConnect
   public static Boolean serviceConnect(Context context, String receiverID) {
 	String sessionId = SharedPrefs.getSessionId(context);
 	String pubKey = PubPrivKeyGenerator.getOwnPublicKeyAsString(context);
 	String alias = SharedPrefs.getAlias(context);
 	
-	final String url = SCConstants.REST_CONNECT_FRIEND;
+	final String url = SCConstants.REST_SERVICE_CONNECT;
 
     Uri uri = Uri.parse(url);
     HttpClient httpclient = EasySSLSocketFactory.getNewHttpClient();
@@ -343,6 +351,13 @@ public class RestService
 	          JSONArray jsonarray = new JSONArray(tokener);
 	
 	          JSONObject jsonobject = jsonarray.getJSONObject(0);
+	          
+	          //if sessionId is expired, catch here and logg out
+	          if(jsonobject.toString() == "{disconnected}") {
+	        	  SCState.setState(SCState.NOT_LOGGED_IN);
+	        	  return false;
+	          }
+	          
 	          int chatSessionId = jsonobject .getInt("chatSessionId");
 	          
 	          Log.d(SCConstants.LOG, "HTTP-Response: chatSessionId: " + chatSessionId);
@@ -399,6 +414,13 @@ public class RestService
 	
 	          //instead of 0, maybe -> for (int i = 0; i < jsonarray.length(); i++)
 	          JSONObject jsonobject = jsonarray.getJSONObject(0);
+	          
+	          //if sessionId is expired, catch here and logg out
+	          if(jsonobject.toString() == "{disconnected}") {
+	        	  SCState.setState(SCState.NOT_LOGGED_IN);
+	        	  return false;
+	          }
+	          
 	          messageReceived = jsonobject .getString("received").equals("true");
 	          
 	          Log.d(SCConstants.LOG, "HTTP-Response: messageReceived?: " + messageReceived);
@@ -440,41 +462,9 @@ public class RestService
 	      // Execute HTTP Post Request
 	      HttpResponse response = httpclient.execute(host, httppost);
 
-	       //TODO TEST 1==1
-	      if(1==1 || (response.getStatusLine().getStatusCode() < 300 && 
-	          response.getStatusLine().getStatusCode() > 199))
-	      {
-
-	          //TODO: for test outcommented
-	          /*BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-	          String json = reader.readLine();
-	          JSONTokener tokener = new JSONTokener(json);
-	          JSONArray jsonarray = new JSONArray(tokener);
-	
-	          JSONObject jsonobject = jsonarray.getJSONObject(0);
-	          receivedMessage = jsonobject .getString("receivedMessage");*/
-	          
-	          //TODO for tests
-	          receivedMessage = encryptChatMsg("Hello, sub?",context,PubPrivKeyGenerator.getOwnPublicKeyAsString(context));
-	          
-	          //Log.d(SCConstants.LOG, "HTTP-Response: receiveMessage: " + receivedMessage);
-	          //Log.d(SCConstants.LOG, "HTTP-Response: receiveMessage: " + decryptChatMsg(receivedMessage,context,PubPrivKeyGenerator.getOwnPrivateKeyAsString(context)));
-	          
-	          Partner.setPartnerNewMsg(decryptChatMsg(receivedMessage,context,PubPrivKeyGenerator.getOwnPrivateKeyAsString(context)));
-	          
-	          return true;
-	      }
-	  } catch (ClientProtocolException e) {
-	  } catch (IOException e) {
-	  }
-	  
-   return false;
- }
-	      
-	      /*
-	       //TODO TEST 1==1
-	      if(1==1 || (response.getStatusLine().getStatusCode() < 300 && 
-	          response.getStatusLine().getStatusCode() > 199))
+	       //TEST 1==1
+	      if(response.getStatusLine().getStatusCode() < 300 && 
+	          response.getStatusLine().getStatusCode() > 199)
 	      {
 	        try
 	        {
@@ -484,14 +474,22 @@ public class RestService
 	          JSONArray jsonarray = new JSONArray(tokener);
 	
 	          JSONObject jsonobject = jsonarray.getJSONObject(0);
+	          
+	          //if sessionId is expired, catch here and logg out
+	          if(jsonobject.toString() == "{disconnected}") {
+	        	  SCState.setState(SCState.NOT_LOGGED_IN);
+	        	  return false;
+	          }
+	          
 	          receivedMessage = jsonobject .getString("receivedMessage");
 	          
-	          //TODO for tests
-	          receivedMessage = encryptChatMsg("Hello, sub?",context,Partner.getPartnerPubKey());
+	          //for tests
+	          //receivedMessage = encryptChatMsg("Hello, sub?",context,PubPrivKeyGenerator.getOwnPublicKeyAsString(context));
 	          
-	          Log.d(SCConstants.LOG, "HTTP-Response: receiveMessage: " + decryptChatMsg(receivedMessage,context));
+	          //Log.d(SCConstants.LOG, "HTTP-Response: receiveMessage: " + receivedMessage);
+	          //Log.d(SCConstants.LOG, "HTTP-Response: receiveMessage: " + decryptChatMsg(receivedMessage,context,PubPrivKeyGenerator.getOwnPrivateKeyAsString(context)));
 	          
-        	  Partner.setPartnerNewMsg(decryptChatMsg(receivedMessage,context));
+	          Partner.setPartnerNewMsg(decryptChatMsg(receivedMessage,context,PubPrivKeyGenerator.getOwnPrivateKeyAsString(context)));
 	          
 	          return true;
 	        }
@@ -505,7 +503,34 @@ public class RestService
 	  }
 	  
     return false;
-  }*/
+  }
+  
+  //Destroy Chat Session
+  public static Boolean destroyChatSession(Context context) {
+	  
+	  final String url = SCConstants.REST_DESTROY_CHAT_SESSION;
+	  String sessionId = SharedPrefs.getSessionId(context);
+
+      Uri uri = Uri.parse(url);
+      HttpClient httpclient = EasySSLSocketFactory.getNewHttpClient();
+      HttpHost host = new HttpHost(uri.getHost(), 443, uri.getScheme());
+      HttpPost httppost = new HttpPost(url);
+      
+	  try {
+	      List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+	      nameValuePairs.add(new BasicNameValuePair("data[User][sessionId]", sessionId));
+	      httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+	
+	      // Execute HTTP Post Request
+	      httpclient.execute(host, httppost);;
+	      SharedPrefs.saveSessionId(context, null);
+	      return true;
+	  }
+	  catch (ClientProtocolException e) {
+	  } catch (IOException e) {
+	  }
+	  return false;
+  }
   
 	//ver... encrypt with partners public key
 	private static String encryptChatMsg(String msg, Context context, String pubKeyStr) {

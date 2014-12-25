@@ -1,7 +1,7 @@
 package cs.hm.edu.sisy.chat.objects;
 
-public class Row {
-
+public class Row 
+{
     public String name;
     public String longText;
 
@@ -9,5 +9,4 @@ public class Row {
         this.name = name;
         this.longText = longText;
     }
-	
 }

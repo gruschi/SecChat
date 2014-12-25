@@ -32,7 +32,6 @@ public class Chat extends Activity {
 			public void onClick(View arg0) 
 			{
 				new RestThreadTask(SCTypes.CONNCET_PRIVATE_CHAT, (Context) Chat.this).execute( receiverPin.toString(), receiverID.toString() );
-				//RestService.connectPrivChat(Chat.this, receiverPin.toString(), receiverID.toString());
 			}
         });
     }

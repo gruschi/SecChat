@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cs.hm.edu.sisy.chat.R;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.text.Html;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,13 +19,13 @@ import android.widget.TextView;
 
 public class DiscussArrayAdapter extends ArrayAdapter<OneComment> {
 
-	private TextView countryName;
-	private List<OneComment> countries = new ArrayList<OneComment>();
+	private TextView comment;
+	private List<OneComment> commentList = new ArrayList<OneComment>();
 	private LinearLayout wrapper;
 
 	@Override
 	public void add(OneComment object) {
-		countries.add(object);
+		commentList.add(object);
 		super.add(object);
 	}
 
@@ -32,13 +34,14 @@ public class DiscussArrayAdapter extends ArrayAdapter<OneComment> {
 	}
 
 	public int getCount() {
-		return this.countries.size();
+		return this.commentList.size();
 	}
 
 	public OneComment getItem(int index) {
-		return this.countries.get(index);
+		return this.commentList.get(index);
 	}
 
+	@SuppressLint("RtlHardcoded")
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View row = convertView;
 		if (row == null) {
@@ -50,11 +53,14 @@ public class DiscussArrayAdapter extends ArrayAdapter<OneComment> {
 
 		OneComment coment = getItem(position);
 
-		countryName = (TextView) row.findViewById(R.id.comment);
+		comment = (TextView) row.findViewById(R.id.comment);
 
-		countryName.setText(coment.comment);
+		String sourceString = "<b>" + coment.alias + "</b><br />" + coment.comment; 
+		comment.setText(Html.fromHtml(sourceString));
+		
+		//TODO: above works? alternative: comment.setText(coment.comment + "\n" + coment.comment);
 
-		countryName.setBackgroundResource(coment.left ? R.drawable.bubble_you : R.drawable.bubble_me);
+		comment.setBackgroundResource(coment.left ? R.drawable.bubble_you : R.drawable.bubble_me);
 		wrapper.setGravity(coment.left ? Gravity.LEFT : Gravity.RIGHT);
 
 		return row;

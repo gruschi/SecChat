@@ -1,6 +1,5 @@
 package cs.hm.edu.sisy.chat.services;
 
-import java.util.Timer;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -11,7 +10,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -26,17 +24,10 @@ import cs.hm.edu.sisy.chat.storage.SharedPrefs;
 import cs.hm.edu.sisy.chat.tools.Common;
 
 public class BGService extends Service {
-//	private NotificationManager mNM;
-	
-	public static final String TAKE_MESSAGE = "Take_Message";
-	public static final String FRIEND_LIST_UPDATED = "Take Friend List";
-	public ConnectivityManager conManager = null; 
 
     // Check interval: every 24 hours
     //private static long UPDATES_CHECK_INTERVAL = 24 * 60 * 60 * 1000;
     //private static long UPDATES_CHECK_INTERVAL = 5000;
-
-	private Timer timer;
 	
 	private static ScheduledExecutorService waitingScheduleExecutor;
 	private static ScheduledExecutorService messagingScheduleExecutor;
@@ -58,21 +49,11 @@ public class BGService extends Service {
     public void onStart(Intent intent, int startId) {
     	Common.doToast(this, "MyService Started");
         Log.d(TAG, "onStart");
-        
-    //Note: You can start a new thread and use it for long background processing from here.
-        
-        //mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 
-       // Display a notification about us starting.  We put an icon in the status bar.
-   	//conManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-   	
-   	 //TODO TEST ==
-   	if(SCState.getState() != SCState.CONNECTED_TO_CHAT) {
+   	if(SCState.getState() == SCState.CONNECTED_TO_CHAT) {
       if(waitingScheduleExecutor != null)
         waitingScheduleExecutor.shutdownNow();
    		messagingSchedule(BGService.this);
-   		
-   		Partner.setPartnerAlias("Peter");
    		
 		SharedPrefs.savePIN( BGService.this, PinHashGenerator.generatePIN() );
 		SharedPrefs.saveStoragedPinDate( BGService.this, Common.getCurrentDate() );
@@ -89,10 +70,9 @@ public class BGService extends Service {
    	}
    	
    	
-   	// Timer is used to take the friendList info every UPDATE_TIME_PERIOD;
+   	/* Timer is used to take the friendList info every UPDATE_TIME_PERIOD;
 		timer = new Timer();   
 		
-		/*
 		Thread thread = new Thread()
 		{
 			@Override
@@ -128,6 +108,9 @@ public class BGService extends Service {
     	
         Common.doToast(this, "MyService Stopped");
         Log.d(TAG, "onDestroy");
+        
+        this.stopSelf();
+        
 		super.onDestroy();
     }
 	
@@ -138,11 +121,17 @@ public class BGService extends Service {
     	waitingScheduleExecutor.scheduleAtFixedRate(new Runnable() {
     	  public void run() {
     		Log.d(TAG, "wSCHEDULE");
-    		new RestThreadTask(SCTypes.SERVICE, context).execute();
+    		if(SCState.getState() != SCState.CHAT_CONNECTION_INCOMING)
+    			new RestThreadTask(SCTypes.SERVICE, context).execute();
+    		
+    		if(SCState.getState() < SCState.LOGGED_IN)
+    		{
+    			disconnect(context);
+    		}
     		  
     		//someone is calling me, call back
     		if(SCState.getState() == SCState.CHAT_CONNECTION_INCOMING)
-    			new RestThreadTask(SCTypes.CONNECT_SERVICE, context).execute(Partner.getPartnerId()+"");  		  
+    			new RestThreadTask(SCTypes.CONNECT_SERVICE, context).execute(Partner.getPartnerId()+"");
     		  
     	  }
     	}, 0, 5, TimeUnit.SECONDS);
@@ -160,6 +149,11 @@ public class BGService extends Service {
     		  
     		  sendMessage(context);
     		  
+      		  if(SCState.getState() < SCState.LOGGED_IN)
+      		  {
+      			  disconnect(context);
+      		  }
+    		  
     		  if(!Messaging.isActivityVisible() && SCState.getMsgState()==SCState.MSG_RECEIVED) 
     		  {
     			  showNotification( Partner.getPartnerAlias(), context );
@@ -169,35 +163,23 @@ public class BGService extends Service {
     	}, 0, 1, TimeUnit.SECONDS);
     }
 	
- // Send an Intent with an action named "custom-event-name". The Intent sent should 
- // be received by the ReceiverActivity.
- private static void sendMessage(Context context) {
-   Intent intent = new Intent("custom-event-name");
-   // You can also include some extra data.
-   //intent.putExtra("message", "This is my message!");
-   LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
- }
-
-/*
-    @Override
-    public void onDestroy() {
-        // Cancel the persistent notification.
-        mNM.cancel(R.string.local_service_started);
-
-        // Tell the user we stopped.
-        Toast.makeText(this, R.string.local_service_stopped, Toast.LENGTH_SHORT).show();
-    }
-*/	
-
-    /*
-	@Override
-	public IBinder onBind(Intent intent) 
-	{
-		return mBinder;
-	}*/
-
-
-
+	 // Send an Intent with an action named "custom-event-name". The Intent sent should 
+	 // be received by the ReceiverActivity.
+	 private static void sendMessage(Context context) {
+	   Intent intent = new Intent("custom-event-name");
+	   // You can also include some extra data.
+	   //intent.putExtra("message", "This is my message!");
+	   LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+	 }
+	 
+	 // Send an Intent with an action named "custom-event-name". The Intent sent should 
+	 // be received by the ReceiverActivity.
+	 private static void disconnect(Context context) {
+	   Intent intent = new Intent("custom-event-name2");
+	   // You can also include some extra data.
+	   //intent.putExtra("message", "This is my message!");
+	   LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+	 }
 
 	/**
 	 * Show a notification while this service is running.
@@ -205,17 +187,12 @@ public class BGService extends Service {
 	 **/
 	private static void showNotification(String alias, Context context) 
 	{       
-		//ActivityManager.getRunningAppProcesses()
-		//http://stackoverflow.com/questions/2314969/how-to-determine-if-one-of-my-activities-is-in-the-foreground
-		
 	    // Prepare intent which is triggered if the
 	    // notification is selected
 	    Intent intent = new Intent(context, Messaging.class);
 	    PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
-	    //TODO opens new itent? should open exits intent
 
 	    // Build notification
-	    // Actions are just fake
 	    Notification noti = new Notification.Builder(context)
 	        .setContentTitle("SecChat - Unread Message")
 	        .setContentText("Message from: " + alias)
@@ -227,23 +204,6 @@ public class BGService extends Service {
 
 	    mNM.notify(0, noti);
     }
-
-	public boolean sendMessage(String  username, String message) {
-		//Partner friendInfo = Partner.getFriendInfo(username);
-		//String msg = null, IP = null;
-		//int port = 0;
-		/*
-		String IP = friendInfo.ip;
-		//IP = "10.0.2.2";
-		int port = Integer.parseInt(friendInfo.port);
-		
-		msg = FriendInfo.USERNAME +"=" + URLEncoder.encode(this.username) +
-		 "&" + FriendInfo.USER_KEY + "=" + URLEncoder.encode(userKey) +
-		 "&" + FriendInfo.MESSAGE + "=" + URLEncoder.encode(message) +
-		 "&";
-		*/
-		return false; 
-	}
 
 	/*
 	public String authenticateUser(String usernameText, String passwordText) 
@@ -292,50 +252,4 @@ public class BGService extends Service {
 		return result;		
 	}
 	*/
-
-	public void messageReceived(String message) 
-	{				
-		//String[] params = message.split("&");
-		//String username= new String();
-		//String userKey = new String();
-		//String msg = new String();
-		/*
-		for (int i = 0; i < params.length; i++) {
-			String[] localpar = params[i].split("=");
-			if (localpar[0].equals(FriendInfo.USERNAME)) {
-				username = URLDecoder.decode(localpar[1]);
-			}
-			else if (localpar[0].equals(FriendInfo.USER_KEY)) {
-				userKey = URLDecoder.decode(localpar[1]);
-			}
-			else if (localpar[0].equals(FriendInfo.MESSAGE)) {
-				msg = URLDecoder.decode(localpar[1]);
-			}			
-		}
-		Log.i("Message received in service", message);
-		
-		FriendInfo friend = FriendController.checkFriend(username, userKey);
-		if ( friend != null)
-		{			
-			Intent i = new Intent(TAKE_MESSAGE);
-		
-			i.putExtra(FriendInfo.USERNAME, friend.userName);			
-			i.putExtra(FriendInfo.MESSAGE, msg);			
-			sendBroadcast(i);
-			String activeFriend = FriendController.getActiveFriend();
-			if (activeFriend == null || activeFriend.equals(username) == false) 
-			{
-				showNotification(username, msg);
-			}
-			Log.i("TAKE_MESSAGE broadcast sent by im service", "");
-		}	
-		*/
-		
-	}  
-
-	public void exit() 
-	{
-		timer.cancel();
-		this.stopSelf();
-	}
 }

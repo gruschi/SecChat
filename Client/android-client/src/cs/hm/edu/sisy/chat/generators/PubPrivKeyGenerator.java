@@ -8,7 +8,6 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -207,8 +206,8 @@ public class PubPrivKeyGenerator extends Activity{
 		try {
 	        cipher=Cipher.getInstance(algorithm);
 	        cipher.init(Cipher.DECRYPT_MODE, privKey);
-	        decryptedBytes = cipher.doFinal(stringToBytes(message)); //TODO: stringToBytes = Base64.decodeBase64(message)
-	        //decryptedBytes = cipher.doFinal(Base64.decode(message)); //TODO: stringToBytes = Base64.decodeBase64(message)
+	        decryptedBytes = cipher.doFinal(stringToBytes(message)); //or stringToBytes = Base64.decodeBase64(message)
+	        //decryptedBytes = cipher.doFinal(Base64.decode(message)); //or stringToBytes = Base64.decodeBase64(message)
 	        decrypted = new String(decryptedBytes);
 	        return decrypted;
 		} catch (InvalidKeyException e) {

@@ -44,11 +44,15 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
 		    	//TODO
 		    	break;
 		    case SEND_MSG:  
+		    	//TODO: we could catch something if we check/do: if(state != SCState.CONNECTED_TO_CHAT) return false;
 		    	return RestService.sendChatMessage(Integer.parseInt(params[0]), params[1], context); //receiverID, message
 		    case RECEIVE_MSG: 
+		    	//TODO: we could catch something if we check/do: if(state != SCState.CONNECTED_TO_CHAT) return false;
 		    	return RestService.receiveChatMessage(context);
 		    case SERVICE:  
 		    	return RestService.service(context);
+		    case DESTROY_CHAT_SESSION:  
+		    	return RestService.destroyChatSession(context);
 		    default: 
 		        break;
 		};
@@ -82,8 +86,10 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
             case CONNCET_PRIVATE_CHAT:  
             	if(result)
             		state = SCState.CONNECT_TO_CHAT_PENDING;
-            	else
+            	else {
             		state = SCState.NOT_CONNECTED_TO_CHAT;
+            		Common.doToast(context, "Try again...");
+            	}
             	break;
             case CONNECT_PUBLIC_CHAT: 
             	//TODO
@@ -99,9 +105,8 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
             		return;
             	}
             case RECEIVE_MSG: 
-            	//TODO
-            	//if(state == SCState.CONNECTED_TO_CHAT)
-            	//{
+            	if(state == SCState.CONNECTED_TO_CHAT)
+            	{
 	            	if(result) {
 	            		SCState.setMsgState(SCState.MSG_RECEIVED);
 	            		return;
@@ -111,10 +116,10 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
 	            		SCState.setMsgState(SCState.MSG_NOT_RECEIVED);
 	            		return;
 	            	}
-            	//}
-            	//else {
-            	//	restartBGService();
-            	//}
+            	}
+            	else {
+            		restartBGService();
+            	}
             case CONNECT_SERVICE: 
             	if(result) {
             		state = SCState.CONNECTED_TO_CHAT;
@@ -124,14 +129,25 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
             		state = SCState.NOT_CONNECTED_TO_CHAT;
             	break;
             case SERVICE:
-              if(SCState.getState() == SCState.CONNECT_TO_CHAT_PENDING)
-                if(result) {
-                  state = SCState.CONNECTED_TO_CHAT;
-                  restartBGService();
+                if(SCState.getState() == SCState.CONNECT_TO_CHAT_PENDING) {
+                  if(result) {
+                    state = SCState.CONNECTED_TO_CHAT;
+                    restartBGService();
+                  }
+                  //else: waiting, do nothing, there is no incoming transmission
                 }
-              else
-                if(result)
-                  state = SCState.CHAT_CONNECTION_INCOMING;
+                else {
+                  if(result) {
+                    state = SCState.CHAT_CONNECTION_INCOMING;
+                  }
+                  //else: waiting, do nothing, there is no incoming transmission
+                }
+            	break;
+            case DESTROY_CHAT_SESSION: 
+            	if(result)
+            		state = SCState.LOGGED_IN;
+            	else
+            		state = SCState.NOT_LOGGED_IN;
             	break;
             default: 
                 break;
