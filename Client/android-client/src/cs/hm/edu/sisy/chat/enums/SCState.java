@@ -1,7 +1,12 @@
 package cs.hm.edu.sisy.chat.enums;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import cs.hm.edu.sisy.chat.tools.Common;
+
 public class SCState {
 	
+	public static final int ERROR = -1;
 	public static final int TIMED_OUT = 0;
     public static final int NOT_REGISTERED = 1;
     public static final int LOGGED_OUT = 3;
@@ -18,18 +23,40 @@ public class SCState {
 	public static final int MSG_NOT_RECEIVED = 14;
     public static final int MSG_RECEIVED = 15;
 	
-	private static int state;
+	//private static int state;
 	private static int msgState = MSG_DEFAULT;
 
-	public static int getState() {
-		return state;
+	public static int getState(Context context) {
+		   SharedPreferences sharedpreferences = context.getSharedPreferences(SCConstants.MyPREFERENCES, Context.MODE_PRIVATE);
+		   
+		   return sharedpreferences.getInt( SCConstants.SCSTATE, -1 );
+	}
+	
+	public static void setState(int state, Context context) {
+		   SharedPreferences sharedpreferences = context.getSharedPreferences(SCConstants.MyPREFERENCES, Context.MODE_PRIVATE);
+		   
+		   //do toast when state is changed
+		   if(getState(context) != state)
+			   Common.doToast(context, SCState.getStateMessageByState(context, state) +"");
+		   
+		   sharedpreferences.edit().putInt(SCConstants.SCSTATE, state).apply();
 	}
 	
 	public static int getMsgState() {
+		//TODO: Storage in SharedPreferences
 		return msgState;
 	}
 	
-	public static String getStateMessage() {
+	public static void setMsgState(int msgState) {
+		//TODO: Storage in SharedPreferences
+		SCState.msgState = msgState;
+	}
+	
+	public static String getStateMessage(Context context) {
+		return getStateMessageByState(context, getState(context));
+	}
+	
+	public static String getStateMessageByState(Context context, int state) {
 		String stateMessage;
 		
         switch (state) {
@@ -71,7 +98,11 @@ public class SCState {
 		return stateMessage;
 	}
 	
-	public static String getMsgStateMessage() {
+	public static String getMsgStateMessage(Context context) {
+		return getMsgStateMessageById(context, getMsgState());
+	}
+	
+	public static String getMsgStateMessageById(Context context, int state) {
 		String msgStateMessage;
 		
         switch (state) {
@@ -93,13 +124,5 @@ public class SCState {
         }
         
 		return msgStateMessage;
-	}
-
-	public static void setState(int state) {
-		SCState.state = state;
-	}
-	
-	public static void setMsgState(int msgState) {
-		SCState.msgState = msgState;
 	}
 }

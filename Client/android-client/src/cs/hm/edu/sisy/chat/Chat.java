@@ -31,7 +31,7 @@ public class Chat extends Activity {
         connectButton.setOnClickListener(new OnClickListener(){
 			public void onClick(View arg0) 
 			{
-				new RestThreadTask(SCTypes.CONNCET_PRIVATE_CHAT, (Context) Chat.this).execute( receiverPin.toString(), receiverID.toString() );
+				new RestThreadTask(SCTypes.CONNCET_PRIVATE_CHAT, (Context) Chat.this).execute( receiverPin.getText().toString(), receiverID.getText().toString() );
 			}
         });
     }

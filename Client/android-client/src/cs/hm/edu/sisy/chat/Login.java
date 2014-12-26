@@ -17,6 +17,7 @@ import cs.hm.edu.sisy.chat.communication.RestWrapper;
 import cs.hm.edu.sisy.chat.enums.SCState;
 import cs.hm.edu.sisy.chat.enums.SCTypes;
 import cs.hm.edu.sisy.chat.tools.Common;
+import cs.hm.edu.sisy.chat.tools.TestData;
 
 public class Login extends Activity {	
 
@@ -28,6 +29,7 @@ public class Login extends Activity {
     public static final int EXIT_APP_ID = Menu.FIRST + 1;
     
     private boolean timerIsStarted = false;
+    private boolean timerExpiredUnsuccessfully = true;
     
     //handler - background thread which acts as state machine handler
 	final Handler handler = new Handler();
@@ -37,17 +39,20 @@ public class Login extends Activity {
 			   
 			      Login.this.runOnUiThread(new Runnable() {
 			    	  public void run() {
-			    		  //TestData.printInterestingData(Login.this);
+			    		  TestData.printInterestingData(Login.this);
 			    		  		    		  
-			    		  if( SCState.getState() == SCState.REGISTERED || SCState.getState() == SCState.NOT_LOGGED_IN )
+			    		  if( SCState.getState(Login.this) == SCState.REGISTERED || SCState.getState(Login.this) == SCState.NOT_LOGGED_IN )
 			    		  {
 			    		        loginButton.setVisibility(View.VISIBLE);
 			    		        registerButton.setEnabled(false);
 			    		        alias.setEnabled(false);
 			    		  }
 			    		  
-						  if( SCState.getState() == SCState.LOGGED_IN )
-								redirectToHome();
+						  if( SCState.getState(Login.this) == SCState.LOGGED_IN )
+						  {
+							  timerExpiredUnsuccessfully = false;
+							  redirectToHome();
+						  }
 			    	  }
 			    	});
 			      
@@ -60,8 +65,8 @@ public class Login extends Activity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    	
-    	//Already loggedin or at least registred?
+
+    	//Already logged in or at least registred?
     	if( RestWrapper.isRegistered(this) )
         	if( RestWrapper.isLoggedIn(this) )
         		redirectToHome();
@@ -88,10 +93,10 @@ public class Login extends Activity {
 					Thread registerThread = new Thread(runnable);
 					registerThread.start();
 					
-					if(SCState.getState() == SCState.TIMED_OUT)
-						SCState.setState(SCState.NOT_REGISTERED);
+					if(SCState.getState(Login.this) == SCState.TIMED_OUT)
+						SCState.setState(SCState.NOT_REGISTERED, Login.this);
 				      
-					if( SCState.getState() == SCState.NOT_REGISTERED ) {
+					if( SCState.getState(Login.this) == SCState.NOT_REGISTERED ) {
 						if(RestWrapper.registerNeeded(Login.this, alias.getText().toString()))
 							new RestThreadTask(SCTypes.REGISTER, (Context) Login.this).execute(alias.getText().toString());
 					}	
@@ -108,10 +113,9 @@ public class Login extends Activity {
 						     }
 
 						     public void onFinish() {
-						    	if(SCState.getState() == SCState.NOT_REGISTERED)
+						    	if(SCState.getState(Login.this) == SCState.NOT_REGISTERED && timerExpiredUnsuccessfully)
 						    	{
-						    		SCState.setState(SCState.TIMED_OUT);
-						    		Common.doToast(Login.this, SCState.getStateMessage() +"");
+						    		SCState.setState(SCState.TIMED_OUT, Login.this);
 						    	}
 								timerIsStarted = false;
 						     }
@@ -125,7 +129,7 @@ public class Login extends Activity {
         	@Override
 			public void onClick(View arg0) 
 			{
-				if( SCState.getState() == SCState.REGISTERED || SCState.getState() == SCState.NOT_LOGGED_IN ) {
+				if( SCState.getState(Login.this) == SCState.REGISTERED || SCState.getState(Login.this) == SCState.NOT_LOGGED_IN ) {
 					if (RestWrapper.loginNeeded(Login.this))
 						new RestThreadTask(SCTypes.LOGIN, (Context) Login.this).execute();
 				}
@@ -156,7 +160,7 @@ public class Login extends Activity {
 		
 		handler.removeCallbacks(runnable);
 		
-		Login.this.finish();
+		finish();
 	}
 
 	@Override
@@ -185,8 +189,9 @@ public class Login extends Activity {
     
     private void redirectToHome() {
 		Intent i = new Intent(Login.this, Home.class);												
-		startActivity(i);	
-		Login.this.onDestroy();
+		startActivity(i);
+		
+		onDestroy();
 	}
     
 }

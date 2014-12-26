@@ -13,6 +13,7 @@
         android:layout_alignBottom="@+id/yourPinID"
         android:layout_alignLeft="@+id/txtYourId"
         android:text="-"
+        android:textSize="@dimen/std_font_size"
         tools:context=".MainActivity" />
 
     <TextView
@@ -23,6 +24,7 @@
         android:layout_marginLeft="81dp"
         android:layout_toRightOf="@+id/yourAliasID"
         android:text="-"
+        android:textSize="@dimen/std_font_size"
         tools:context=".MainActivity" />
 
     <TextView
@@ -34,6 +36,7 @@
         android:layout_marginLeft="35dp"
         android:layout_marginTop="35dp"
         android:text="@string/yourAlias"
+        android:textSize="@dimen/std_font_size"
         tools:context=".MainActivity" />
 
     <TextView
@@ -44,6 +47,7 @@
         android:layout_below="@+id/yourAliasID"
         android:layout_marginTop="25dp"
         android:text="@string/yourID"
+        android:textSize="@dimen/std_font_size"
         tools:context=".MainActivity" />
 
     <TextView
@@ -54,6 +58,7 @@
         android:layout_below="@+id/yourSecChatID"
         android:layout_marginTop="30dp"
         android:text="@string/yourPIN"
+        android:textSize="@dimen/std_font_size"
         tools:context=".MainActivity" />
 
     <TextView
@@ -63,15 +68,19 @@
         android:layout_above="@+id/yourPinID"
         android:layout_alignLeft="@+id/txtYourAlias"
         android:text="-"
+        android:textSize="@dimen/std_font_size"
         tools:context=".MainActivity" />
 
     <Button
         android:id="@+id/btnHint"
-        style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/yourPinID"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="17dp"
+        android:layout_toLeftOf="@+id/txtYourAlias"
+        android:background="@drawable/custom_button_oval"
+        style="?android:attr/buttonStyleSmall"
         android:text="Hint!" />
 
 </RelativeLayout>

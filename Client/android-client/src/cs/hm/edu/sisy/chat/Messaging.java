@@ -301,7 +301,7 @@ public class Messaging extends Activity {
       
 	private void exitChat() {
 		//change state from CONNECTED_TO_CHAT to
-		SCState.setState(SCState.LOGGED_IN);
+		SCState.setState(SCState.LOGGED_IN, Messaging.this);
 		
 		//exit server connection to other peer
 		new RestThreadTask(SCTypes.DESTROY_CHAT_SESSION, Messaging.this).execute();

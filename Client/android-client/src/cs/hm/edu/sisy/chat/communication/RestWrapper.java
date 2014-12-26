@@ -15,13 +15,12 @@ public class RestWrapper {
 	public static boolean isRegistered(Context context)
     {
 		boolean isRegistered = ( SharedPrefs.getID(context) != 0 );
-		
-		if( SCState.getState() <= SCState.NOT_LOGGED_IN )
+		if( SCState.getState(context) <= SCState.NOT_LOGGED_IN )
 		{
 			if(isRegistered)
-				SCState.setState(SCState.REGISTERED);
+				SCState.setState(SCState.REGISTERED, context);
 			else
-				SCState.setState(SCState.NOT_REGISTERED);
+				SCState.setState(SCState.NOT_REGISTERED, context);
 		}
 		
     	return isRegistered;
@@ -32,9 +31,9 @@ public class RestWrapper {
 		boolean isLoggedIn = ( SharedPrefs.getSessionId(context) != null );
 		
 		if(isLoggedIn)
-			SCState.setState(SCState.LOGGED_IN);
+			SCState.setState(SCState.LOGGED_IN, context);
 		else
-			SCState.setState(SCState.NOT_LOGGED_IN);
+			SCState.setState(SCState.NOT_LOGGED_IN, context);
 		
     	return isLoggedIn;
     }  

@@ -129,7 +129,7 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
             		state = SCState.NOT_CONNECTED_TO_CHAT;
             	break;
             case SERVICE:
-                if(SCState.getState() == SCState.CONNECT_TO_CHAT_PENDING) {
+                if(SCState.getState(context) == SCState.CONNECT_TO_CHAT_PENDING) {
                   if(result) {
                     state = SCState.CONNECTED_TO_CHAT;
                     restartBGService();
@@ -153,9 +153,8 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
                 break;
         }
         
-        Common.doToast(context, SCState.getStateMessage() +"");
-        
-        SCState.setState(state);
+        if(state != 0)
+        	SCState.setState(state, context);
     }
     
     private void restartBGService() {

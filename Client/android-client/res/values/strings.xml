@@ -24,8 +24,8 @@
     <string name="close">close</string>
     <string name="exit">exit</string>
     
-    <string name="generateNewPIN">generate new PIN</string>
-    <string name="saveAlias">save new Alias</string>
+    <string name="generateNewPIN">generate PIN</string>
+    <string name="saveAlias">save Alias</string>
     
   <string name="exit_application">Exit</string>
 

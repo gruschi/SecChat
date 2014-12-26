@@ -3,7 +3,9 @@ package cs.hm.edu.sisy.chat.tools;
 import java.util.Calendar;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
+import cs.hm.edu.sisy.chat.enums.SCConstants;
 import cs.hm.edu.sisy.chat.enums.SCState;
 
 public class Common {
@@ -22,7 +24,8 @@ public class Common {
      
      public static void doToast(Context context, String message)
      {
-     	Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+    	Log.d(SCConstants.LOG, "TOAST: " + message);
+     	Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
      }
      
      public static String stateToString(int id) 

@@ -20,7 +20,7 @@ public class TestData {
     	String pubK = PubPrivKeyGenerator.getOwnPrivateKeyAsString(thisC);
     	String privK = PubPrivKeyGenerator.getOwnPublicKeyAsString(thisC);
     	
-    	String state = SCState.getStateMessage();
+    	String state = SCState.getStateMessage(thisC);
     	
     	Log.d(SCConstants.LOG, "Alias: "+alias);
     	Log.d(SCConstants.LOG, "Hash: "+hash);

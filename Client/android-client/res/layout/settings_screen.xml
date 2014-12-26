@@ -81,9 +81,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
+        android:layout_alignRight="@+id/yourSecChatID"
         android:layout_below="@+id/yourPinID"
         android:layout_marginLeft="21dp"
         android:layout_marginTop="18dp"
+        android:background="@drawable/custom_button_oval"
         android:text="@string/generateNewPIN" />
 
     <Button
@@ -93,7 +95,9 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/btnGenerateNewPIN"
         android:layout_alignBottom="@+id/btnGenerateNewPIN"
+        android:layout_alignLeft="@+id/txtYourPin"
         android:layout_alignRight="@+id/txtYourAlias"
+        android:background="@drawable/custom_button_oval"
         android:text="@string/saveAlias" />
 
 	  <ImageView

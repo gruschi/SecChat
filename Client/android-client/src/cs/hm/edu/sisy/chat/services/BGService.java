@@ -50,7 +50,7 @@ public class BGService extends Service {
     	Common.doToast(this, "MyService Started");
         Log.d(TAG, "onStart");
 
-   	if(SCState.getState() == SCState.CONNECTED_TO_CHAT) {
+   	if(SCState.getState(BGService.this) == SCState.CONNECTED_TO_CHAT) {
       if(waitingScheduleExecutor != null)
         waitingScheduleExecutor.shutdownNow();
    		messagingSchedule(BGService.this);
@@ -121,16 +121,15 @@ public class BGService extends Service {
     	waitingScheduleExecutor.scheduleAtFixedRate(new Runnable() {
     	  public void run() {
     		Log.d(TAG, "wSCHEDULE");
-    		if(SCState.getState() != SCState.CHAT_CONNECTION_INCOMING)
+    		
+    		if(SCState.getState(context) != SCState.CHAT_CONNECTION_INCOMING)
     			new RestThreadTask(SCTypes.SERVICE, context).execute();
     		
-    		if(SCState.getState() < SCState.LOGGED_IN)
-    		{
+    		if(SCState.getState(context) < SCState.LOGGED_IN)
     			disconnect(context);
-    		}
     		  
     		//someone is calling me, call back
-    		if(SCState.getState() == SCState.CHAT_CONNECTION_INCOMING)
+    		if(SCState.getState(context) == SCState.CHAT_CONNECTION_INCOMING)
     			new RestThreadTask(SCTypes.CONNECT_SERVICE, context).execute(Partner.getPartnerId()+"");
     		  
     	  }
@@ -149,12 +148,12 @@ public class BGService extends Service {
     		  
     		  sendMessage(context);
     		  
-      		  if(SCState.getState() < SCState.LOGGED_IN)
+      		  if(SCState.getState(context) < SCState.LOGGED_IN)
       		  {
       			  disconnect(context);
       		  }
     		  
-    		  if(!Messaging.isActivityVisible() && SCState.getMsgState()==SCState.MSG_RECEIVED) 
+    		  if(!Messaging.isActivityVisible() && SCState.getMsgState() == SCState.MSG_RECEIVED) 
     		  {
     			  showNotification( Partner.getPartnerAlias(), context );
     			  SCState.setMsgState(SCState.MSG_DEFAULT);

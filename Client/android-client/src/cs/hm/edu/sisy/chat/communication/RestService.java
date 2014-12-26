@@ -177,11 +177,20 @@ public class RestService
       try {
 	      List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 	      nameValuePairs.add(new BasicNameValuePair("data[User][sessionId]", sessionId));
-	      nameValuePairs.add(new BasicNameValuePair("data[Connection][receiverID ]", receiverID));
+	      nameValuePairs.add(new BasicNameValuePair("data[Connection][receiverId]", receiverID));
 	      nameValuePairs.add(new BasicNameValuePair("data[Connection][alias]", alias));
 	      nameValuePairs.add(new BasicNameValuePair("data[Connection][receiverPin]", receiverPin));
 	      nameValuePairs.add(new BasicNameValuePair("data[Connection][pubKey]", pubKey));
 	      httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+	      
+	      /*
+	      Log.d(SCConstants.LOG, "Link: "+SCConstants.REST_CONNECT_FRIEND);
+		  Log.d(SCConstants.LOG, "data[User][sessionId]: "+sessionId);
+		  Log.d(SCConstants.LOG, "data[Connection][receiverId]: "+receiverID);
+		  Log.d(SCConstants.LOG, "data[Connection][alias]: "+alias);
+		  Log.d(SCConstants.LOG, "data[Connection][receiverPin]: "+receiverPin);
+		  Log.d(SCConstants.LOG, "data[Connection][pubKey]: "+pubKey);
+		  */
 	
 	      // Execute HTTP Post Request
 	      HttpResponse response = httpclient.execute(host, httppost);
@@ -195,6 +204,11 @@ public class RestService
 	        {
 	          BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
 	          String json = reader.readLine();
+	          
+	          //If there is no valid request...
+	          if(json.equalsIgnoreCase("null") || json == null || json == "" || json.isEmpty() || json == JSONObject.NULL)
+	        	  return false;
+	          
 	          JSONTokener tokener = new JSONTokener(json);
 	          JSONArray jsonarray = new JSONArray(tokener);
 	
@@ -202,7 +216,7 @@ public class RestService
 	          
 	          //if sessionId is expired, catch here and logg out
 	          if(jsonobject.toString() == "{disconnected}") {
-	        	  SCState.setState(SCState.NOT_LOGGED_IN);
+	        	  SCState.setState(SCState.NOT_LOGGED_IN, context);
 	        	  return false;
 	          }
 	          
@@ -256,26 +270,31 @@ public class RestService
 	        try
 	        {
 	          BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-
 	          String json = reader.readLine();
-	          //TEST-JSON
+	          
+	          //If there is no request...
+	          if(json.equalsIgnoreCase("null") || json == null || json == "" || json.isEmpty() || json == JSONObject.NULL)
+	        	  return false;
+	          
+	          //TEST-JSON:
 	          //json = "{\"chatSession\":[{\"Connection\":{\"id\":\"2\",\"senderId\":\"5\",\"receiverId\":\"10\",\"alias\":\"tu001\",\"receiverPin\":\"1234\",\"pubKey\":\"g0kn4pg0kn4p23oge5ng0kn4p23oge5neqp5f73i1ghf5eqp5f73i1ghf523oge5neqp5f73i1ghf5\"}}]}";
 	          JSONObject jsonobject = new JSONObject(json);
 
-	          Log.d(SCConstants.LOG, "HTTP-Response: ServiceJSON1: " + jsonobject.toString());
+	          Log.d(SCConstants.LOG, "HTTP-Response: ServiceJSON: " + jsonobject.toString());
 	          
+	        //If there is no request...
 	          if(jsonobject.toString() == "{\"chatSession\":[]}")
 	        	  return false;
 	          
 	          //if sessionId is expired, catch here and logg out
 	          if(jsonobject.toString() == "{disconnected}") {
-	        	  SCState.setState(SCState.NOT_LOGGED_IN);
+	        	  SCState.setState(SCState.NOT_LOGGED_IN, context);
 	        	  return false;
 	          }
 	          
 	          //if chatSessionId is expired, catch here and logg out
 	          if(jsonobject.toString() == "{chatDisconnected}") {
-	        	  SCState.setState(SCState.LOGGED_IN);
+	        	  SCState.setState(SCState.LOGGED_IN, context);
 	        	  return false;
 	          }
 
@@ -331,7 +350,7 @@ public class RestService
 	  try {
 	      List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 	      nameValuePairs.add(new BasicNameValuePair("data[User][sessionId]", sessionId));
-	      nameValuePairs.add(new BasicNameValuePair("data[Connection][receiverID ]", receiverID));
+	      nameValuePairs.add(new BasicNameValuePair("data[Connection][receiverID]", receiverID));
 	      nameValuePairs.add(new BasicNameValuePair("data[Connection][alias]", alias));
 	      nameValuePairs.add(new BasicNameValuePair("data[Connection][pubKey]", pubKey));
 	      httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
@@ -354,7 +373,7 @@ public class RestService
 	          
 	          //if sessionId is expired, catch here and logg out
 	          if(jsonobject.toString() == "{disconnected}") {
-	        	  SCState.setState(SCState.NOT_LOGGED_IN);
+	        	  SCState.setState(SCState.NOT_LOGGED_IN, context);
 	        	  return false;
 	          }
 	          
@@ -417,7 +436,7 @@ public class RestService
 	          
 	          //if sessionId is expired, catch here and logg out
 	          if(jsonobject.toString() == "{disconnected}") {
-	        	  SCState.setState(SCState.NOT_LOGGED_IN);
+	        	  SCState.setState(SCState.NOT_LOGGED_IN, context);
 	        	  return false;
 	          }
 	          
@@ -477,7 +496,7 @@ public class RestService
 	          
 	          //if sessionId is expired, catch here and logg out
 	          if(jsonobject.toString() == "{disconnected}") {
-	        	  SCState.setState(SCState.NOT_LOGGED_IN);
+	        	  SCState.setState(SCState.NOT_LOGGED_IN, context);
 	        	  return false;
 	          }
 	          
