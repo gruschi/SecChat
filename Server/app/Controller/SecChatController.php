@@ -4,7 +4,7 @@ class SecChatController extends AppController {
 	
 public function beforeFilter() {
 		parent::beforeFilter();
- 		$this->Auth->allow('connect', 'service', 'serviceConnect');
+ 		$this->Auth->allow('connect', 'service', 'serviceConnect', 'destroyChatSession');
 	}
 	
 	public function index(){		
@@ -71,6 +71,23 @@ public function beforeFilter() {
 		
 		$this->layout = "ajax";
 		
+	}
+	
+	public function destroyChatSession(){
+		$this->loadModel("Connection");
+		$return = false;
+		if(isset($this->request->data["Connection"]["id"]) && isset($this->request->data["User"]["sessionId"])){
+			//TODO Teste ob SessionId zur senderId passt.			
+			$this->Connection->delete($this->request->data('Connection.id'));
+			
+			$return = true;
+		}
+		
+		$result = array("chatDisconnected" => $return);
+		
+		$this->set("result", json_encode($result));
+		
+		$this->layout = "ajax";
 	}
 }
 
