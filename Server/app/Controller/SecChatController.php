@@ -44,7 +44,7 @@ public function beforeFilter() {
 							"conditions" => 
 								array("Connection.receiverId" => intval($objUser["User"]["id"]), "Connection.receiverPin IS NOT NULL"),
 							"fields" => array(
-								"Connection.id", "Connection.senderId", "Connection.alias", "Connection.receiverPin", "Connection.PubKey"
+								"Connection.senderId", "Connection.alias", "Connection.receiverPin", "Connection.PubKey"
 							)
 					)
 				);			
