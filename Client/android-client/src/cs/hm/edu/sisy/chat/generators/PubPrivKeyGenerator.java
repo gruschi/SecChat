@@ -233,6 +233,9 @@ public class PubPrivKeyGenerator extends Activity{
     }
 
     public static byte[] stringToBytes(String s) {
+    	if(s == null)
+    		return null;
+    	
         byte[] b2 = new BigInteger(s, 36).toByteArray();
         return Arrays.copyOfRange(b2, 1, b2.length);
     }

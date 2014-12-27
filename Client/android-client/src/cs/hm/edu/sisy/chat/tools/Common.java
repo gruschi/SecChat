@@ -45,6 +45,18 @@ public class Common {
      	return message;
      }
      
+     public static String beautifyId(int id) 
+     {
+	     String secChatId = id+"";
+
+	     return secChatId.substring(0,3) + " " + secChatId.substring(3,6) + " " + secChatId.substring(6);
+     }
+     
+     public static String replaceWhitespaces(String id) 
+     {
+	     return id.replaceAll("\\s","");
+     }
+     
      /*
      public int stateToInt(int id) 
      {

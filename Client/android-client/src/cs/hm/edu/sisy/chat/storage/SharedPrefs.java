@@ -3,10 +3,13 @@ package cs.hm.edu.sisy.chat.storage;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.util.Log;
 import cs.hm.edu.sisy.chat.enums.SCConstants;
 import cs.hm.edu.sisy.chat.objects.PubKey;
 
 public class SharedPrefs {
+	
+    private static final String TAG = "SharedPrefs";
 		   
 	   public static void saveHash(Context context, String hash)
 	   {
@@ -159,9 +162,11 @@ public class SharedPrefs {
 	  	   SharedPreferences sharedpreferences = context.getSharedPreferences(SCConstants.MyPREFERENCES, Context.MODE_PRIVATE);
 
 		   sharedpreferences.edit().putInt(SCConstants.CHAT_SESSION_ID, chatSessionId).apply();
+		   
+		   Log.d(TAG, "saved new chatSessionId: " + chatSessionId);
 	   }
 	   
-	   public static int getChatSessionId(Context context) 
+	   public static int getChatSessionId(Context context)
 	   {
 		   SharedPreferences sharedpreferences = context.getSharedPreferences(SCConstants.MyPREFERENCES, Context.MODE_PRIVATE);
 		   

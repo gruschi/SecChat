@@ -197,7 +197,7 @@ public class Home extends Activity {
       
       yourAlias.setText( SharedPrefs.getAlias(this) +"" );
       yourPIN.setText( SharedPrefs.getPIN(this) +"" );
-      yourID.setText( SharedPrefs.getID(this) +"" );
+      yourID.setText( Common.beautifyId(SharedPrefs.getID(this)) );
     }
     
     // Our handler for received Intents. This will be called whenever an Intent

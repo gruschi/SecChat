@@ -45,7 +45,7 @@ public class Settings extends Activity
      
      txtYourAlias.setText(SharedPrefs.getAlias(this) +"");
      txtYourPin.setText(SharedPrefs.getPIN(this) +"");
-     txtYourId.setText(SharedPrefs.getID(this) +"");
+     txtYourId.setText( Common.beautifyId(SharedPrefs.getID(this)) );
      
      GenerateQRCode();
      

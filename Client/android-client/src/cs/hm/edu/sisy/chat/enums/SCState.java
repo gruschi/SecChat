@@ -22,10 +22,7 @@ public class SCState {
     public static final int MSG_SENT = 13;
 	public static final int MSG_NOT_RECEIVED = 14;
     public static final int MSG_RECEIVED = 15;
-	
-	//private static int state;
-	private static int msgState = MSG_DEFAULT;
-
+    
 	public static int getState(Context context) {
 		   SharedPreferences sharedpreferences = context.getSharedPreferences(SCConstants.MyPREFERENCES, Context.MODE_PRIVATE);
 		   
@@ -42,14 +39,20 @@ public class SCState {
 		   sharedpreferences.edit().putInt(SCConstants.SCSTATE, state).apply();
 	}
 	
-	public static int getMsgState() {
-		//TODO: Storage in SharedPreferences
-		return msgState;
+	public static int getMsgState(Context context) {
+		   SharedPreferences sharedpreferences = context.getSharedPreferences(SCConstants.MyPREFERENCES, Context.MODE_PRIVATE);
+		   
+		   return sharedpreferences.getInt( SCConstants.MSGSTATE, -1 );
 	}
 	
-	public static void setMsgState(int msgState) {
-		//TODO: Storage in SharedPreferences
-		SCState.msgState = msgState;
+	public static void setMsgState(int msgState, Context context) {
+		   SharedPreferences sharedpreferences = context.getSharedPreferences(SCConstants.MyPREFERENCES, Context.MODE_PRIVATE);
+		   
+		   //do toast when state is changed
+		   if(msgState == MSG_SENT)
+			   Common.doToast(context, SCState.getMsgStateMessageById(context, msgState) +"");
+		   
+		   sharedpreferences.edit().putInt(SCConstants.MSGSTATE, msgState).apply();
 	}
 	
 	public static String getStateMessage(Context context) {
@@ -64,7 +67,7 @@ public class SCState {
 	        	stateMessage = "Timeout";
 	        	break;
 	        case 1:     
-	        	stateMessage = "Not Registred";
+	        	stateMessage = "Not Registered";
 	        	break;
 	        case 2: 
 	        	stateMessage = "-";
@@ -85,9 +88,12 @@ public class SCState {
 	        	stateMessage = "Not Connected To Chat";
 	        	break;
 	        case 8:
-	        	stateMessage = "Connect To Chat Pending";
+	        	stateMessage = "Chat Connection Incoming";
 	        	break;
 	        case 9:
+	        	stateMessage = "Connect To Chat Pending";
+	        	break;
+	        case 10:
 	        	stateMessage = "Connected To Chat";
 	        	break;
             default:
@@ -99,7 +105,7 @@ public class SCState {
 	}
 	
 	public static String getMsgStateMessage(Context context) {
-		return getMsgStateMessageById(context, getMsgState());
+		return getMsgStateMessageById(context, getMsgState(context));
 	}
 	
 	public static String getMsgStateMessageById(Context context, int state) {

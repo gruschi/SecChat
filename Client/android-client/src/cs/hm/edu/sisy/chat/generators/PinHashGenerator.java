@@ -4,9 +4,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
+import cs.hm.edu.sisy.chat.storage.SharedPrefs;
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.util.Log;
 
 public class PinHashGenerator {
+	
+    private static final String TAG = "PinHashGenerator";
 	
        //PIN, 6 default length
        public static String generatePIN() 
@@ -17,7 +22,7 @@ public class PinHashGenerator {
 	   public static String generatePIN( int length ) 
 	   {
 		    String pin = "";
-		    String possible = "abcdefghijklmnopqrstuvwxyz0123456789"; //ABCDEFGHIJKLMNOPQRSTUVWXYZ
+		    String possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; //abcdefghijklmnopqrstuvwxyz
 
 		    for( int i=0; i < length; i++ )
 		    	pin += possible.charAt((int) Math.floor(Math.random() * possible.length()));
@@ -56,5 +61,19 @@ public class PinHashGenerator {
 	        byte[] salt = new byte[16];
 	        sr.nextBytes(salt);
 	        return salt.toString();
+	    }
+	    
+	    public static boolean validatePin(Context context, String pin)
+	    {
+	    	boolean valid = SharedPrefs.getPIN(context).equalsIgnoreCase(pin);
+	    	
+    		Log.d(TAG, "Testing: PIN: " + SharedPrefs.getPIN(context) + " vs " + pin);
+	    	
+	    	if(valid)
+	    		Log.d(TAG, "ID and PIN valid!");
+	    	else
+	    		Log.d(TAG, "ID and PIN are NOT valid!");
+			
+	    	return valid;
 	    }
 }

@@ -1,8 +1,16 @@
 package cs.hm.edu.sisy.chat.objects;
 
+import cs.hm.edu.sisy.chat.enums.SCPartner;
+
 public class Partner {
 	private static String partnerAlias;
 	private static String partnerPubKey;
+	
+	 //i am sender or receiver, by default receiver
+	private static SCPartner type = SCPartner.RECEIVER;
+	
+	//if I am receiver, so the following are my data...
+	//if I am sender, this are my partners data
 	private static String partnerPin;
 	private static int partnerId;
 	
@@ -52,5 +60,13 @@ public class Partner {
 	}
 	public static void resetPartnerNewMsg() {
 		Partner.partnerNewMsg = "";
+	}
+	public static SCPartner getType() {
+		//TODO: Storage in SharedPreferences
+		return type;
+	}
+	public static void setType(SCPartner type) {
+		//TODO: Storage in SharedPreferences
+		Partner.type = type;
 	}
 }

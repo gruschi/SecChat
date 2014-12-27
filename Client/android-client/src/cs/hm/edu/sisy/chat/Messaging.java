@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import cs.hm.edu.sisy.chat.communication.RestThreadTask;
+import cs.hm.edu.sisy.chat.enums.SCPartner;
 import cs.hm.edu.sisy.chat.enums.SCState;
 import cs.hm.edu.sisy.chat.enums.SCTypes;
 import cs.hm.edu.sisy.chat.objects.Partner;
@@ -72,7 +73,7 @@ public class Messaging extends Activity {
 					messageText.setText("");
 					Thread thread = new Thread(){					
 						public void run() {
-							new RestThreadTask(SCTypes.SEND_MSG, Messaging.this).execute(Partner.getPartnerId()+"", message.toString()); 
+							new RestThreadTask(SCTypes.SEND_MSG, Messaging.this).execute(message.toString()); 
 							
 							//TODO timer "message sent" or "message not sent" via msgState
 							/*
@@ -312,6 +313,7 @@ public class Messaging extends Activity {
 		Partner.setPartnerPin(null);
 		Partner.setPartnerPubKey(null);
 		Partner.resetPartnerNewMsg();
+		Partner.setType(SCPartner.RECEIVER);
 		
 		//reset chatSession
 		SharedPrefs.resetChatSessionId(Messaging.this);

@@ -3,6 +3,7 @@ package cs.hm.edu.sisy.chat.communication;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.util.Log;
 import cs.hm.edu.sisy.chat.enums.SCState;
 import cs.hm.edu.sisy.chat.enums.SCTypes;
 import cs.hm.edu.sisy.chat.services.BGService;
@@ -14,6 +15,8 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
 
     private SCTypes type; 
     private Context context;
+    
+    private static final String TAG = "RestThreadTask";
     
     private int state = 0;
 	
@@ -36,8 +39,8 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
 		    case LOGOUT:  
 		    	return RestService.logoutUser( context);
 		    case CONNECT_SERVICE:  
-		    	return RestService.serviceConnect(context, params[0]); //String String receiverID
-		    case CONNCET_PRIVATE_CHAT:  
+		    	return RestService.serviceConnect(context);
+		    case CONNCET_PRIVATE_CHAT:
 		    	//return RestWrapper.connect2Chat(context);
 		    	return RestService.connectPrivChat(context, params[0], params[1]); //String receiverPin, String receiverID
 		    case CONNECT_PUBLIC_CHAT: 
@@ -45,7 +48,7 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
 		    	break;
 		    case SEND_MSG:  
 		    	//TODO: we could catch something if we check/do: if(state != SCState.CONNECTED_TO_CHAT) return false;
-		    	return RestService.sendChatMessage(Integer.parseInt(params[0]), params[1], context); //receiverID, message
+		    	return RestService.sendChatMessage(params[0], context); //, message
 		    case RECEIVE_MSG: 
 		    	//TODO: we could catch something if we check/do: if(state != SCState.CONNECTED_TO_CHAT) return false;
 		    	return RestService.receiveChatMessage(context);
@@ -96,24 +99,24 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
             	break;
             case SEND_MSG:  
             	if(result) {
-            		SCState.setMsgState(SCState.MSG_SENT);
+            		SCState.setMsgState(SCState.MSG_SENT, context);
             		return;
             	}
             	else
             	{
-            		SCState.setMsgState(SCState.MSG_NOT_SENT);
+            		SCState.setMsgState(SCState.MSG_NOT_SENT, context);
             		return;
             	}
             case RECEIVE_MSG: 
-            	if(state == SCState.CONNECTED_TO_CHAT)
+            	if(SCState.getState(context) == SCState.CONNECTED_TO_CHAT)
             	{
 	            	if(result) {
-	            		SCState.setMsgState(SCState.MSG_RECEIVED);
+	            		SCState.setMsgState(SCState.MSG_RECEIVED, context);
 	            		return;
 	            	}
 	            	else
 	            	{
-	            		SCState.setMsgState(SCState.MSG_NOT_RECEIVED);
+	            		SCState.setMsgState(SCState.MSG_NOT_RECEIVED, context);
 	            		return;
 	            	}
             	}
@@ -158,6 +161,7 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
     }
     
     private void restartBGService() {
+    	Log.d(TAG, "Restarting BGService");
 		context.stopService(new Intent(context, BGService.class));
 		context.startService(new Intent(context, BGService.class));
     }

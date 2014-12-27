@@ -12,6 +12,7 @@ public class SCConstants {
      public static final String PIN = "pin";
  	 public static final String CHAT_SESSION_ID = "chatSessionId";
  	 public static final String SCSTATE = "SCState";
+     public static final String MSGSTATE = "MSGState";
 
 	 //REST
      public static final String REST_SERVER = "https://secchat.bg-world.de" ;

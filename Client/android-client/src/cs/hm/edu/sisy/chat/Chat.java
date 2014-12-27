@@ -10,7 +10,10 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import cs.hm.edu.sisy.chat.communication.RestThreadTask;
+import cs.hm.edu.sisy.chat.enums.SCPartner;
 import cs.hm.edu.sisy.chat.enums.SCTypes;
+import cs.hm.edu.sisy.chat.objects.Partner;
+import cs.hm.edu.sisy.chat.tools.Common;
 
 public class Chat extends Activity {
   
@@ -31,7 +34,8 @@ public class Chat extends Activity {
         connectButton.setOnClickListener(new OnClickListener(){
 			public void onClick(View arg0) 
 			{
-				new RestThreadTask(SCTypes.CONNCET_PRIVATE_CHAT, (Context) Chat.this).execute( receiverPin.getText().toString(), receiverID.getText().toString() );
+				Partner.setType(SCPartner.SENDER);
+				new RestThreadTask(SCTypes.CONNCET_PRIVATE_CHAT, (Context) Chat.this).execute( Common.replaceWhitespaces(receiverPin.getText().toString()), Common.replaceWhitespaces(receiverID.getText().toString()) );
 			}
         });
     }

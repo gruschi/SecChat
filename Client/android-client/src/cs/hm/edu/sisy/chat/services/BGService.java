@@ -53,10 +53,13 @@ public class BGService extends Service {
    	if(SCState.getState(BGService.this) == SCState.CONNECTED_TO_CHAT) {
       if(waitingScheduleExecutor != null)
         waitingScheduleExecutor.shutdownNow();
+      
    		messagingSchedule(BGService.this);
    		
 		SharedPrefs.savePIN( BGService.this, PinHashGenerator.generatePIN() );
 		SharedPrefs.saveStoragedPinDate( BGService.this, Common.getCurrentDate() );
+		
+		Log.d(TAG, "Start Messaging...");
 
         Intent i = new Intent();
         i.setClass(BGService.this.getBaseContext(), Messaging.class);
@@ -66,6 +69,7 @@ public class BGService extends Service {
    	else {
       if(messagingScheduleExecutor != null)
         messagingScheduleExecutor.shutdownNow();
+      
    		waitingSchedule(BGService.this);
    	}
    	
@@ -122,15 +126,15 @@ public class BGService extends Service {
     	  public void run() {
     		Log.d(TAG, "wSCHEDULE");
     		
-    		if(SCState.getState(context) != SCState.CHAT_CONNECTION_INCOMING)
-    			new RestThreadTask(SCTypes.SERVICE, context).execute();
-    		
     		if(SCState.getState(context) < SCState.LOGGED_IN)
     			disconnect(context);
+    		
+    		else if(SCState.getState(context) != SCState.CHAT_CONNECTION_INCOMING)
+    			new RestThreadTask(SCTypes.SERVICE, context).execute();
     		  
     		//someone is calling me, call back
-    		if(SCState.getState(context) == SCState.CHAT_CONNECTION_INCOMING)
-    			new RestThreadTask(SCTypes.CONNECT_SERVICE, context).execute(Partner.getPartnerId()+"");
+    		else if(SCState.getState(context) == SCState.CHAT_CONNECTION_INCOMING)
+    			new RestThreadTask(SCTypes.CONNECT_SERVICE, context).execute();
     		  
     	  }
     	}, 0, 5, TimeUnit.SECONDS);
@@ -153,13 +157,13 @@ public class BGService extends Service {
       			  disconnect(context);
       		  }
     		  
-    		  if(!Messaging.isActivityVisible() && SCState.getMsgState() == SCState.MSG_RECEIVED) 
+    		  if(!Messaging.isActivityVisible() && SCState.getMsgState(context) == SCState.MSG_RECEIVED) 
     		  {
     			  showNotification( Partner.getPartnerAlias(), context );
-    			  SCState.setMsgState(SCState.MSG_DEFAULT);
+    			  SCState.setMsgState(SCState.MSG_DEFAULT, context);
     		  }
     	  }
-    	}, 0, 1, TimeUnit.SECONDS);
+    	}, 0, 2, TimeUnit.SECONDS);
     }
 	
 	 // Send an Intent with an action named "custom-event-name". The Intent sent should 
