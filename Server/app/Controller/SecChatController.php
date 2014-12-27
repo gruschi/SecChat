@@ -2,20 +2,17 @@
 
 class SecChatController extends AppController {
 	
+public function beforeFilter() {
+		parent::beforeFilter();
+ 		$this->Auth->allow('connect', 'service', 'serviceConnect', 'destroyChatSession');
+	}
+	
 	public function index(){		
 		$this->layout = "ajax";
 	}
 	
 	public function connect($type=null){
 		$this->loadModel("Connection");
-		
-		/*
-		 * data[Connection][sessionId] = sessionID des Clients
-			data[Connection][receiverId] = receiverID
-			data[Connection][alias] = senderAlias (an Receiver weiterleiten)
-			data[Connection][receiverPin] = receiverPIN
-			data[Connection][pubKey] = senderPubKey (an Receiver weiterleiten)
-		 */
 		
 		$result = null;		
 		if($type == "contact"){			
@@ -27,7 +24,6 @@ class SecChatController extends AppController {
 			}
 		}
 		
-		
 		$this->set("result", json_encode($result));
 		
 		$this->layout = "ajax";
@@ -35,22 +31,29 @@ class SecChatController extends AppController {
 	
 	public function service(){
 		$this->loadModel("Connection");
+		$this->loadModel("User");
 		
 		//Get Incoming Connections
 //  		echo "<br>UserId: ".$this->Auth->user("user");
-		$result = $this->Connection->find('all', array("conditions" => array("Connection.receiverId" => $this->Auth->user("username"), "Connection.receiverPin != NULL")));			
+		
+		//GetUserId		
+		$objUser = $this->User->find("first", array("conditions" => array("User.sessionId" => $this->request->data["Connection"]["sessionId"])));		
+		
+		$result = $this->Connection->find('all', 
+					array(
+							"conditions" => 
+								array("Connection.receiverId" => intval($objUser["User"]["id"]), "Connection.receiverPin IS NOT NULL"),
+							"fields" => array(
+								"Connection.senderId", "Connection.alias", "Connection.receiverPin", "Connection.PubKey"
+							)
+					)
+				);			
 		
 		$return = array("chatSession" => $result);
 		
 		$this->set("result", json_encode($return));
-		
-		//TODO Löschen der Anfrage (oder doch nicht? Nur bei Schließen der Verbindung)
-// 		$cR = count($result);
-// 		for($i = 0; $i < $cR; $i++){
-// 			$this->Connection->delete($result[$i]["Connection"]["id"]);
-// 		}
-		
-		$this->layout = "ajax";
+
+ 		$this->layout = "ajax";
 	}
 	
 	public function serviceConnect(){
@@ -68,6 +71,23 @@ class SecChatController extends AppController {
 		
 		$this->layout = "ajax";
 		
+	}
+	
+	public function destroyChatSession(){
+		$this->loadModel("Connection");
+		$return = false;
+		if(isset($this->request->data["Connection"]["id"]) && isset($this->request->data["User"]["sessionId"])){
+			//TODO Teste ob SessionId zur senderId passt.			
+			$this->Connection->delete($this->request->data('Connection.id'));
+			
+			$return = true;
+		}
+		
+		$result = array("chatDisconnected" => $return);
+		
+		$this->set("result", json_encode($result));
+		
+		$this->layout = "ajax";
 	}
 }
 
