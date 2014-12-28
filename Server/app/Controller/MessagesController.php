@@ -27,18 +27,22 @@ class MessagesController extends AppController {
 			)));				
 			
 			if(!empty($objUser)){
-				if($objConnection["Connection"]["receiverId"] == $objUser["User"]["id"]
-						|| $objConnection["Connection"]["senderId"] == $objUser["User"]["id"]){
-					$this->Message->create();
-					if ($this->Message->save($this->request->data)) {
-						$response = array("received" => "true");
+				if(!empty($objConnection)){
+					if($objConnection["Connection"]["receiverId"] == $objUser["User"]["id"]
+							|| $objConnection["Connection"]["senderId"] == $objUser["User"]["id"]){
+						$this->Message->create();
+						if ($this->Message->save($this->request->data)) {
+							$response = array("received" => "true");
+						}else{
+							$response = array("received" => "false");
+						}
+					
 					}else{
 						$response = array("received" => "false");
 					}
-						
 				}else{
-					$response = array("received" => "false");
-				}
+					$response = array("chatDisconnected" => true);
+				}				
 			}else{
 				$response = array("disconnected");
 			}
