@@ -124,6 +124,10 @@ public class BGService extends Service {
     	// This schedule a runnable task every 5 seconds
     	waitingScheduleExecutor.scheduleAtFixedRate(new Runnable() {
     	  public void run() {
+    		//TODO: only one chat allowed at the same time, at the moment
+      		if(SCState.getState(context) == SCState.CONNECTED_TO_CHAT)
+    			return;
+    		  
     		Log.d(TAG, "wSCHEDULE");
     		
     		if(SCState.getState(context) < SCState.LOGGED_IN)

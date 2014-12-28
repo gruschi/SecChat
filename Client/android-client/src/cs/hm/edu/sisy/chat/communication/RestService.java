@@ -254,7 +254,7 @@ public class RestService
 	
 	  try {
 	      List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-	      nameValuePairs.add(new BasicNameValuePair("data[Connection][sessionId]", sessionId));
+	      nameValuePairs.add(new BasicNameValuePair("data[User][sessionId]", sessionId));
 	      httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 	
 	      // Execute HTTP Post Request
@@ -305,14 +305,14 @@ public class RestService
 	          for (int i=0; i<cast.length(); i++) 
 	          {
 	        	  //Log.d(SCConstants.LOG, "Service: HTTP-Response: ServiceJSON2: " + cast.getJSONObject(i).getJSONObject("Connection").toString());
-	        	  
+
 	              JSONObject connection = cast.getJSONObject(i).getJSONObject("Connection");
-	              
-	              String pubKey = connection.getString("PubKey");
+
+	              String pubKey = connection.getString("pubKey");
 	              int senderId = connection.getInt("senderId"); //partnerId
 	              String receiverPin = connection.getString("receiverPin"); //partnerPin
 	              String alias = connection.getString("alias");
-	              
+
 	              //either be sender or id and pin should be valid
 	              if( Partner.getType() == SCPartner.SENDER || PinHashGenerator.validatePin(context, receiverPin) )
 	              {
@@ -320,6 +320,11 @@ public class RestService
 		              Partner.setPartnerId(senderId);
 		              Partner.setPartnerPin(receiverPin);
 		              Partner.setPartnerPubKey(pubKey);
+		              
+		              //TODO: if pubKey/json broken check
+		              //http://stackoverflow.com/questions/8934412/mysql-to-php-to-json-string-cannot-be-converted-to-jsonobject
+		              //http://stackoverflow.com/questions/3020094/how-should-i-escape-strings-in-json
+		              //http://stackoverflow.com/questions/16574482/decoding-json-string-in-java
 	              }
 	              else
 	            	  return false;
@@ -460,12 +465,10 @@ public class RestService
 	  
 	  return messageReceived;
   }
- 
   
   //receive message
   public static boolean receiveChatMessage(Context context) {
 	  String sessionId = SharedPrefs.getSessionId(context);
-	  int chatSessionId = SharedPrefs.getChatSessionId(context);
 	  
 	  final String url = SCConstants.REST_RECEIVE_MSG;
 
@@ -479,7 +482,6 @@ public class RestService
 	  try {
 	      List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 	      nameValuePairs.add(new BasicNameValuePair("data[User][sessionId]", sessionId));
-	      nameValuePairs.add(new BasicNameValuePair("data[User][chatSessionId]", chatSessionId +""));
 	      httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 	
 	      // Execute HTTP Post Request
@@ -504,7 +506,7 @@ public class RestService
 	          }
 	          
 		      //If there is no message to receive...
-	          if( jsonobject.toString().equalsIgnoreCase("{\"receivedMessages\":[]}") )
+	          if( jsonobject.toString().equalsIgnoreCase("{\"receivedMessages\":[]}") || jsonobject.toString().equalsIgnoreCase("{\"receivedMessages\": null}") )
 	        	  return false;
 	          
 	          JSONArray cast = jsonobject.getJSONArray("receivedMessages");
