@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cs.hm.edu.sisy.chat"
+    package="edu.hm.cs.sisy.chat"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -18,23 +18,23 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         
-    <service android:name="cs.hm.edu.sisy.chat.services.BGService"></service>
+    <service android:name="edu.hm.cs.sisy.services.BGService"></service>
    
-    <activity android:name="cs.hm.edu.sisy.chat.Login">
+    <activity android:name="edu.hm.cs.sisy.chat.Login">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"></action>
         <category android:name="android.intent.category.LAUNCHER">
         </category>
       </intent-filter>
     </activity>
-    <activity android:name="cs.hm.edu.sisy.chat.Home" android:launchMode="singleTop">
+    <activity android:name="edu.hm.cs.sisy.chat.Home" android:launchMode="singleTop">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"></action>
         <category android:name="android.intent.category.NORMAL">
         </category>
       </intent-filter>
     </activity>
-    <activity android:name="cs.hm.edu.sisy.chat.Messaging" android:launchMode="singleTop">
+    <activity android:name="edu.hm.cs.sisy.chat.Messaging" android:launchMode="singleTop">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"></action>
         <category
@@ -42,14 +42,14 @@
         </category>
       </intent-filter>
     </activity>
-    <activity android:name="cs.hm.edu.sisy.chat.Settings" android:launchMode="singleTop">
+    <activity android:name="edu.hm.cs.sisy.chat.Settings" android:launchMode="singleTop">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"></action>
         <category android:name="android.intent.category.NORMAL">
         </category>
       </intent-filter>
     </activity>
-    <activity android:name="cs.hm.edu.sisy.chat.Chat" android:launchMode="singleTop">
+    <activity android:name="edu.hm.cs.sisy.chat.Chat" android:launchMode="singleTop">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"></action>
         <category
@@ -57,7 +57,7 @@
         </category>
       </intent-filter>
     </activity>
-    <activity android:name="cs.hm.edu.sisy.chat.Debug">
+    <activity android:name="edu.hm.cs.sisy.chat.Debug">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"></action>
         <category
@@ -67,7 +67,7 @@
     </activity>
 
     <service
-        android:name="cs.hm.edu.sisy.chat.services.BGService"
+        android:name="edu.hm.cs.sisy.services.BGService"
         android:enabled="true"
         android:exported="false"/>
     
