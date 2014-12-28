@@ -35,7 +35,7 @@ public function beforeFilter() {
 				if($this->Connection->save($this->request->data)){
 					$result = array("chatSessionId" => $this->Connection->id);
 				}else{
-					debug($this->Connection->invalidFields());
+					$result = array("disconnected");
 				}
 			}
 			
@@ -63,38 +63,43 @@ public function beforeFilter() {
 				//GetUserId
 				$objUser = $this->User->find("first", array("conditions" => array("User.sessionId" => $this->request->data["User"]["sessionId"])));
 					
-				$result = $this->Connection->find('all',
-						array(
-								"conditions" =>
-								array(	"Connection.receiverId" => intval($objUser["User"]["id"]),										
-										"Connection.send" => false),
-								"fields" => array(
-										"Connection.id",
-										"Connection.senderId",
-										"Connection.alias",
-										"Connection.receiverPin",
-										"Connection.pubKey"
-								),
-								"limit" => 1
-						)
-				);									
+				if(!empty($objUser)){
+					$result = $this->Connection->find('all',
+							array(
+									"conditions" =>
+									array(	"Connection.receiverId" => intval($objUser["User"]["id"]),
+											"Connection.send" => false),
+									"fields" => array(
+											"Connection.id",
+											"Connection.senderId",
+											"Connection.alias",
+											"Connection.receiverPin",
+											"Connection.pubKey"
+									),
+									"limit" => 1
+							)
+					);
+						
+					//Flag setzen in Connection
+					if(!empty($result)){
+						$cR = count($result);
+						for($i = 0; $i < $cR; $i++){
+							if(isset($result[$i]["Connection"]["id"])){
+								$this->Connection->updateAll(
+										array("Connection.send" => true),
+										array("Connection.id" => $result[$i]["Connection"]["id"]));
 					
-				//Flag setzen in Connection
-				if(!empty($result)){					
-					$cR = count($result);
-					for($i = 0; $i < $cR; $i++){
-						if(isset($result[$i]["Connection"]["id"])){
-							$this->Connection->updateAll(
-									array("Connection.send" => true),
-									array("Connection.id" => $result[$i]["Connection"]["id"]));
-				
-							unset($result[$i]["Connection"]["id"]);//ID löschen um Verwirrung zu vermeiden.
+								unset($result[$i]["Connection"]["id"]);//ID löschen um Verwirrung zu vermeiden.
+							}
 						}
 					}
-				}
-			}	
-			
-			$return = array("chatSession" => $result);
+					
+					$return = array("chatSession" => $result);
+				}else{
+					$return = array("disconnected");
+				}									
+			}
+				
 			
 			$this->set("result", json_encode($return));			
  	 		$this->layout = "ajax";
@@ -117,7 +122,7 @@ public function beforeFilter() {
 			if($this->Connection->save($this->request->data)){
 				$result = array("chatSessionId" => $this->Connection->id);
 			}else{
-				debug($this->Connection->invalidFields());
+				$result = array("disconnected");
 			}
 			
 			$this->set("result", json_encode($result));
@@ -142,32 +147,37 @@ public function beforeFilter() {
 				
 				$objUser = $this->User->find("first", array("conditions" => array("User.sessionId" => $this->request->data("User.sessionId"))));
 				
-				$curConnection = $this->Connection->find("first", 
-						array("conditions" => array(
-								"Connection.id" => $this->request->data('Connection.id'),
-								"OR" => array(
-									"Connection.senderId" => $objUser["User"]["id"],
-									"Connection.receiverId" => $objUser["User"]["id"]
-								)
-				)));				
+				if(!empty($objUser)){
+					$curConnection = $this->Connection->find("first",
+							array("conditions" => array(
+									"Connection.id" => $this->request->data('Connection.id'),
+									"OR" => array(
+											"Connection.senderId" => $objUser["User"]["id"],
+											"Connection.receiverId" => $objUser["User"]["id"]
+									)
+							)));
+					
+					if(!empty($curConnection)){
+						//Lösche auch entgegengesetze Richtung
+						$altConnection = $this->Connection->find("first", array("conditions" =>
+								array(
+										"Connection.senderId" => $curConnection["Connection"]["receiverId"],
+										"Connection.receiverId" => $curConnection["Connection"]["senderId"]
+								)));
+							
+						$this->Connection->delete($altConnection["Connection"]["id"]);
+							
+						$this->Connection->delete($this->request->data('Connection.id'));
+						$return = true;
+					}
 				
-				if(!empty($curConnection)){
-					//Lösche auch entgegengesetze Richtung					
-					$altConnection = $this->Connection->find("first", array("conditions" => 
-							array(
-									"Connection.senderId" => $curConnection["Connection"]["receiverId"],
-									"Connection.receiverId" => $curConnection["Connection"]["senderId"]
-					)));
-					
-					$this->Connection->delete($altConnection["Connection"]["id"]);
-					
-					$this->Connection->delete($this->request->data('Connection.id'));
-					$return = true;
-				}						
-									
+					$result = array("chatDisconnected" => $return);
+				}else{
+					$result = array("disconnected");
+				}																
 			}
 			
-			$result = array("chatDisconnected" => $return);
+			
 			
 			$this->set("result", json_encode($result));
 			
