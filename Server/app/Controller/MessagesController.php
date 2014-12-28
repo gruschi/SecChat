@@ -26,18 +26,23 @@ class MessagesController extends AppController {
 						"Connection.id" => $this->request->data("Message.connectionId")
 			)));				
 			
-			if(!empty($objUser) && ($objConnection["Connection"]["receiverId"] == $objUser["User"]["id"] 
-					|| $objConnection["Connection"]["senderId"] == $objUser["User"]["id"])){
-				$this->Message->create();
-				if ($this->Message->save($this->request->data)) {
-					$response = array("received" => "true");
+			if(!empty($objUser)){
+				if($objConnection["Connection"]["receiverId"] == $objUser["User"]["id"]
+						|| $objConnection["Connection"]["senderId"] == $objUser["User"]["id"]){
+					$this->Message->create();
+					if ($this->Message->save($this->request->data)) {
+						$response = array("received" => "true");
+					}else{
+						$response = array("received" => "false");
+					}
+						
 				}else{
 					$response = array("received" => "false");
 				}
-									
 			}else{
-				$response = array("received" => "false");
+				$response = array("disconnected");
 			}
+			
 						
 			$this->set("response", json_encode($response));
  			$this->layout = "ajax";
@@ -94,7 +99,7 @@ class MessagesController extends AppController {
 					$return = array("receivedMessages" => null);
 				}				
 			}else{
-				$return = array("receivedMessages" => null);
+				$return = array("disconnected");
 			}
 			
 			
