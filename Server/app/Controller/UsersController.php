@@ -1,9 +1,10 @@
 <?php
 
 class UsersController extends AppController {
-
+	
 	public function beforeFilter() {
 		parent::beforeFilter();
+		
 		// Allow users to register and logout.
 		$this->Auth->allow('add', 'login', 'logout');
 	}
@@ -90,16 +91,24 @@ class UsersController extends AppController {
 	
 	private function updateSessionId($sessionId){
 		$this->User->updateAll(
-				array('User.sessionId' => "'".$sessionId."'"),
+				array('User.sessionId' => $sessionId),
     			array('User.id' => $this->Auth->user('id'))
 		);
 	}
 	
+	/**
+	 * Log Out the User
+	 */
 	public function logout() {
-		$this->updateSessionId("");
-		$this->Session->destroy();
 		
-		$this->set("return", "null");
+		$this->updateSessionId(null);
+		
+		//Dreifacher Logout hält besser.
+		$this->Auth->logout();
+		$this->Session->delete('User');
+		$this->Session->destroy();		
+				
+		$this->set("return", "logged out");
 		
 		$this->layout = "ajax";
 	}
