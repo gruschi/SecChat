@@ -45,7 +45,7 @@ public class PubPrivKeyGenerator extends Activity{
             generator.initialize(1024);
             KeyPair pair = generator.generateKeyPair();
             pubKey = pair.getPublic();
-            privKey = pair.getPrivate();        
+            privKey = pair.getPrivate();
             
             /*byte[] publicKeyBytes = pubKey.getEncoded();
             String pubKeyStr = new String(Base64.encode(publicKeyBytes));

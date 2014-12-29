@@ -53,7 +53,7 @@ public class Partner {
 		return partnerNewMsg;
 	}
 	public static void setPartnerNewMsg(String partnerNewMsg) {
-	    if (Partner.partnerNewMsg.isEmpty())
+	    if (Partner.partnerNewMsg == null || Partner.partnerNewMsg.isEmpty())
 	    	Partner.partnerNewMsg = partnerNewMsg;
 	    else
 	    	Partner.partnerNewMsg += "\n" + partnerNewMsg;

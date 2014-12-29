@@ -33,13 +33,13 @@ public class Home extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_screen);
-        
+
         yourAlias = (TextView) findViewById(R.id.txtYourAlias);
         yourPIN = (TextView) findViewById(R.id.txtYourPin);
         yourID = (TextView) findViewById(R.id.txtYourId);
-        
+
         hintButton = (Button) findViewById(R.id.btnHint);
-        
+
         hintButton.setOnClickListener(new OnClickListener(){
         	@Override
 			public void onClick(View arg0) 
@@ -58,7 +58,7 @@ public class Home extends Activity {
 	        	        }
 	        	     })*/
 	        	    .setIcon(android.R.drawable.ic_dialog_alert)
-	        	     .show();
+	        	    .show();
 			}
         });
         

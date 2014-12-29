@@ -58,11 +58,11 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
             	if(SCState.getState(context) == SCState.CONNECTED_TO_CHAT)
             		return RestService.receiveChatMessage(context);
             	else
-            		restartBGService();
+            		break;
 		    case SERVICE:  
 		    	return RestService.service(context);
 		    case DESTROY_CHAT_SESSION:  
-		    	return RestService.destroyChatSession(context);
+		    	return RestService.destroyChatSession(context, params[0]);
 		    default: 
 		        break;
 		};
@@ -110,16 +110,21 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
             	else
           			SCState.setMsgState(SCState.MSG_NOT_SENT, context);
            		return;
-            case RECEIVE_MSG: 
-            	if(result) {
-            		SCState.setMsgState(SCState.MSG_RECEIVED, context);
-            		return;
+            case RECEIVE_MSG:
+            	if(SCState.getState(context) == SCState.CONNECTED_TO_CHAT)
+                	if(result) {
+                		SCState.setMsgState(SCState.MSG_RECEIVED, context);
+                		return;
+                	}
+                	else
+                	{
+                		SCState.setMsgState(SCState.MSG_NOT_RECEIVED, context);
+                		return;
+    	            }
+            	else {
+            		Common.resetClient(context);
+            		restartBGService();
             	}
-            	else
-            	{
-            		SCState.setMsgState(SCState.MSG_NOT_RECEIVED, context);
-            		return;
-	            }
             case CONNECT_SERVICE: 
             	if(result) {
             		state = SCState.CONNECTED_TO_CHAT;
@@ -148,7 +153,8 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
             		state = SCState.LOGGED_IN;
             		break;
             	}
-            	Log.e(TAG, "Destryoing Chat Session didnt work...");
+            	else
+            		Log.e(TAG, "Destryoing Chat Session didnt work...");
             	//there should no else case... if DestroyChatSession really didnt
             	//work, then we have to call it again... but this may not be
             	break;
@@ -157,7 +163,7 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
         }
         
         if(state != 0)
-        	SCState.setState(state, context);
+        	SCState.setState(state, context, true);
     }
     
     private void restartBGService() {

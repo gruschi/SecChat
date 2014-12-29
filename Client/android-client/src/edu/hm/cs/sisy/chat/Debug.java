@@ -1,20 +1,13 @@
 package edu.hm.cs.sisy.chat;
 
-import edu.hm.cs.sisy.chat.R;
-import edu.hm.cs.sisy.communication.RestThreadTask;
-import edu.hm.cs.sisy.enums.SCPartner;
-import edu.hm.cs.sisy.enums.SCState;
-import edu.hm.cs.sisy.enums.SCTypes;
-import edu.hm.cs.sisy.objects.Partner;
-import edu.hm.cs.sisy.services.BGService;
-import edu.hm.cs.sisy.storage.SharedPrefs;
-import edu.hm.cs.sisy.tools.Common;
-import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import edu.hm.cs.sisy.services.BGService;
+import edu.hm.cs.sisy.tools.Common;
  
 public class Debug extends Activity {
  

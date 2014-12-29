@@ -181,6 +181,8 @@ public class SharedPrefs {
 	   public static void resetChatSessionId(Context context) 
 	   {
 	  	   SharedPreferences sharedpreferences = context.getSharedPreferences(SCConstants.MyPREFERENCES, Context.MODE_PRIVATE);
+	  	   
+		   Log.d(TAG, "reseting chatSessionId: " + getChatSessionId(context));
 		   
 		      if (sharedpreferences.contains( SCConstants.CHAT_SESSION_ID ))
 		      {

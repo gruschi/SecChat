@@ -60,7 +60,7 @@ public class Chat extends Activity {
 
 		return result;
 	}
-	
+
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 	    

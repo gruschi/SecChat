@@ -95,7 +95,7 @@ public class Login extends Activity {
 					registerThread.start();
 					
 					if(SCState.getState(Login.this) == SCState.TIMED_OUT)
-						SCState.setState(SCState.NOT_REGISTERED, Login.this);
+						SCState.setState(SCState.NOT_REGISTERED, Login.this, true);
 				      
 					if( SCState.getState(Login.this) == SCState.NOT_REGISTERED ) {
 						if(RestWrapper.registerNeeded(Login.this, alias.getText().toString()))
@@ -116,7 +116,7 @@ public class Login extends Activity {
 						     public void onFinish() {
 						    	if(SCState.getState(Login.this) == SCState.NOT_REGISTERED && timerExpiredUnsuccessfully)
 						    	{
-						    		SCState.setState(SCState.TIMED_OUT, Login.this);
+						    		SCState.setState(SCState.TIMED_OUT, Login.this, true);
 						    	}
 								timerIsStarted = false;
 						     }
@@ -194,5 +194,19 @@ public class Login extends Activity {
 		
 		onDestroy();
 	}
+    
+    //Handler Example
+    /*
+  	private final Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+              if(msg.arg1 == 1)
+                    Toast.makeText(getApplicationContext(),"Your message", Toast.LENGTH_LONG).show();
+        }
+    }
+    
+    Message msg = handler.obtainMessage();
+	msg.arg1 = 1;
+	handler.sendMessage(msg);
+     */
     
 }

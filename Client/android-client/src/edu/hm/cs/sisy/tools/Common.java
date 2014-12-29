@@ -69,10 +69,10 @@ public class Common {
      public static void resetClient(Context context)
      {
  		//change state from CONNECTED_TO_CHAT to
- 		SCState.setState(SCState.LOGGED_IN, context);
+ 		SCState.setState(SCState.LOGGED_IN, context, true);
  		
  		//exit server connection to other peer
- 		new RestThreadTask(SCTypes.DESTROY_CHAT_SESSION, context).execute();
+ 		new RestThreadTask(SCTypes.DESTROY_CHAT_SESSION, context).execute( Integer.toString(SharedPrefs.getChatSessionId(context)) );
  		
  		//reset partner-object
  		Partner.setPartnerAlias(null);
@@ -81,7 +81,7 @@ public class Common {
  		Partner.setPartnerPubKey(null);
  		Partner.resetPartnerNewMsg();
  		Partner.setType(SCPartner.RECEIVER);
- 		
+
  		//reset chatSession
  		SharedPrefs.resetChatSessionId(context);
  		

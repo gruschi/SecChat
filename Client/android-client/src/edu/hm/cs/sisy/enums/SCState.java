@@ -29,11 +29,11 @@ public class SCState {
 		   return sharedpreferences.getInt( SCConstants.SCSTATE, -1 );
 	}
 	
-	public static void setState(int state, Context context) {
+	public static void setState(int state, Context context, boolean toastNeeded) {
 		   SharedPreferences sharedpreferences = context.getSharedPreferences(SCConstants.MyPREFERENCES, Context.MODE_PRIVATE);
 		   
 		   //do toast when state is changed
-		   if(getState(context) != state)
+		   if(toastNeeded && getState(context) != state)
 			   Common.doToast(context, SCState.getStateMessageByState(context, state) +"");
 		   
 		   sharedpreferences.edit().putInt(SCConstants.SCSTATE, state).apply();
