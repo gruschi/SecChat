@@ -82,8 +82,10 @@ class MessagesController extends AppController {
 									"Message.message"
 								),								
 								"conditions" => array(
-									"Message.connectionId" => $connections[$i]["Connection"]["id"])
-								)
+									"Message.connectionId" => $connections[$i]["Connection"]["id"],
+									"Message.read" => false
+								)														
+							)
 						);
 					
 						$cM = count($tmpMessages);
@@ -100,17 +102,19 @@ class MessagesController extends AppController {
 						
 					$return = array("receivedMessages" => $messages);
 				}else{
-					$return = array("receivedMessages" => null);
+					$return = array("chatDisconnected");
 				}				
 			}else{
 				$return = array("disconnected");
 			}
 			
 			
+		}else{
+			$return = array("no Access");
 		}		
 		
 		$this->set("messages", json_encode($return));
- 		$this->layout = "ajax";
+  		$this->layout = "ajax";
 	}
 	
 }
