@@ -3,6 +3,7 @@ package edu.hm.cs.sisy.communication;
 import java.security.NoSuchAlgorithmException;
 
 import android.content.Context;
+import android.util.Log;
 import edu.hm.cs.sisy.enums.SCState;
 import edu.hm.cs.sisy.generators.PinHashGenerator;
 import edu.hm.cs.sisy.generators.PubPrivKeyGenerator;
@@ -11,9 +12,12 @@ import edu.hm.cs.sisy.tools.Common;
 
 public class RestWrapper {
 
+    private static final String TAG = "RestWrapper";
 
 	public static boolean isRegistered(Context context)
     {
+		Log.d(TAG, "Check if client is registered...");
+		
 		boolean isRegistered = ( SharedPrefs.getID(context) != 0 );
 		if( SCState.getState(context) <= SCState.NOT_LOGGED_IN )
 		{
@@ -28,6 +32,8 @@ public class RestWrapper {
     
     public static boolean isLoggedIn(Context context)
     {
+    	Log.d(TAG, "Check if client is logged in...");
+    	
 		boolean isLoggedIn = ( SharedPrefs.getSessionId(context) != null );
 		
 		if(isLoggedIn)

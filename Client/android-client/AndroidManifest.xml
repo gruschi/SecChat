@@ -27,14 +27,14 @@
         </category>
       </intent-filter>
     </activity>
-    <activity android:name="edu.hm.cs.sisy.chat.Home" android:launchMode="singleTop">
+    <activity android:name="edu.hm.cs.sisy.chat.Home" android:launchMode="singleInstance">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"></action>
         <category android:name="android.intent.category.NORMAL">
         </category>
       </intent-filter>
     </activity>
-    <activity android:name="edu.hm.cs.sisy.chat.Messaging" android:launchMode="singleTop">
+    <activity android:name="edu.hm.cs.sisy.chat.Messaging" android:launchMode="singleInstance">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"></action>
         <category
@@ -49,7 +49,7 @@
         </category>
       </intent-filter>
     </activity>
-    <activity android:name="edu.hm.cs.sisy.chat.Chat" android:launchMode="singleTop">
+    <activity android:name="edu.hm.cs.sisy.chat.Chat" android:launchMode="singleInstance">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"></action>
         <category

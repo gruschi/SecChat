@@ -13,8 +13,9 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import edu.hm.cs.sisy.chat.R;
+import edu.hm.cs.sisy.chat.Login;
 import edu.hm.cs.sisy.chat.Messaging;
+import edu.hm.cs.sisy.chat.R;
 import edu.hm.cs.sisy.communication.RestThreadTask;
 import edu.hm.cs.sisy.enums.SCState;
 import edu.hm.cs.sisy.enums.SCTypes;
@@ -124,14 +125,16 @@ public class BGService extends Service {
     	// This schedule a runnable task every 5 seconds
     	waitingScheduleExecutor.scheduleAtFixedRate(new Runnable() {
     	  public void run() {
+      		Log.d(TAG, "wSCHEDULE");
+    		  
+		    if(SCState.getState(context) < SCState.LOGGED_IN) {
+			   endApplication(context);
+			   return;
+		    }
+    		  
     		//TODO: only one chat allowed at the same time, at the moment
       		if(SCState.getState(context) == SCState.CONNECTED_TO_CHAT)
     			return;
-    		  
-    		Log.d(TAG, "wSCHEDULE");
-    		
-    		if(SCState.getState(context) < SCState.LOGGED_IN)
-    			disconnect(context);
     		
     		else if(SCState.getState(context) != SCState.CHAT_CONNECTION_INCOMING)
     			new RestThreadTask(SCTypes.SERVICE, context).execute();
@@ -152,14 +155,17 @@ public class BGService extends Service {
     	  public void run() {
     		  Log.d(TAG, "mSCHEDULE");
     		  
+      		  if(SCState.getState(context) < SCState.LOGGED_IN) {
+      			 endApplication(context);
+      			 return;
+      		  }
+    		  
     		  new RestThreadTask(SCTypes.RECEIVE_MSG, context).execute();
     		  
     		  sendMessage(context);
-    		  
-      		  if(SCState.getState(context) < SCState.LOGGED_IN)
-      		  {
-      			  disconnect(context);
-      		  }
+      		  
+      		  if(SCState.getState(context) <= SCState.NOT_CONNECTED_TO_CHAT)
+      			  finishActivity(context);
     		  
     		  if(!Messaging.isActivityVisible() && SCState.getMsgState(context) == SCState.MSG_RECEIVED) 
     		  {
@@ -181,12 +187,24 @@ public class BGService extends Service {
 	 
 	 // Send an Intent with an action named "custom-event-name". The Intent sent should 
 	 // be received by the ReceiverActivity.
-	 private static void disconnect(Context context) {
-	   Intent intent = new Intent("custom-event-name2");
+	 private static void finishActivity(Context context) {
+	   Intent intent = new Intent("finish_activity");
 	   // You can also include some extra data.
 	   //intent.putExtra("message", "This is my message!");
 	   LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 	 }
+	 
+	 private static void endApplication(Context context) {
+			//Intent intent = new Intent(context, Login.class);												
+		    //context.startActivity(intent);
+		 
+	        Intent i = new Intent();
+	        i.setClass(context, Login.class);
+	        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	        context.startActivity(i);
+	        
+	        context.stopService(new Intent(context, BGService.class));
+	}
 
 	/**
 	 * Show a notification while this service is running.

@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -38,9 +37,8 @@ public class Messaging extends Activity {
 	private Button sendMessageButton;
 	
 	ArrayList<String> listItems;
-	ArrayAdapter<String> adapter;
 	
-	private DiscussArrayAdapter adapter2;
+	private DiscussArrayAdapter adapter;
 	
     private static boolean activityVisible;	
 	
@@ -67,7 +65,7 @@ public class Messaging extends Activity {
 				message = messageText.getText();
 				if (message.length()>0) 
 				{
-					adapter2.add(new OneComment(false, SharedPrefs.getAlias(Messaging.this), message.toString()));
+					adapter.add(new OneComment(false, SharedPrefs.getAlias(Messaging.this), message.toString()));
 								
 					messageText.setText("");
 					Thread thread = new Thread(){					
@@ -106,12 +104,13 @@ public class Messaging extends Activity {
 			}
 		});
 		
-		adapter2 = new DiscussArrayAdapter(getApplicationContext(), R.layout.listitem_discuss);
+		adapter = new DiscussArrayAdapter(getApplicationContext(), R.layout.listitem_discuss);
 		
-		messageHistoryText.setAdapter(adapter2);
+		messageHistoryText.setAdapter(adapter);
 		
 		receiveMessages();
 		disconnect() ;
+		finishMessaging();
 	}
 
 	@Override
@@ -164,7 +163,7 @@ public class Messaging extends Activity {
 	private void appendToMessageHistory(String alias, String message) {
 		if (alias != null && message != null) 
 		{
-			adapter2.add(new OneComment(true, alias, message));
+			adapter.add(new OneComment(true, alias, message));
 			
 			//adapter2.notifyDataSetChanged();
 		}
@@ -279,6 +278,20 @@ public class Messaging extends Activity {
        //String message = intent.getStringExtra("message");
     	 
 	   exitChat();
+	   messageHistoryText = null;
+	   adapter = null;
+	   //finish();
+     }
+   };
+   
+   private BroadcastReceiver finishReceiver = new BroadcastReceiver() {
+     @Override
+     public void onReceive(Context context, Intent intent) {
+    	 
+	   exitChat();
+	   messageHistoryText = null;
+	   adapter = null;
+	   //finish();
      }
    };
    
@@ -290,17 +303,23 @@ public class Messaging extends Activity {
 	  LocalBroadcastManager.getInstance(this).registerReceiver(discReceiver,
 	      new IntentFilter("custom-event-name2"));
 	}
+	
+	private void finishMessaging() 
+	{
+	  LocalBroadcastManager.getInstance(this).registerReceiver(finishReceiver,
+	      new IntentFilter("finish_activity"));
+	}
    
    @Override
    protected void onDestroy() {
      // Unregister since the activity is about to be closed.
      LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
      LocalBroadcastManager.getInstance(this).unregisterReceiver(discReceiver);
+     LocalBroadcastManager.getInstance(this).unregisterReceiver(finishReceiver);
      super.onDestroy();
    }
       
 	private void exitChat() {
 		Common.resetClient(Messaging.this);
 	}
-
 }

@@ -87,10 +87,18 @@ public class Common {
  		
  		//TODO: workaround, needed?
  		Intent i = new Intent(context, Home.class);
- 	    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+ 	    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
  	    context.startActivity(i);
  		
- 	   ((Activity) context).finish();
+ 	   if (context instanceof Activity) //not service
+ 		   ((Activity) context).finish();
+     }
+     
+     public static void disconnectedFromSystem(Context context)
+     {
+    	 SCState.setState(SCState.NOT_LOGGED_IN, context, false);
+    	 
+    	 SharedPrefs.resetSessionId(context);
      }
      
      /*

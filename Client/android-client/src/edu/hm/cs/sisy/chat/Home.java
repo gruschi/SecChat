@@ -2,19 +2,14 @@ package edu.hm.cs.sisy.chat;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
-import edu.hm.cs.sisy.chat.R;
 import edu.hm.cs.sisy.generators.PinHashGenerator;
 import edu.hm.cs.sisy.services.BGService;
 import edu.hm.cs.sisy.storage.SharedPrefs;
@@ -68,8 +63,6 @@ public class Home extends Activity {
         updateDate();
         
         startService(new Intent(this, BGService.class));
-        
-        disconnect();
         
          /*
 		// Start and bind the BGService 
@@ -183,8 +176,6 @@ public class Home extends Activity {
     {
     	//new RestThreadTask(SCTypes.LOGOUT, Home.this).execute(); 
     	
-    	LocalBroadcastManager.getInstance(this).unregisterReceiver(discReceiver);
-    	
     	super.onDestroy();
     }
     
@@ -200,25 +191,4 @@ public class Home extends Activity {
       yourPIN.setText( SharedPrefs.getPIN(this) +"" );
       yourID.setText( Common.beautifyId(SharedPrefs.getID(this)) );
     }
-    
-    // Our handler for received Intents. This will be called whenever an Intent
-    // with an action named "custom-event-name" is broadcasted.
-    private BroadcastReceiver discReceiver = new BroadcastReceiver() {
-      @Override
-      public void onReceive(Context context, Intent intent) {
-        // Get extra data included in the Intent
-        //String message = intent.getStringExtra("message");
-     	 
- 	   finish();
-      }
-    };
-    
- 	private void disconnect() 
- 	{
- 		  // Register to receive messages.
- 		  // We are registering an observer (mMessageReceiver) to receive Intents
- 		  // with actions named "custom-event-name2".
- 		  LocalBroadcastManager.getInstance(this).registerReceiver(discReceiver,
- 		      new IntentFilter("custom-event-name2"));
- 	}
 }

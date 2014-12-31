@@ -28,6 +28,7 @@ import edu.hm.cs.sisy.generators.PinHashGenerator;
 import edu.hm.cs.sisy.generators.PubPrivKeyGenerator;
 import edu.hm.cs.sisy.objects.Partner;
 import edu.hm.cs.sisy.storage.SharedPrefs;
+import edu.hm.cs.sisy.tools.Common;
 import edu.hm.cs.sisy.tools.EasySSLSocketFactory;
 
 public class RestService
@@ -208,7 +209,7 @@ public class RestService
 	          
 	          //if sessionId is expired, catch here and logg out
 	          if(json.equalsIgnoreCase("[\"disconnected\"]")) {
-	        	  SCState.setState(SCState.NOT_LOGGED_IN, context, false);
+	        	  Common.disconnectedFromSystem(context);
 	        	  return false;
 	          }
 	          
@@ -277,7 +278,7 @@ public class RestService
 	          
 	          //if sessionId is expired, catch here and logg out
 	          if(json.equalsIgnoreCase("[\"disconnected\"]")) {
-	        	  SCState.setState(SCState.NOT_LOGGED_IN, context, false);
+	        	  Common.disconnectedFromSystem(context);
 	        	  return false;
 	          }
 	          
@@ -382,7 +383,7 @@ public class RestService
 	          
 	          //if sessionId is expired, catch here and logg out
 	          if(json.equalsIgnoreCase("[\"disconnected\"]")) {
-	        	  SCState.setState(SCState.NOT_LOGGED_IN, context, false);
+	        	  Common.disconnectedFromSystem(context);
 	        	  return false;
 	          }
 	          
@@ -447,7 +448,7 @@ public class RestService
 	          
 	          //if sessionId is expired, catch here and logg out
 	          if(json.equalsIgnoreCase("[\"disconnected\"]")) {
-	        	  SCState.setState(SCState.NOT_LOGGED_IN, context, false);
+	        	  Common.disconnectedFromSystem(context);
 	        	  return false;
 	          }
 	          
@@ -516,7 +517,7 @@ public class RestService
 	          
 	          //if sessionId is expired, catch here and logg out
 	          if(json.equalsIgnoreCase("[\"disconnected\"]")) {
-	        	  SCState.setState(SCState.NOT_LOGGED_IN, context, false);
+	        	  Common.disconnectedFromSystem(context);
 	        	  return false;
 	          }
 

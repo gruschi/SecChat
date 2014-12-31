@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import edu.hm.cs.sisy.enums.SCState;
 import edu.hm.cs.sisy.services.BGService;
 import edu.hm.cs.sisy.tools.Common;
  
@@ -35,6 +36,12 @@ public class Debug extends Activity {
     public void resetAll(View V)
     {
     	Common.resetClient(Debug.this);
+    }
+    
+    //reset client
+    public void resetSessionId(View V)
+    {
+    	SCState.setState(SCState.NOT_LOGGED_IN, Debug.this, true);
     }
  
 	@Override

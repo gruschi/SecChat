@@ -75,6 +75,9 @@ public class RestThreadTask extends AsyncTask<String, Void, Boolean> {
 
     @Override
     protected void onPostExecute(Boolean result) {
+    	
+    	if(SCState.getState(context) == SCState.NOT_LOGGED_IN)
+    		return;
        
         switch (type) {
             case LOGIN: 

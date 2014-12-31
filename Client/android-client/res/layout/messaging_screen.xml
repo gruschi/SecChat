@@ -4,24 +4,10 @@
     android:padding="10dip" 
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
-<!--    
-    <TextView 
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dip"
-        android:text="Friend:"
-    />
-    
-    <EditText android:id="@+id/friendUserName"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:singleLine="true"
-        android:editable="false" />
---> 
+
     <TextView   android:layout_width="fill_parent"
        			android:layout_height="wrap_content"
-        		android:layout_marginBottom="10dip"
+        		android:layout_marginBottom="5dip"
         		android:text="Messages:"/>
            	    
    <ListView
@@ -29,7 +15,7 @@
        android:layout_width="fill_parent"
        android:layout_height="fill_parent"
        android:layout_gravity="bottom"
-       android:layout_marginBottom="10dip"
+       android:layout_marginBottom="5dip"
        android:layout_weight="1"
        android:stackFromBottom="true"
        android:transcriptMode="alwaysScroll" >
@@ -65,5 +51,3 @@
 	</LinearLayout>
 
 </LinearLayout>
-
-

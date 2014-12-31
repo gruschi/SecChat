@@ -2,7 +2,6 @@ package edu.hm.cs.sisy.storage;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.util.Log;
 import edu.hm.cs.sisy.enums.SCConstants;
 import edu.hm.cs.sisy.objects.PubKey;
@@ -106,16 +105,11 @@ public class SharedPrefs {
 			return null;
 	   }
 	   
-	   public static void clearSession(Context context) 
+	   public static void resetSessionId(Context context) 
 	   {
-		   SharedPreferences sharedpreferences = context.getSharedPreferences(SCConstants.MyPREFERENCES, Context.MODE_PRIVATE);
+		   Log.d(TAG, "reseting sessionId: " + getSessionId(context));
 		   
-		      if (sharedpreferences.contains( SCConstants.SESSION_ID ))
-		      {
-				  Editor editor = sharedpreferences.edit();
-			      editor.putString(null, SCConstants.SESSION_ID);
-			      editor.commit();
-		      }
+		   saveSessionId(context, null); 
 	   }
 	   
      public static void saveStoragedPinDate(Context context, int currentDate) 
@@ -180,14 +174,9 @@ public class SharedPrefs {
 	   
 	   public static void resetChatSessionId(Context context) 
 	   {
-	  	   SharedPreferences sharedpreferences = context.getSharedPreferences(SCConstants.MyPREFERENCES, Context.MODE_PRIVATE);
-	  	   
 		   Log.d(TAG, "reseting chatSessionId: " + getChatSessionId(context));
 		   
-		      if (sharedpreferences.contains( SCConstants.CHAT_SESSION_ID ))
-		      {
-		    	  sharedpreferences.edit().putInt(SCConstants.CHAT_SESSION_ID, 0).apply();
-		      }
+		   saveChatSessionId(context, 0);
 	   }
 
 }
