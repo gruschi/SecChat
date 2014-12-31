@@ -51,7 +51,7 @@ public class Messaging extends Activity {
 				
 		messageHistoryText = (ListView) findViewById(R.id.messageHistory);
 		
-		messageText = (EditText) findViewById(R.id.message);
+		messageText = (EditText) findViewById(R.id.newMessage);
 		
 		messageText.requestFocus();			
 		

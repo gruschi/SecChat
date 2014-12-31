@@ -5,10 +5,11 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <TextView   android:layout_width="fill_parent"
+    <TextView   
+            android:layout_width="fill_parent"
        			android:layout_height="wrap_content"
         		android:layout_marginBottom="5dip"
-        		android:text="Messages:"/>
+        		android:text="@string/messages"/>
            	    
    <ListView
        android:id="@+id/messageHistory"
@@ -20,34 +21,37 @@
        android:stackFromBottom="true"
        android:transcriptMode="alwaysScroll" >
    </ListView>
-   
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="5dip"
         android:background="@android:color/black" />
+    
+    
+   <TableLayout 
+        android:layout_weight="0" 
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content">
 
-        
-    <LinearLayout android:orientation="horizontal"
-    			  android:layout_width="fill_parent"
-    			  android:layout_height="fill_parent"
-    			  android:layout_weight="4">
-		
-			<EditText 	android:id="@+id/message"
-			 			android:layout_width="fill_parent"
-		        		android:layout_height="fill_parent"
-		        		android:gravity="top"
-		      			android:layout_weight="1"
-		      			/>
-		      			 		  
-		    <Button android:id="@+id/sendMessageButton"
-		            android:background="@drawable/custom_button_oval"
-                style="?android:attr/buttonStyleSmall"
-		        	android:layout_width="fill_parent"
-		        	android:layout_height="fill_parent"
-		        	android:layout_weight="4"
-		        	android:text="Send"/>
+        <TableRow>
    
-	</LinearLayout>
+		      <EditText 
+		          android:id="@+id/newMessage"
+		          android:layout_width="fill_parent"
+		          android:layout_height="fill_parent"
+		          android:gravity="top"
+		          android:layout_weight="1"/>
+		                      
+		        <Button 
+		            android:id="@+id/sendMessageButton"
+		            android:background="@drawable/custom_button_oval"
+		            style="?android:attr/buttonStyleSmall"
+		            android:layout_width="wrap_content"
+		            android:layout_height="fill_parent"
+		            android:text="@string/send"/>           
+            
+        </TableRow>
+    </TableLayout>    
 
 </LinearLayout>
