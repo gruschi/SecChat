@@ -604,7 +604,7 @@ class AuthComponent extends Component {
 			$this->Session->renew();
 			$this->Session->write(self::$sessionKey, $user);
 		}
-		return (bool)$this->user();
+		return (bool)$user;
 	}
 
 /**
@@ -751,11 +751,11 @@ class AuthComponent extends Component {
 			$this->constructAuthenticate();
 		}
 		foreach ($this->_authenticateObjects as $auth) {
-			$result = $auth->authenticate($request, $response);
+			$result = $auth->authenticate($request, $response);						
 			if (!empty($result) && is_array($result)) {
 				return $result;
 			}
-		}
+		}		
 		return false;
 	}
 

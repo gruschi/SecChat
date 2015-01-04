@@ -31,12 +31,17 @@ public function beforeFilter() {
 			
 			$result = null;
 			if($type == "contact"){
-				$this->Connection->create();
-				if($this->Connection->save($this->request->data)){
-					$result = array("chatSessionId" => $this->Connection->id);
+				if($this->request->data("Connection.receiverId") !== null 
+						&& $this->request->data("Connection.pubKey") !== null ){
+					$this->Connection->create();
+					if($this->Connection->save($this->request->data)){
+						$result = array("chatSessionId" => $this->Connection->id);
+					}else{
+						$result = array("disconnected");
+					}
 				}else{
 					$result = array("disconnected");
-				}
+				}			
 			}
 			
 			$this->set("result", json_encode($result));
@@ -86,7 +91,7 @@ public function beforeFilter() {
 						for($i = 0; $i < $cR; $i++){
 							if(isset($result[$i]["Connection"]["id"])){
 								$this->Connection->updateAll(
-										array("Connection.send" => true),
+										array("Connection.send" => true, "Connection.pubKey" => null),
 										array("Connection.id" => $result[$i]["Connection"]["id"]));
 					
 								unset($result[$i]["Connection"]["id"]);//ID löschen um Verwirrung zu vermeiden.
@@ -117,12 +122,17 @@ public function beforeFilter() {
 		if($this->request->is("post")){
 			$this->loadModel("Connection");
 			
-			//Tut das gleiche wie Contact		
-			$this->Connection->create();
-			if($this->Connection->save($this->request->data)){
-				$result = array("chatSessionId" => $this->Connection->id);
+			//Tut das gleiche wie Contact
+			if($this->request->data("Connection.receiverId") !== null
+					&& $this->request->data("Connection.pubKey") !== null ){		
+				$this->Connection->create();
+				if($this->Connection->save($this->request->data)){
+					$result = array("chatSessionId" => $this->Connection->id);
+				}else{
+					$result = array("disconnected");
+				}
 			}else{
-				$result = array("disconnected");
+				$result = array("disconnected"); 
 			}
 			
 			$this->set("result", json_encode($result));

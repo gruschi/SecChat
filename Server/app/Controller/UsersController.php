@@ -24,12 +24,17 @@ class UsersController extends AppController {
 		if ($this->request->is('post')) {
 			$this->User->create();
 			$return = null;
-			if ($this->User->save($this->request->data)) {								
-				$user = $this->User->find("first", array("conditions" => array("User.id" => $this->User->id)));				
-				$return = array('userId' => $this->User->id);				
+			if($this->request->data("User.password") !== null){
+				if ($this->User->save($this->request->data)) {
+					$user = $this->User->find("first", array("conditions" => array("User.id" => $this->User->id)));
+					$return = array('userId' => $this->User->id);
+				}else{
+					$return = null;
+				}
 			}else{
 				$return = null;
-			}	
+			}
+			
 			$this->set("return", json_encode($return));
 			
 			$this->layout = "ajax";
@@ -41,8 +46,8 @@ class UsersController extends AppController {
 	 */
  	public function login() {
 		$return = null;
-		if ($this->request->is('post')) {
-			if ($this->Auth->login()) {
+		if ($this->request->is('post')) {		
+			if ($this->Auth->login()==true) {				
 				$this->updateSessionId($this->Session->id());
 				$return = array("sessionId" => $this->Session->id());
 			}else{				
@@ -51,7 +56,7 @@ class UsersController extends AppController {
 		}
 		
 		$this->set("return", json_encode($return));
- 		$this->layout = "ajax";
+//  		$this->layout = "ajax";
 	}
 	
 	/**
