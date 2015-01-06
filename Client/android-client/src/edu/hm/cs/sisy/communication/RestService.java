@@ -62,6 +62,9 @@ public class RestService
 		          BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
 
 		          String json = reader.readLine();
+		          
+			      Log.d(SCConstants.LOG, "Login-JSONResponse: "+json);
+		          
 		          JSONObject jsonobject = new JSONObject(json);
 
 		          String sessionId = jsonobject.getString("sessionId");
@@ -123,14 +126,16 @@ public class RestService
 	
 	  try {
 	      List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-	      nameValuePairs.add(new BasicNameValuePair("alias", alias)); //alias
-	      nameValuePairs.add(new BasicNameValuePair("password", hash)); //hash value
+	      nameValuePairs.add(new BasicNameValuePair("data[User][alias]", alias)); //alias
+	      nameValuePairs.add(new BasicNameValuePair("data[User][password]", hash)); //hash value
 	      httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 	
 	      // Execute HTTP Post Request
 	      HttpResponse response = httpclient.execute(host, httppost);
 
 		  Log.d(SCConstants.LOG, "Register: HTTP-Status: "+response.getStatusLine().getStatusCode());
+		  
+	      Log.d(SCConstants.LOG, "Register-Post: alias - " + alias + "; password - " + hash);
 	
 	      if(response.getStatusLine().getStatusCode() < 300 && 
 	          response.getStatusLine().getStatusCode() > 199)
@@ -140,6 +145,9 @@ public class RestService
 	          BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
 
 	          String json = reader.readLine();
+	          
+		      Log.d(SCConstants.LOG, "Register-Response: "+json);
+	          
 	          JSONObject jsonobject = new JSONObject(json);
 	          
 	          int userId = jsonobject.getInt("userId");

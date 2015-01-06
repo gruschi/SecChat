@@ -168,7 +168,7 @@ public class Login extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {		
 		boolean result = super.onCreateOptionsMenu(menu);
 		
-		 menu.add(0, SIGN_UP_ID, 0, R.string.index);
+		 //menu.add(0, SIGN_UP_ID, 0, R.string.index);
 		 menu.add(0, EXIT_APP_ID, 0, R.string.exit_application);
 
 		return result;
