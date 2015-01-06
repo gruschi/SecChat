@@ -56,7 +56,7 @@ class UsersController extends AppController {
 		}
 		
 		$this->set("return", json_encode($return));
-//  		$this->layout = "ajax";
+  		$this->layout = "ajax";
 	}
 	
 	/**

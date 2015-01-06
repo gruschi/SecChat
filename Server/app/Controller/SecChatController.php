@@ -2,9 +2,14 @@
 
 class SecChatController extends AppController {
 	
-public function beforeFilter() {
+	public function beforeFilter() {
 		parent::beforeFilter();
 
+		//Restrict Access
+		//SecurityComponent::requirePost()
+		//SecurityComponent::requireSecure()
+		
+		
 		$this->Auth->allow('connect', 'service', 'serviceConnect', 'destroyChatSession');
 	}
 	
