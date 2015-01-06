@@ -1,13 +1,12 @@
 -- phpMyAdmin SQL Dump
--- version 4.2.7.1
+-- version 4.2.11
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 19. Nov 2014 um 10:03
--- Server Version: 5.6.20
--- PHP-Version: 5.5.15
+-- Generation Time: Jan 06, 2015 at 12:45 PM
+-- Server version: 5.6.21
+-- PHP Version: 5.6.3
 
-SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
@@ -18,56 +17,76 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Datenbank: `secchat`
+-- Database: `secchat`
 --
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `messages`
+-- Table structure for table `connections`
+--
+
+DROP TABLE IF EXISTS `connections`;
+CREATE TABLE IF NOT EXISTS `connections` (
+`id` int(10) NOT NULL,
+  `senderId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `receiverId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `alias` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `receiverPin` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `pubKey` text COLLATE utf8_unicode_ci NOT NULL,
+  `send` tinyint(1) NOT NULL DEFAULT '0',
+  `created` datetime DEFAULT NULL,
+  `modified` datetime DEFAULT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `messages`
 --
 
 DROP TABLE IF EXISTS `messages`;
 CREATE TABLE IF NOT EXISTS `messages` (
 `id` int(10) NOT NULL,
-  `senderId` int(10) NOT NULL,
-  `receiverId` int(10) NOT NULL,
-  `mesage` text COLLATE utf8_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+  `connectionId` int(10) NOT NULL,
+  `senderId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `message` text COLLATE utf8_unicode_ci NOT NULL,
+  `read` tinyint(1) NOT NULL DEFAULT '0',
+  `created` datetime DEFAULT NULL,
+  `modified` datetime DEFAULT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `users`
+-- Table structure for table `users`
 --
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
-`id` int(10) unsigned NOT NULL,
-  `username` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `alias` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `id` int(10) unsigned NOT NULL,
   `password` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `alias` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `sessionId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `created` datetime DEFAULT NULL,
   `modified` datetime DEFAULT NULL
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=4 ;
-
---
--- Daten für Tabelle `users`
---
-
-INSERT INTO `users` (`id`, `username`, `alias`, `password`, `sessionId`, `created`, `modified`) VALUES
-(1, 'tu001', 'tu001', '$2a$10$VxiAsY9ykspoXE6MhJv2xuvrdIncMwMuMLnuPtgaDBPTo1HlpkaAC', '', '2014-11-12 09:19:58', '2014-11-12 09:19:58');
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Indexes for dumped tables
 --
 
 --
+-- Indexes for table `connections`
+--
+ALTER TABLE `connections`
+ ADD PRIMARY KEY (`id`), ADD KEY `senderId` (`senderId`), ADD KEY `receiverId` (`receiverId`);
+
+--
 -- Indexes for table `messages`
 --
 ALTER TABLE `messages`
- ADD PRIMARY KEY (`id`), ADD KEY `senderId` (`senderId`), ADD KEY `receiverId` (`receiverId`);
+ ADD PRIMARY KEY (`id`), ADD KEY `connectionId` (`connectionId`), ADD KEY `senderId` (`senderId`);
 
 --
 -- Indexes for table `users`
@@ -80,16 +99,15 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `connections`
+--
+ALTER TABLE `connections`
+MODIFY `id` int(10) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=13;
+--
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `users`
---
-ALTER TABLE `users`
-MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;SET FOREIGN_KEY_CHECKS=1;
-
+MODIFY `id` int(10) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
